@@ -12,6 +12,9 @@ module.exports = {
   finnhubKey: env('FINNHUB_KEY', ''),
   // E-Mail-Adressen, die beim Login über Free Homes (bestätigte Adresse) Admin-Rechte erhalten
   adminEmails: env('ADMIN_EMAILS', '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean),
+  // Großinvestoren aus den 13F-Meldungen der SEC. Die SEC verlangt einen aussagekräftigen User-Agent mit Kontakt.
+  secUserAgent: env('SEC_USER_AGENT', 'InvestmentArena/1.0 (+https://www.investment-arena.com)'),
+  gurus: env('GURUS', '1') !== '0',
   startCash: 100000,
   sessionDays: 30,
   demoUserDays: 7,

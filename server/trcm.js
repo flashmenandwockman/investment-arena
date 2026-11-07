@@ -24,12 +24,12 @@ CREATE TABLE IF NOT EXISTS trcm_log (
 `);
 
 const DEFAULTS = {name: 'TRCM Portfolio', team: 'Analystenteam von Florian Homm',
-  strategy: 'Das Musterdepot des TRCM-Analystenteams. Long und short, aktiv gemanagt.'};
+  strategy: 'Das Portfolio des TRCM-Analystenteams. Long und short, aktiv gemanagt.'};
 // Frühere Standardtexte mit Florians Namen durch die neuen ersetzen
-const OLD = {team: 'Florian Homm & Analystenteam', strategy: 'Das Musterdepot von Florian Homm und dem TRCM-Analystenteam. Long und short, aktiv gemanagt.'};
+const OLD = {team: ['Florian Homm & Analystenteam'], strategy: ['Das Musterdepot von Florian Homm und dem TRCM-Analystenteam. Long und short, aktiv gemanagt.', 'Das Musterdepot des TRCM-Analystenteams. Long und short, aktiv gemanagt.']};
 const qMeta = db.prepare('SELECT v FROM trcm_meta WHERE k = ?');
 const qSetMeta = db.prepare('INSERT INTO trcm_meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v');
-const meta = k => { const r = qMeta.get(k); return r && r.v !== OLD[k] ? r.v : DEFAULTS[k]; };
+const meta = k => { const r = qMeta.get(k); return r && !(OLD[k] || []).includes(r.v) ? r.v : DEFAULTS[k]; };
 
 const qOpen = db.prepare('SELECT * FROM trcm_holdings WHERE closed_at IS NULL ORDER BY w DESC, id');
 const qClosed = db.prepare('SELECT * FROM trcm_holdings WHERE closed_at IS NOT NULL ORDER BY closed_at DESC LIMIT 100');

@@ -49,6 +49,12 @@ CREATE TABLE IF NOT EXISTS oidc_states (
 
 // Spätere Erweiterungen bestehender Datenbanken
 const cols = db.prepare('PRAGMA table_info(users)').all().map(c => c.name);
+const fcols = db.prepare('PRAGMA table_info(funds)').all().map(c => c.name);
+if (!fcols.includes('kind')) db.exec("ALTER TABLE funds ADD COLUMN kind TEXT NOT NULL DEFAULT 'community'");   // community | guru
+if (!fcols.includes('nav_base')) db.exec('ALTER TABLE funds ADD COLUMN nav_base REAL NOT NULL DEFAULT 100');      // Anteilswert bei der letzten Umschichtung
+if (!fcols.includes('rebalanced_at')) db.exec('ALTER TABLE funds ADD COLUMN rebalanced_at INTEGER');
+if (!fcols.includes('source')) db.exec('ALTER TABLE funds ADD COLUMN source TEXT');                             // JSON, z. B. 13F-Meldung
+db.exec('CREATE TABLE IF NOT EXISTS equity_hist (user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, day TEXT NOT NULL, eq REAL NOT NULL, PRIMARY KEY (user_id, day))');
 if (!cols.includes('role')) db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT ''");   // '' | admin
 
 module.exports = db;

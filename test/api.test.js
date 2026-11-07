@@ -62,6 +62,12 @@ test('Registrieren, Handeln, Schließen, Abmelden', async () => {
   assert.strictEqual(cl.status, 200);
   assert.ok(Math.abs(cl.data.state.cash - 98000) < 1);
 
+  assert.strictEqual((await c('/api/state/reset', {})).status, 400, 'Zurücksetzen nur mit Bestätigung');
+  assert.strictEqual((await c('/api/state')).data.positions.length, 1);
+  const rs = await c('/api/state/reset', {confirm: true});
+  assert.strictEqual(rs.data.positions.length, 0);
+  assert.strictEqual(rs.data.cash, 100000);
+
   await c('/api/auth/logout', {});
   assert.strictEqual((await c('/api/state')).status, 401);
   assert.strictEqual((await c('/api/auth/login', {email: 'a@b.de', password: 'falsch123'})).status, 400);
@@ -159,4 +165,60 @@ test('TRCM-Portfolio: Admin pflegt, nur Mitglieder sehen die Titel', async () =>
   assert.strictEqual((await member(`/api/admin/trcm/holdings/${aapl.id}`, undefined, 'DELETE')).status, 403);
 
   assert.strictEqual((await admin(`/api/admin/trcm/holdings/${aapl.id}`, undefined, 'DELETE')).data.holdings.length, 0);
+});
+
+test('Copy Trading: Positionen übernehmen, nachbilden, beenden', async () => {
+  const leader = client(), fan = client();
+  const L = (await leader('/api/auth/register', {name: 'Vorbild', email: 'vorbild@x.de', password: 'geheim1234'})).data.user;
+  await fan('/api/auth/register', {name: 'Fan', email: 'fan@x.de', password: 'geheim1234'});
+  await leader('/api/orders', {sym: 'AAPL', dir: 1, amt: 20000});
+  assert.strictEqual((await fan('/api/copy', {leaderId: L.id, amt: 100})).status, 400, 'Mindestbetrag');
+  assert.strictEqual((await leader('/api/copy', {leaderId: L.id, amt: 1000})).status, 400, 'nicht sich selbst');
+  const c = await fan('/api/copy', {leaderId: L.id, amt: 10000});
+  assert.strictEqual(c.status, 200);
+  const cs = c.data.state;
+  assert.strictEqual(cs.cash, 90000);
+  const mirrored = cs.positions.filter(p => p.copyId);
+  assert.strictEqual(mirrored.length, 1);
+  assert.ok(Math.abs(mirrored[0].stake - 2000) <= 1, '20 % des Vorbilds → 20 % der Kopie');
+  assert.ok(Math.abs(cs.equity - 100000) < 1);
+  assert.strictEqual((await fan('/api/copy', {leaderId: L.id, amt: 1000})).status, 400, 'nicht doppelt');
+
+  // Neue Order des Vorbilds wird anteilig nachgebildet (Hebel auch im Einsteiger-Modus)
+  const o = await leader('/api/orders', {sym: 'TSLA', dir: -1, kind: 'lev', lev: 2, amt: 8000});
+  let st = (await fan('/api/state')).data;
+  const t = st.positions.find(p => p.copyId && p.sym === 'TSLA');
+  assert.ok(t && t.lev === 2 && t.dir === -1 && Math.abs(t.stake - 800) <= 1);
+
+  // Vorbild schließt → Kopie schließt
+  const lid = o.data.state.positions.find(p => p.sym === 'TSLA').id;
+  await leader(`/api/positions/${lid}/close`, {});
+  st = (await fan('/api/state')).data;
+  assert.ok(!st.positions.some(p => p.copyId && p.sym === 'TSLA'));
+
+  const d = await fan('/api/discover');
+  const me = d.data.traders.find(x => x.id === L.id);
+  assert.strictEqual(me.copiers, 1);
+  assert.ok(me.risk >= 1 && me.risk <= 7);
+  assert.ok(d.data.traders.find(x => x.id === L.id && !x.me) && me.copying === true);
+
+  const s = await fan(`/api/copy/${st.copies[0].id}/stop`, {});
+  assert.strictEqual(s.data.state.copies.length, 0);
+  assert.ok(!s.data.state.positions.some(p => p.copyId));
+  assert.ok(Math.abs(s.data.state.cash - 100000) < 5);
+});
+
+test('Großinvestoren aus 13F-Meldungen sind kopierbar', async () => {
+  const c = client();
+  await c('/api/auth/demo', {});
+  const d = await c('/api/discover');
+  assert.ok(d.data.gurus.length >= 1, 'mindestens ein Großinvestor aus den mitgelieferten Meldungen');
+  const g = d.data.gurus[0];
+  assert.strictEqual(g.kind, 'guru');
+  assert.strictEqual(g.source.type, '13F');
+  assert.ok(!(await c('/api/funds')).data.funds.some(f => f.kind === 'guru'), 'nicht bei den Community-Fonds');
+  assert.ok(!(await c('/api/leaderboard')).data.rows.some(r => r.name === g.manager), 'nicht in der Rangliste');
+  const inv = await c(`/api/funds/${g.id}/invest`, {amt: 5000});
+  assert.strictEqual(inv.status, 200);
+  assert.strictEqual(inv.data.state.positions[0].fundKind, 'guru');
 });

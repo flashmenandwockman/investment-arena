@@ -180,6 +180,19 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .sheet-h h3{font-family:var(--serif);font-weight:400;font-size:24px;margin:0}
 .x{width:44px;height:44px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:22px;flex:none}
 .chart{width:100%;height:120px;margin:10px 0 4px}
+.chartbox{position:relative;margin:14px 0 6px;touch-action:pan-y}
+.chartbox svg{display:block;width:100%;height:150px}
+.chartbox .cx{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.35);pointer-events:none}
+.chartbox .cd{position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;border:2px solid var(--bg);pointer-events:none}
+.chartbox .ct{position:absolute;top:-6px;transform:translate(-50%,-100%);padding:6px 10px;border-radius:10px;background:var(--card-2);border:1px solid var(--line-gold);font-size:12.5px;white-space:nowrap;pointer-events:none;box-shadow:0 10px 24px -12px #000}
+.chartbox .ct small{display:block;color:var(--muted);font-size:11px}
+.chartbox .lo,.chartbox .hi{position:absolute;right:0;font-size:10.5px;color:var(--muted);background:rgba(7,11,23,.7);padding:0 4px;border-radius:4px;pointer-events:none}
+.chartbox .hi{top:0} .chartbox .lo{bottom:0}
+.chartbox.loading svg{opacity:.45}
+.ranges{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px}
+.ranges button{height:36px;border-radius:10px;font-size:12.5px;font-weight:600;color:var(--muted);border:1px solid transparent}
+.ranges button.on{color:var(--gold-p);border-color:var(--line-gold);background:rgba(198,164,108,.1)}
+.rchg{font-size:12.5px;margin:2px 2px 14px}
 .step{margin-top:18px}
 .step > label{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
 .seg{display:grid;gap:8px} .c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}.c4{grid-template-columns:repeat(4,1fr)}
@@ -297,6 +310,28 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 .nfrow{gap:8px;margin-bottom:10px}
 .coach.mini{margin-top:20px}
 .fine{line-height:1.55}
+/* Anleger entdecken / Copy Trading */
+.trader{display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center;padding:16px;border-radius:18px;background:var(--card);border:1px solid var(--line);width:100%;text-align:left}
+.trader:hover{border-color:var(--line-gold)}
+.trader .av{width:48px;height:48px}
+.trader .nm b{display:block;font-size:15.5px} .trader .nm small{display:block;color:var(--muted);font-size:12px;margin-top:2px;line-height:1.4}
+.trader .r{text-align:right} .trader .r b{display:block;font-size:17px} .trader .r small{font-size:11.5px;color:var(--muted)}
+.tstats{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:12px;border-top:1px solid var(--line)}
+.risk{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--card-2);border:1px solid var(--line)}
+.risk i{width:8px;height:8px;border-radius:50%} .pill2{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);background:var(--card-2)}
+.copyb{margin-left:auto;height:38px;padding:0 18px;border-radius:999px;background:var(--gold-grad);color:#1a0e00;font-weight:700;font-size:13.5px}
+.copyb.on{background:none;border:1px solid var(--up);color:var(--up)}
+.sec-sub{font-size:13.5px;line-height:1.55;color:var(--muted);margin:0 2px 16px}
+.gstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.gstats div{padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);text-align:center} .gstats small{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px} .gstats b{font-size:14px}
+.copyc{padding:18px;border-radius:18px;background:linear-gradient(160deg,#121c38,#0a1024);border:1px solid var(--line-gold)}
+.copyc .top{display:flex;align-items:center;gap:12px} .copyc .top .av{width:40px;height:40px;font-size:13px}
+.copyc .mini{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.copyc .mini:first-of-type{margin-top:12px} .copyc .mini span:last-child{white-space:nowrap}
+.optin{display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:16px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:14px;line-height:1.5;cursor:pointer}
+.optin input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--down)}
+.srcnote{font-size:12px;line-height:1.5;color:var(--muted);margin:10px 2px 0}
+
 /* TRCM-Portfolio */
 .trcm{display:block;width:100%;text-align:left;padding:20px;border-radius:22px;background:linear-gradient(160deg,#18233f,#0b1126);border:1px solid var(--gold);position:relative;overflow:hidden;box-shadow:0 18px 40px -26px rgba(198,164,108,.7)}
 .trcm::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(224,194,138,.16),transparent 70%);pointer-events:none}
@@ -406,6 +441,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 
   <!-- DEPOT -->
   <main id="tab-depot" hidden>
+    <div id="copiesBox" hidden><div class="sec-h"><h2>Kopierte Anleger</h2><span class="muted num" style="font-size:12px" id="copyCount"></span></div><div class="list" id="copies"></div></div>
     <div class="sec-h"><h2>Offene Positionen</h2><span class="muted num" style="font-size:12px" id="posCount"></span></div>
     <div class="list" id="positions"></div>
     <div class="sec-h"><h2>Verlauf</h2><span class="muted num" style="font-size:12px" id="realized"></span></div>
@@ -442,8 +478,19 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 
   <!-- FONDS -->
   <main id="tab-fonds" hidden>
-    <div class="sec-h"><h2>TRCM Portfolio</h2><span class="muted" style="font-size:12px">Musterdepot</span></div>
-    <button class="trcm" id="trcmCard"><span class="kick">Musterdepot</span><h3>TRCM Portfolio</h3><div class="team">wird geladen …</div></button>
+    <div class="sec-h"><h2>TRCM Portfolio</h2></div>
+    <button class="trcm" id="trcmCard"><span class="kick">Analystenteam von Florian Homm</span><h3>TRCM Portfolio</h3><div class="team">wird geladen …</div></button>
+    <p style="margin:14px 2px 0"><a class="link" href="https://homm-longshort.com/" target="_blank" rel="noopener">Mehr Infos im Homm Long Short Börsenbrief ↗</a></p>
+
+    <div class="sec-h"><h2>Anleger kopieren</h2><span class="muted num" style="font-size:12px" id="trCount"></span></div>
+    <p class="sec-sub">Folgen Sie erfolgreichen Tradern der Arena automatisch: Ihre offenen Positionen werden anteilig übernommen, jeder neue Trade wird nachgebildet.</p>
+    <div class="chips" id="trSort"><button class="chip on" data-trs="pop">Beliebt</button><button class="chip" data-trs="m1">Rendite 1 Monat</button><button class="chip" data-trs="w1">Diese Woche</button><button class="chip" data-trs="safe">Geringes Risiko</button></div>
+    <div class="list" id="traders"></div>
+    <button class="btn2" id="trMore" style="margin-top:12px" hidden>Alle anzeigen</button>
+
+    <div class="sec-h"><h2>Großinvestoren</h2><span class="muted" style="font-size:12px">Quelle: SEC 13F</span></div>
+    <p class="sec-sub">Die Depots bekannter Investoren laut ihrer Pflichtmeldung an die US-Börsenaufsicht. Kopieren Sie die zehn größten Positionen mit Spielgeld.</p>
+    <div class="list" id="gurus"></div>
     <div class="sec-h"><h2>Community-Fonds</h2><span class="muted" style="font-size:12px" id="fundCount"></span></div>
     <p class="muted" style="font-size:13.5px;line-height:1.55;margin:0 2px 18px">Mitglieder stellen eigene Aktienpakete zusammen, long und short. Investieren Sie Spielgeld in die Ideen, die Sie überzeugen. Die besten Fondsmanager stehen oben.</p>
     <button class="cta" id="newFundBtn" style="margin:0 0 20px">+ Eigenen Fonds gründen</button>
@@ -463,7 +510,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 <nav class="nav"><div class="nav-in">
   <button class="on" data-tab="markt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg>Märkte</button>
   <button data-tab="depot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M8 6V4h8v2"/></svg>Depot<span class="badge" id="navBadge" hidden>0</span></button>
-  <button data-tab="fonds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>Fonds</button>
+  <button data-tab="fonds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>Entdecken</button>
   <button data-tab="arena"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Arena</button>
   <button data-tab="lernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l10-5 10 5-10 5z"/><path d="M6 10v5c3 2.5 9 2.5 12 0v-5"/></svg>Lernen</button>
 </div></nav>
@@ -478,7 +525,11 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
       <div><h3 id="tName"></h3><div class="num" id="tPrice" style="font-size:14px"></div></div>
       <button class="x" data-closesheet aria-label="Schließen">×</button>
     </div>
-    <svg class="chart" id="tChart" viewBox="0 0 320 120" preserveAspectRatio="none"></svg>
+    <div class="chartbox" id="tChartBox"><svg id="tChart" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
+      <span class="hi num" id="tHi"></span><span class="lo num" id="tLo"></span>
+      <i class="cx" id="tCx" hidden></i><i class="cd" id="tCd" hidden></i><div class="ct num" id="tTip" hidden></div></div>
+    <div class="ranges" id="tRanges"><button data-rg="1d">24h</button><button data-rg="5d">Woche</button><button data-rg="1mo" class="on">Monat</button><button data-rg="1y">Jahr</button><button data-rg="5y">Max</button></div>
+    <div class="rchg num" id="tRchg"></div>
     <div id="smart"></div>
 
     <div class="step"><label>1 · Ihre Erwartung</label>
@@ -559,8 +610,10 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
       <span><small>Aktueller Depotwert</small><b class="num" id="pfEq"></b></span>
       <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span>
     </button>
+    <div class="gstats num" id="pfStats"></div>
     <div class="holdings" id="pfHold"><div id="pfHoldIn" style="padding-top:6px"></div></div>
-    <button class="btn2" id="pfFollow" style="margin-top:16px">+ Folgen</button>
+    <button class="cta" id="pfCopy" style="margin-top:20px">Kopieren</button>
+    <button class="btn2" id="pfFollow" style="margin-top:12px">+ Folgen</button>
   </div>
 </section>
 
@@ -568,7 +621,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 <section class="sheet" id="fundSheet" role="dialog" aria-modal="true">
   <div class="sheet-in">
     <div class="grab"></div>
-    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Community-Fonds</span><h3 id="fdName"></h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600" id="fdKick">Community-Fonds</span><h3 id="fdName"></h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
     <div id="fdBody"></div>
     <div id="fdInvest">
       <div class="step"><label>Investieren <span class="num muted" id="fdPct"></span></label>
@@ -578,7 +631,36 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
       <button class="cta long" id="fdGo">Investieren</button>
     </div>
     <div class="coach mini" id="fdTip"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundInvest"></p></div><button class="say" data-saykey="fundInvest" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
-    <p class="fine">Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.</p>
+    <p class="fine" id="fdFine">Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.</p>
+  </div>
+</section>
+
+<!-- Arena zurücksetzen -->
+<section class="sheet" id="resetSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><h3>Arena zurücksetzen?</h3><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="alert" style="margin-top:16px">Sie starten neu mit 100.000 € Spielgeld. Das lässt sich nicht rückgängig machen.</div>
+    <div class="summary" id="rsInfo"></div>
+    <label class="optin"><input type="checkbox" id="rsOk"><span>Ja, ich möchte <b>alle Trades zurücksetzen</b> und verliere damit meinen Platz in der Rangliste.</span></label>
+    <button class="cta short" id="rsGo" disabled>Endgültig zurücksetzen</button>
+    <button class="btn2" data-closesheet style="margin-top:12px">Abbrechen, alles behalten</button>
+  </div>
+</section>
+
+<!-- Kopieren -->
+<section class="sheet" id="copySheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Anleger kopieren</span><h3 id="cpName"></h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="gstats num" id="cpStats"></div>
+    <div class="step"><label>Betrag für die Kopie <span class="num muted" id="cpPct"></span></label>
+      <div class="amount"><input id="cpAmt" inputmode="numeric" value="5000" aria-label="Betrag in Euro"><span>€</span></div>
+      <div class="seg c4" style="margin-top:10px"><button class="opt" data-cq="1000">1.000</button><button class="opt" data-cq="5000">5.000</button><button class="opt" data-cq="10000">10.000</button><button class="opt" data-cq="0.1">10 %</button></div>
+    </div>
+    <div class="summary" id="cpInfo"></div>
+    <button class="cta" id="cpGo">Kopieren</button>
+    <p class="fine">Mindestens 500 €, höchstens 5 Anleger gleichzeitig. Sie können einzelne kopierte Positionen schließen oder die Kopie jederzeit beenden. Simulation mit Spielgeld, keine Anlageberatung.</p>
   </div>
 </section>
 
@@ -586,7 +668,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 <section class="sheet" id="trcmSheet" role="dialog" aria-modal="true">
   <div class="sheet-in">
     <div class="grab"></div>
-    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Musterdepot</span><h3 id="tcName">TRCM Portfolio</h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600" id="tcTeam">Analystenteam von Florian Homm</span><h3 id="tcName">TRCM Portfolio</h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
     <div id="tcBody"></div>
     <div class="admin" id="tcAdmin" hidden>
       <span class="kick">Admin</span><h4>Titel hinzufügen</h4>
@@ -707,7 +789,7 @@ const BADGES = [['first','🥇 Erster Trade'],['short','📉 Erster Short'],['st
 /* ---------- Zustand (kommt vom Server) ---------- */
 let Q = {}, fx = 1.12;
 let S = {cash:START, pos:[], hist:[], realized:0, mode:null, badges:{}, xp:0, active:{}, follow:{}, equity:START, eqPrev:START};
-let ME = null, CFG = {freehomes:false}, LB = [], FUNDS = [], AUDIO = new Set(), FD = null;
+let ME = null, CFG = {freehomes:false}, LB = [], FUNDS = [], AUDIO = new Set(), FD = null, DISC = {traders:[], gurus:[]};
 let ui = {tab:'markt', filter:'all', lb:'day', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
 async function api(path, opts={}){
   const r = await fetch(path, {method:opts.method||(opts.body?'POST':'GET'), credentials:'same-origin', cache:'no-store',
@@ -716,7 +798,7 @@ async function api(path, opts={}){
   if(!r.ok) throw Object.assign(new Error(d.error||'Verbindungsfehler'),{status:r.status});
   return d;
 }
-function setState(v){ S = {cash:v.cash, pos:v.positions, hist:v.hist, realized:v.realized, mode:v.mode, badges:v.badges||{}, xp:v.xp||0, active:v.active||{}, follow:v.follow||{}, equity:v.equity, eqPrev:v.eqPrev}; }
+function setState(v){ S = {copies:v.copies||[], cash:v.cash, pos:v.positions, hist:v.hist, realized:v.realized, mode:v.mode, badges:v.badges||{}, xp:v.xp||0, active:v.active||{}, follow:v.follow||{}, equity:v.equity, eqPrev:v.eqPrev}; }
 function showEvents(ev){ (ev||[]).forEach(e=>{ if(e.type==='badge'){ const b=BADGES.find(b=>b[0]===e.key); if(b) setTimeout(()=>toast('Abzeichen: '+b[1]+'  ·  +'+e.xp+' XP'),900); } }); }
 
 /* ---------- helpers ---------- */
@@ -882,18 +964,20 @@ function renderHeader(){
 }
 function kindLabel(p){ return p.label || ''; }
 function renderPositions(){
-  $('#posCount').textContent = S.pos.length ? S.pos.length+' offen' : '';
-  $('#positions').innerHTML = !S.pos.length ? `<div class="empty">Noch keine Positionen.<br>Wählen Sie unter „Märkte“ einen Wert oder investieren Sie in einen Community-Fonds.</div>` : S.pos.map(p=>{
+  renderCopies();
+  const own = S.pos.filter(p=>!p.copyId);
+  $('#posCount').textContent = own.length ? own.length+' offen' : '';
+  $('#positions').innerHTML = !own.length ? `<div class="empty">Noch keine Positionen.<br>Wählen Sie unter „Märkte“ einen Wert oder kopieren Sie unter „Entdecken“ einen Anleger.</div>` : own.map(p=>{
     const v=val(p), pl=v-p.stake, warn=p.kind==='lev' && v<p.stake*.25, fund=p.kind==='fund', q=Q[p.sym]||{price:p.price,cur:p.cur,vol:.3};
     const T=p.expiryTs?Math.max(0,(p.expiryTs-Date.now())/DAY):0;
     const extra = fund ? `Anteilswert ${nf(p.price||p.entry,2)} · Einstieg ${nf(p.entry,2)}` : p.kind==='option' ? `Verfall in ${Math.ceil(T)} Tagen${pro()&&T>0&&q.price?` · Δ ${delta(q.price,p.strike,T/365,q.vol,p.opt).toFixed(2)}`:''}` : p.kind==='lev' ? `Knock-out bei ${fmt(p.ko,q.cur)}${pro()?` · Gebühren ${eur(p.fees||0)}`:''}` : (p.dir<0?'Leerverkauf':'Direktanlage');
     const right = fund ? `<div><small>Anteile</small><b>${nf(p.units,2)}</b></div>` : `<div><small>${p.kind==='option'?'Basiswert':'Einstieg → jetzt'}</small><b>${p.kind==='option'?fmt(q.price,q.cur):`${fmt(p.entry,q.cur)} → ${fmt(q.price,q.cur)}`}</b></div>`;
     return `<div class="pos ${warn?'warn':''}">
-      <div class="pos-h"><div>${fund?'<span class="tag kind">FONDS</span>':`<span class="tag ${p.dir>0?'long':'short'}">${p.dir>0?'LONG':'SHORT'}</span><span class="tag kind">${esc(p.label)}</span>`}<div style="margin-top:10px;font-weight:600;font-size:15px">${esc(p.name)}</div><small class="muted">${extra}${p.sl?` · Stop −${p.sl*100} %`:''}</small></div>
+      <div class="pos-h"><div>${fund?`<span class="tag kind">${p.fundKind==='guru'?'GROSSINVESTOR':'FONDS'}</span>`:`<span class="tag ${p.dir>0?'long':'short'}">${p.dir>0?'LONG':'SHORT'}</span><span class="tag kind">${esc(p.label)}</span>`}<div style="margin-top:10px;font-weight:600;font-size:15px">${esc(p.name)}</div><small class="muted">${extra}${p.sl?` · Stop −${p.sl*100} %`:''}</small></div>
       <div style="text-align:right" class="num"><b class="${cls(pl/p.stake)}" style="font-size:16px;white-space:nowrap">${sgn(pl)}</b><br><small class="${cls(pl/p.stake)}">${pct(pl/p.stake,1)}</small></div></div>
       <div class="kv num"><div><small>Einsatz</small><b>${eur(p.stake,0)}</b></div><div><small>Wert</small><b>${eur(v,0)}</b></div>${right}</div>
       ${warn?`<div class="alert" style="margin:0 0 10px">Nachschussalarm: nur noch ${Math.round(v/p.stake*100)} % vom Einsatz übrig.</div>`:''}
-      <button class="btn2" data-close="${p.id}">${fund?'Anteile verkaufen':'Position schließen'} · ${eur(v)}</button></div>`;
+      <button class="btn2" data-close="${p.id}">${p.fundKind==='guru'?'Kopie beenden':fund?'Anteile verkaufen':'Position schließen'} · ${eur(v)}</button></div>`;
   }).join('');
   $('#realized').innerHTML = `Realisiert: <span class="${cls(S.realized)}">${sgn(S.realized)}</span>`;
   $('#history').innerHTML = S.hist.length ? S.hist.slice(-30).reverse().map(h=>`<div class="h"><div><b>${esc(h.t)}</b><br><small class="muted">${dstr(h.ts)} · ${esc(h.d)}</small></div><b class="num ${h.pl==null?'muted':cls(h.pl)}">${h.pl==null?eur(-h.stake,0):sgn(h.pl)}</b></div>`).join('') : `<div class="empty">Noch keine Trades.</div>`;
@@ -912,7 +996,7 @@ function renderArena(){
     <span class="vv num">${k==='eq'?`<b>${eur(r.eq,0)}</b><small class="${cls(r.tot)}">${pct(r.tot,1)}</small>`:`<b class="${cls(r[k])}">${pct(r[k],2)}</b><small class="muted">${eur(r.eq,0)}</small>`}</span></button>`).join('');
 }
 function renderLessons(){ $('#lessons').innerHTML = LESSONS.map(([k,l],i)=>`<button class="row lesson" style="grid-template-columns:42px 1fr auto" data-lesson="${k}"><span class="logo">${i+1}</span><span class="n"><b>${l}</b><small>Florian erklärt · ca. 30 Sek.</small></span><span class="say" style="width:40px;height:40px"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg></span></button>`).join(''); }
-function render(){ renderHeader(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); }
+function render(){ renderHeader(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); renderDiscover(); }
 
 /* ---------- coach / voice ---------- */
 let curCoach='welcome';
@@ -947,16 +1031,55 @@ let tt; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add
 function openSheet(id){ $('#scrim').classList.add('on'); $(id).classList.add('on'); }
 function closeSheets(){ $('#scrim').classList.remove('on'); $$('.sheet').forEach(s=>s.classList.remove('on')); if('speechSynthesis' in window) speechSynthesis.cancel(); if(player){ player.pause(); player=null; } $$('.speaking').forEach(b=>b.classList.remove('speaking')); }
 
+/* ---------- Kurs-Chart ---------- */
+const CH={r:'1mo', pts:[], cur:'EUR', seq:0};
+const RLABEL={'1d':'in 24 Stunden','5d':'in einer Woche','1mo':'in einem Monat','1y':'in einem Jahr','5y':'in 5 Jahren'};
+async function loadChart(sym, r){
+  CH.r=r; $$('#tRanges [data-rg]').forEach(b=>b.classList.toggle('on',b.dataset.rg===r));
+  const seq=++CH.seq; $('#tChartBox').classList.add('loading');
+  try{ const d=await api(`/api/chart?sym=${encodeURIComponent(sym)}&r=${r}`); if(seq!==CH.seq||ui.sym!==sym) return;
+    if(d.points.length>1){ CH.pts=d.points; CH.cur=d.cur||CH.cur; CH.daily=!!d.daily; CH.prev=d.prevClose; } drawChart(); }
+  catch(e){} finally{ if(seq===CH.seq) $('#tChartBox').classList.remove('loading'); }
+}
+function drawChart(){
+  const pts=CH.pts; if(pts.length<2) return;
+  const ser=pts.map(p=>p[1]), mn=Math.min(...ser), mx=Math.max(...ser), r=mx-mn||1, n=pts.length;
+  CH.xy=pts.map((p,i)=>[i/(n-1), 1-(p[1]-mn)/r]);
+  const line=CH.xy.map(([x,y])=>`${(x*320).toFixed(1)},${(8+y*132).toFixed(1)}`).join(' ');
+  const base=CH.r==='1d'&&CH.prev?CH.prev:ser[0], ch=ser.at(-1)/base-1, col=ch>=0?'#3ccf91':'#ff6b6b'; CH.col=col;
+  $('#tChart').innerHTML=`<defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".25"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><polygon fill="url(#g)" points="0,150 ${line} 320,150"/><polyline fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke" points="${line}"/>`;
+  $('#tHi').textContent=fmt(mx,CH.cur); $('#tLo').textContent=fmt(mn,CH.cur);
+  $('#tRchg').innerHTML=CH.daily?'<span class="muted">Tageskurse der letzten Wochen</span>':`<span class="${cls(ch)}">${pct(ch,2)}</span> <span class="muted">${RLABEL[CH.r]} · ${fmt(ser[0],CH.cur)} → ${fmt(ser.at(-1),CH.cur)}</span>`;
+  hideTip();
+}
+const tipDate = ts => { const d=new Date(ts); return ['1d','5d','1mo'].includes(CH.r)&&!CH.daily ? d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'})+' · '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}); };
+function showTip(clientX){
+  if(!CH.xy) return; const box=$('#tChartBox').getBoundingClientRect(), x=Math.min(Math.max((clientX-box.left)/box.width,0),1);
+  const i=Math.round(x*(CH.pts.length-1)), [px,py]=CH.xy[i], p=CH.pts[i], base=CH.pts[0][1];
+  const left=px*box.width, top=(8+py*132)/150*box.height;
+  $('#tCx').style.left=left+'px'; $('#tCd').style.left=left+'px'; $('#tCd').style.top=top+'px'; $('#tCd').style.background=CH.col;
+  // Wert und Zeitpunkt in der Kurszeile unter dem Namen anzeigen (verdeckt nichts)
+  if(CH.head==null) CH.head=$('#tPrice').innerHTML;
+  $('#tPrice').innerHTML=`<b>${fmt(p[1],CH.cur)}</b> <span class="${cls(p[1]/base-1)}">${pct(p[1]/base-1,1)}</span> <span class="muted">· ${tipDate(p[0])}</span>`;
+  $('#tCx').hidden=false; $('#tCd').hidden=false;
+}
+function hideTip(){ $('#tCx').hidden=true; $('#tCd').hidden=true; if(CH.head!=null){ $('#tPrice').innerHTML=CH.head; CH.head=null; } }
+$('#tChartBox').addEventListener('pointermove',e=>showTip(e.clientX));
+$('#tChartBox').addEventListener('pointerdown',e=>showTip(e.clientX));
+$('#tChartBox').addEventListener('pointerleave',hideTip);
+$('#tChartBox').addEventListener('touchmove',e=>{ if(e.touches[0]) showTip(e.touches[0].clientX); },{passive:true});
+$('#tChartBox').addEventListener('touchend',()=>setTimeout(hideTip,1200));
+$('#tRanges').addEventListener('click',e=>{ const b=e.target.closest('[data-rg]'); if(b&&ui.sym) loadChart(ui.sym,b.dataset.rg); });
+
 function openTrade(sym){
   ui.sym=sym; const q=Q[sym], m=META[sym], c=chg(sym);
   if(!pro() && ui.kind==='option') ui.kind='stock';
   if(!pro() && ui.lev>5) ui.lev=5;
-  $('#tName').textContent=m.n;
+  $('#tName').textContent=m.n; CH.head=null;
   $('#tPrice').innerHTML=`${fmt(q.price,q.cur)} <span class="${cls(c)}">${pct(c)}</span>${pro()?` <span class="muted">· Vol. ${Math.round(q.vol*100)} % p. a.</span>`:''}`;
-  const ser=q.hist.slice(-60), mn=Math.min(...ser), mx=Math.max(...ser), r=mx-mn||1;
-  const line=ser.map((v,i)=>`${(i/(ser.length-1)*320).toFixed(1)},${(112-(v-mn)/r*100).toFixed(1)}`).join(' ');
-  const col=ser.at(-1)>=ser[0]?'#3ccf91':'#ff6b6b';
-  $('#tChart').innerHTML=`<defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".25"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><polygon fill="url(#g)" points="0,120 ${line} 320,120"/><polyline fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke" points="${line}"/>`;
+  // Erst die vorhandenen Tageskurse zeigen, dann den gewählten Zeitraum nachladen
+  CH.pts=q.hist.slice(-30).map((v,i,a)=>[Date.now()-(a.length-1-i)*DAY,v]); CH.cur=q.cur; CH.daily=true; drawChart();
+  loadChart(sym, CH.r);
   $('#smart').innerHTML = smartPanel(sym);
   openSheet('#sheet');
   updateTrade(m.g==='crypto'&&ui.kind==='stock'?'crypto':defaultTip());
@@ -1057,6 +1180,9 @@ async function openProfile(id){
     + `<div class="hd"><span>Barreserve</span><b class="num">${nf(pr.cashWeight*100,1)} %</b><span class="w"><i style="width:${pr.cashWeight*100}%"></i></span></div>`
     + (pr.funds.length?`<div class="hd"><span>Verwaltet als Fondsmanager</span><b></b>${pr.funds.map(f=>`<small>${esc(f.name)}</small><small class="num ${cls(f.perf)}">${pct(f.perf,1)}</small>`).join('')}</div>`:'')
     + `<p class="fine" style="text-align:left">Gewichtung in % des Depotwerts.</p>`;
+  $('#pfStats').innerHTML=statBoxes(pr.stats); $('#pfStats').hidden=!pr.stats;
+  const tr=DISC.traders.find(x=>x.id===pr.id); $('#pfCopy').hidden=!!row.me||!ME||!tr; $('#pfCopy').dataset.id=pr.id;
+  $('#pfCopy').textContent=tr&&tr.copying?`✓ Sie kopieren ${pr.name}`:`${pr.name} kopieren`;
   $('#pfFollow').hidden = !!row.me;
   $('#pfFollow').textContent = S.follow[pr.id] ? '✓ Sie folgen '+pr.name : '+ Folgen'; $('#pfFollow').dataset.id=pr.id; $('#pfFollow').dataset.name=pr.name;
   openSheet('#profile'); coach('profile');
@@ -1064,6 +1190,74 @@ async function openProfile(id){
 $('#pfVal').onclick=()=>{ const on=$('#pfHold').classList.toggle('on'); $('#pfVal').setAttribute('aria-expanded',on); };
 $('#pfFollow').onclick=async e=>{ const b=e.currentTarget, id=b.dataset.id, on=!S.follow[id];
   try{ setState(await api('/api/state',{method:'PATCH',body:{follow:{[id]:on}}})); b.textContent=on?'✓ Sie folgen '+b.dataset.name:'+ Folgen'; renderArena(); }catch(err){ toast(err.message); } };
+
+/* ---------- Anleger entdecken & Copy Trading ---------- */
+const RISKC=['#3ccf91','#3ccf91','#a6d86b','#e0c28a','#f0b14a','#ff8a5c','#ff6b6b'];
+const riskPill = r => `<span class="risk" title="Risikowert 1 bis 7"><i style="background:${RISKC[r-1]}"></i>Risiko ${r}</span>`;
+let trSort='pop', trAll=false, CP=null;
+async function loadDiscover(){ try{ DISC=await api('/api/discover'); }catch(e){} }
+function sortedTraders(){
+  const t=DISC.traders.filter(x=>!x.me).slice();
+  const by={pop:(a,b)=>b.copiers-a.copiers||b.m1-a.m1, m1:(a,b)=>b.m1-a.m1, w1:(a,b)=>b.w1-a.w1, safe:(a,b)=>a.risk-b.risk||b.m1-a.m1}[trSort];
+  return t.sort(by);
+}
+function traderCard(t){
+  const r=trSort==='w1'?['w1','diese Woche']:['m1','1 Monat'];
+  return `<div class="trader" data-person="${t.id}" role="button" tabindex="0">${avatar(t)}
+    <span class="nm"><b>${esc(t.name)}${t.bot?'<span class="bot">Beispiel</span>':''}</b><small>${esc(t.sub)}</small></span>
+    <span class="r num"><b class="${cls(t[r[0]])}">${pct(t[r[0]],1)}</b><small>${r[1]}</small></span>
+    <div class="tstats num">${riskPill(t.risk)}<span class="pill2">👥 ${t.copiers} Kopierer</span><span class="pill2">${pct(t.tot,1)} gesamt</span>
+      <button class="copyb ${t.copying?'on':''}" data-copy="${t.id}">${t.copying?'✓ Kopiert':'Kopieren'}</button></div></div>`;
+}
+const quarter = d => { const x=new Date(d); return `Q${Math.floor(x.getMonth()/3)+1}/${x.getFullYear()}`; };
+function renderDiscover(){
+  if(!$('#traders')) return;
+  const t=sortedTraders(), show=trAll?t:t.slice(0,6);
+  $('#trCount').textContent=t.length?t.length+' Trader':'';
+  $$('[data-trs]').forEach(b=>b.classList.toggle('on',b.dataset.trs===trSort));
+  $('#traders').innerHTML=show.map(traderCard).join('')||'<div class="empty">Noch keine Trader zum Kopieren.</div>';
+  $('#trMore').hidden=trAll||t.length<=6;
+  $('#gurus').innerHTML=DISC.gurus.map(g=>{
+    const src=g.source||{}, q=src.reportDate?quarter(src.reportDate):'';
+    return `<button class="fund" data-fund="${g.id}"><div class="fund-h"><div class="fund-t"><small>${esc(src.firm||'')}</small><b>${esc(g.manager)}</b></div>
+      <div class="perf num"><b class="${cls(g.perf)}">${pct(g.perf,1)}</b><small class="${cls(g.day)}">heute ${pct(g.day,1)}</small></div></div>
+      <div class="chips2">${g.top.map(h=>`<span class="bd">${esc(h.name||h.sym)} ${nf(h.w,0)} %</span>`).join('')}</div>
+      <div class="meta num"><span>Meldung ${q}</span><span>${g.investors} Kopierer</span><span>${eur(g.aum,0)} kopiert</span></div></button>`; }).join('')
+    || '<div class="empty">Die Meldungen werden geladen.</div>';
+}
+function renderCopies(){
+  const cs=S.copies||[]; $('#copiesBox').hidden=!cs.length; $('#copyCount').textContent=cs.length?cs.length+' aktiv':'';
+  $('#copies').innerHTML=cs.map(c=>{
+    const ps=S.pos.filter(p=>p.copyId===c.id);
+    return `<div class="copyc"><div class="top">${avatar({name:c.leaderName,color:c.color})}<div style="flex:1;min-width:0"><b>${esc(c.leaderName)}</b><br><small class="muted">kopiert seit ${dshort2(c.ts)} · ${eur(c.amt,0)} zugeteilt</small></div>
+      <div class="num" style="text-align:right"><b class="${cls(c.pl)}" style="font-size:16px">${sgn(c.pl)}</b><br><small class="${cls(c.pl)}">${pct(c.pl/c.amt,1)}</small></div></div>
+      ${ps.map(p=>`<div class="mini num"><span><span class="tag ${p.kind==='fund'?'kind':p.dir>0?'long':'short'}">${p.kind==='fund'?'FONDS':p.dir>0?'LONG':'SHORT'}</span>${esc(p.name)} <span class="muted">· ${esc(p.label)}</span></span><span class="${cls(p.pl)}">${eur(p.value,0)}</span></div>`).join('')}
+      <div class="mini num"><span class="muted">Freies Kopier-Guthaben</span><span>${eur(c.cash,0)}</span></div>
+      <button class="btn2" style="margin-top:12px" data-stopcopy="${c.id}">Kopie beenden · ${eur(c.value)}</button></div>`; }).join('');
+}
+function statBoxes(t){ return t?`<div><small>1 Woche</small><b class="${cls(t.w1)}">${pct(t.w1,1)}</b></div><div><small>1 Monat</small><b class="${cls(t.m1)}">${pct(t.m1,1)}</b></div><div><small>Risiko</small><b>${t.risk} / 7</b></div><div><small>Kopierer</small><b>${t.copiers}</b></div>`:''; }
+const cpAmt = () => Math.floor(+String($('#cpAmt').value).replace(/\D/g,'')||0);
+function updCopy(){
+  const a=cpAmt(); $('#cpPct').textContent=S.equity?nf(a/S.equity*100,1)+' % des Depots':'';
+  $('#cpGo').textContent=`${CP.name} kopieren · ${eur(a,0)}`; $('#cpGo').disabled=a<500||a>S.cash;
+  $('#cpInfo').innerHTML=`<div><span>Offene Positionen werden übernommen</span><b>${CP.positions}</b></div><div><span>Neue Trades</span><b>automatisch</b></div><div><span>Ihr verfügbares Spielgeld</span><b class="num">${eur(S.cash,0)}</b></div>`;
+}
+function openCopy(id){
+  if(!ME) return;
+  CP=DISC.traders.find(x=>x.id===id); if(!CP) return toast('Trader nicht gefunden');
+  if(CP.copying){ closeSheets(); document.querySelector('.nav [data-tab="depot"]').click(); return; }
+  $('#cpName').textContent=CP.name; $('#cpStats').innerHTML=statBoxes(CP);
+  $('#cpAmt').value=Math.min(5000,Math.floor(S.cash)).toLocaleString('de-DE'); updCopy();
+  closeSheets(); setTimeout(()=>openSheet('#copySheet'),50);
+}
+$('#cpAmt').addEventListener('input',updCopy);
+$('#copySheet').addEventListener('click',e=>{ const q=e.target.closest('[data-cq]'); if(!q) return; const v=+q.dataset.cq; $('#cpAmt').value=Math.floor(v<1?S.equity*v:v).toLocaleString('de-DE'); updCopy(); });
+$('#cpGo').onclick=async()=>{ const b=$('#cpGo'); b.disabled=true;
+  try{ const r=await api('/api/copy',{body:{leaderId:CP.id,amt:cpAmt()}}); setState(r.state); closeSheets(); await loadDiscover(); render(); toast(`Sie kopieren jetzt ${CP.name}`); }
+  catch(e){ toast(e.message); b.disabled=false; } };
+$('#trSort').addEventListener('click',e=>{ const b=e.target.closest('[data-trs]'); if(!b) return; trSort=b.dataset.trs; renderDiscover(); });
+$('#trMore').onclick=()=>{ trAll=true; renderDiscover(); };
+$('#pfCopy').onclick=e=>openCopy(+e.currentTarget.dataset.id);
 
 /* ---------- TRCM-Portfolio ---------- */
 let TC = null, TA = {sym:null, dir:1}, TE = null;
@@ -1073,7 +1267,7 @@ const isoDate = ts => new Date(ts - new Date(ts).getTimezoneOffset()*6e4).toISOS
 const px = (v,cur) => v==null ? '–' : fmt(v,cur);
 function renderTrcm(){
   if(!TC) return;
-  $('#trcmCard').innerHTML=`<span class="kick">Musterdepot</span><h3>${esc(TC.name)}</h3><div class="team">${esc(TC.team)}</div>
+  $('#trcmCard').innerHTML=`<span class="kick">${esc(TC.team)}</span><h3>${esc(TC.name)}</h3><div class="team">Long und short, aktiv gemanagt</div>
     <div class="nums num"><b class="${cls(TC.perf)}">${pct(TC.perf,1)}</b><small class="${cls(TC.day)}">heute ${pct(TC.day,1)}</small></div>
     <div class="foot2"><span>${TC.count} Titel${TC.member?'':' · 🔒 nur für Free-Homes-Mitglieder'}</span><span>${TC.member?'Titel ansehen →':'Mehr erfahren →'}</span></div>`;
 }
@@ -1086,12 +1280,13 @@ function holdingRow(h, closed){
     ${TC.admin?`<button class="tedit" data-tedit="${h.id}">Bearbeiten</button>`:''}</div>`;
 }
 function renderTrcmSheet(){
-  $('#tcName').textContent=TC.name;
+  $('#tcName').textContent=TC.name; $('#tcTeam').textContent=TC.team;
   let h=`<div class="valbtn" style="margin-top:12px;cursor:default"><span><small>Wertentwicklung der aktuellen Titel</small><b class="num ${cls(TC.perf)}">${pct(TC.perf,1)}</b></span><span class="num" style="text-align:right"><b class="${cls(TC.day)}" style="font-family:var(--sans);font-size:17px">${pct(TC.day,1)}</b><br><small class="muted">heute</small></span></div>
     <p style="font-size:14px;line-height:1.55;margin:20px 2px 8px">${esc(TC.strategy)}</p>
-    <p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px">${esc(TC.team)} · ${TC.count} Titel</p>`;
+    <p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px">${esc(TC.team)} · ${TC.count} Titel</p>
+    <p style="margin:14px 2px 0"><a class="link" href="https://homm-longshort.com/" target="_blank" rel="noopener">Mehr Infos im Homm Long Short Börsenbrief ↗</a></p>`;
   if(!TC.member){
-    h+=`<div class="lock"><div class="ic">🔒</div><b>Die Titel sehen nur Free-Homes-Mitglieder</b><p>Welche Aktien das Analystenteam hält, mit Einstiegskurs, Gewichtung und Begründung, ist Mitgliedern von Free Homes vorbehalten.</p>
+    h+=`<div class="lock"><div class="ic">🔒</div><b>Die Titel sehen nur Free-Homes-Mitglieder</b><p>Welche Aktien das Analystenteam hält, mit Einstiegskurs, Gewichtung und Begründung, ist Mitgliedern von Free Homes vorbehalten. Hintergründe und Analysen lesen Sie im <a class="link" href="https://homm-longshort.com/" target="_blank" rel="noopener">Homm Long Short Börsenbrief</a>.</p>
       ${CFG.freehomes?'<button class="cta" id="tcFh" style="margin-top:18px">Mit Free Homes anmelden</button>':'<p style="margin-top:12px;color:var(--gold-p)">Der Login über Free Homes wird in Kürze freigeschaltet.</p>'}</div>`;
   } else {
     const tw=TC.holdings.reduce((a,x)=>a+x.w,0);
@@ -1099,7 +1294,7 @@ function renderTrcmSheet(){
       + (TC.holdings.length?TC.holdings.map(x=>holdingRow(x,false)).join(''):'<div class="empty" style="margin-top:10px">Noch keine Titel im Portfolio.</div>')
       + (TC.holdings.length&&TC.cash>0.0005?`<div class="hrow"><span><b>Barreserve</b></span><b class="num">${nf(TC.cash*100,1)} %</b><span class="w"><i style="width:${TC.cash*100}%"></i></span></div>`:'');
     if(TC.closed.length) h+=`<div class="tc-h"><h4>Verkaufte Titel</h4></div>`+TC.closed.map(x=>holdingRow(x,true)).join('');
-    h+=`<p class="fine" style="text-align:left;margin-top:16px">Wertentwicklung je Titel seit Einstieg, Portfolio gewichtet. Musterdepot zu Informationszwecken, keine Anlageberatung.</p>`;
+    h+=`<p class="fine" style="text-align:left;margin-top:16px">Wertentwicklung je Titel seit Einstieg, Portfolio gewichtet. Das TRCM Portfolio dient der Information, keine Anlageberatung.</p>`;
   }
   $('#tcBody').innerHTML=h;
   $('#tcAdmin').hidden=!TC.admin;
@@ -1164,21 +1359,24 @@ function renderFunds(){
 }
 async function openFund(id){
   try{ FD=await api('/api/funds/'+id); }catch(e){ return toast(e.message); }
-  $('#fdName').textContent=FD.name;
+  const guru = FD.kind==='guru', src = FD.source||{};
+  $('#fdName').textContent=guru?FD.manager:FD.name; $('#fdKick').textContent=guru?'Großinvestor · '+(src.firm||''):'Community-Fonds';
+  $('#fdFine').textContent=guru?'Daten aus der öffentlichen 13F-Meldung an die US-Börsenaufsicht SEC (nur US-Aktienpositionen, ohne Optionen und Leerverkäufe). Meldungen erscheinen bis zu 45 Tage nach Quartalsende. Bei einer neuen Meldung wird automatisch umgeschichtet. Keine Verbindung zu der genannten Person, keine Anlageberatung.':'Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.';
   $('#fdBody').innerHTML=`<div class="valbtn" style="margin-top:10px;cursor:default"><span><small>Anteilswert · Start 100</small><b class="num">${nf(FD.nav,2)}</b></span><span class="num" style="text-align:right"><b class="${cls(FD.perf)}" style="font-family:var(--sans);font-size:18px">${pct(FD.perf,1)}</b><br><small class="muted">seit ${new Date(FD.createdAt).toLocaleDateString('de-DE')}</small></span></div>
     <p style="font-size:14px;line-height:1.55;margin:20px 2px 8px">${esc(FD.strategy)}</p>
-    <p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px 16px">Manager: <b>${esc(FD.manager)}</b> · ${FD.investors} Anleger · ${eur(FD.aum,0)} investiert</p>
-    ${FD.holdings.map(h=>`<div class="hrow"><span><span class="tag ${h.dir>0?'long':'short'}">${h.dir>0?'LONG':'SHORT'}</span> <b>${esc(h.name||h.sym)}</b></span><b class="num">${nf(h.w*100,0)} %</b><span class="w"><i style="width:${h.w*100}%"></i></span><small class="muted num">Beitrag seit Start</small><small class="num ${cls(h.perf)}">${pct(h.perf,1)}</small></div>`).join('')}`;
+    ${guru?`<p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px 16px">13F-Meldung zum ${dshort2(Date.parse(src.reportDate))}, eingereicht am ${dshort2(Date.parse(src.filingDate))} · ${FD.investors} Kopierer · ${eur(FD.aum,0)} kopiert</p>`
+      :`<p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px 16px">Manager: <b>${esc(FD.manager)}</b> · ${FD.investors} Anleger · ${eur(FD.aum,0)} investiert</p>`}
+    ${FD.holdings.map(h=>`<div class="hrow"><span><span class="tag ${h.dir>0?'long':'short'}">${h.dir>0?'LONG':'SHORT'}</span> <b>${esc(h.name||h.sym)}</b></span><b class="num">${nf(h.w*100,guru?1:0)} %</b><span class="w"><i style="width:${h.w*100}%"></i></span><small class="muted num">${guru?'seit Meldung im Depot':'Beitrag seit Start'}</small><small class="num ${cls(h.perf)}">${pct(h.perf,1)}</small></div>`).join('')}`;
   const own = ME && FD.ownerId===ME.id; $('#fdInvest').hidden=own;
   $('#fdAmt').value=Math.min(5000,Math.floor(S.cash)).toLocaleString('de-DE'); updFundAmt();
   $$('[data-tipkey]').forEach(p=>p.textContent=TIPS[p.dataset.tipkey]);
   openSheet('#fundSheet'); coach('fundInvest');
 }
 const fundAmt = () => +String($('#fdAmt').value).replace(/\D/g,'')||0;
-function updFundAmt(){ const a=fundAmt(); $('#fdPct').textContent=nf(a/Math.max(S.equity,1)*100,1)+' % des Depots'; $('#fdGo').textContent=`Investieren · ${eur(a,0)}`; $('#fdGo').disabled=a<100||a>S.cash; }
+function updFundAmt(){ const a=fundAmt(); $('#fdPct').textContent=nf(a/Math.max(S.equity,1)*100,1)+' % des Depots'; $('#fdGo').textContent=`${FD&&FD.kind==='guru'?'Kopieren':'Investieren'} · ${eur(a,0)}`; $('#fdGo').disabled=a<100||a>S.cash; }
 $('#fdAmt').oninput=updFundAmt;
 $('#fdGo').onclick=async()=>{ const b=$('#fdGo'); b.disabled=true;
-  try{ const r=await api(`/api/funds/${FD.id}/invest`,{body:{amt:fundAmt()}}); setState(r.state); closeSheets(); await loadFunds(); render(); toast(`In „${FD.name}“ investiert · ${eur(fundAmt(),0)}`); showEvents(r.events); }
+  try{ const r=await api(`/api/funds/${FD.id}/invest`,{body:{amt:fundAmt()}}); setState(r.state); closeSheets(); await Promise.all([loadFunds(), loadDiscover()]); render(); toast(FD.kind==='guru'?`Sie kopieren jetzt ${FD.manager} · ${eur(fundAmt(),0)}`:`In „${FD.name}“ investiert · ${eur(fundAmt(),0)}`); showEvents(r.events); }
   catch(e){ toast(e.message); b.disabled=false; } };
 
 function nfRow(sym, dir=1, w=''){
@@ -1204,13 +1402,25 @@ $('#nfGo').onclick=async()=>{
   catch(e){ $('#nfErr').textContent=e.message; $('#nfErr').hidden=false; }
 };
 
-$('#resetBtn').onclick=async()=>{ if(!confirm('Arena zurücksetzen? Alle Positionen und der Verlauf werden gelöscht.')) return;
-  try{ setState(await api('/api/state/reset',{body:{}})); render(); coach('welcome'); toast('Neustart mit 100.000 € Spielgeld.'); }catch(e){ toast(e.message); } };
+$('#resetBtn').onclick=()=>{
+  const r=ranked('all'), ix=r.findIndex(x=>x.me), own=S.pos.filter(p=>!p.copyId).length;
+  $('#rsInfo').innerHTML=`<div><span>Aktueller Depotwert</span><b class="num">${eur(S.equity,0)}</b></div>
+    <div><span>Platz in der Rangliste</span><b class="num">${ix>=0?ix+1+' von '+r.length:'–'}</b></div>
+    <div><span>Offene Positionen</span><b class="num">${own}</b></div>
+    <div><span>Kopierte Anleger</span><b class="num">${(S.copies||[]).length}</b></div>
+    <div><span>Verlauf, Abzeichen und XP</span><b>werden gelöscht</b></div>`;
+  $('#rsOk').checked=false; $('#rsGo').disabled=true; openSheet('#resetSheet'); };
+$('#rsOk').onchange=e=>{ $('#rsGo').disabled=!e.target.checked; };
+$('#rsGo').onclick=async()=>{ if(!$('#rsOk').checked) return; $('#rsGo').disabled=true;
+  try{ setState(await api('/api/state/reset',{body:{confirm:true}})); closeSheets(); render(); loadLB().then(renderArena); coach('welcome'); toast('Neustart mit 100.000 € Spielgeld.'); }catch(e){ toast(e.message); $('#rsGo').disabled=false; } };
 
 /* ---------- global clicks ---------- */
 document.addEventListener('click',e=>{
   const t=e.target;
   const c=t.closest('[data-close]'); if(c){ c.disabled=true; api(`/api/positions/${c.dataset.close}/close`,{body:{}}).then(r=>{ setState(r.state); render(); toast(`Position geschlossen · ${sgn(r.pl)}`); coach(r.pl>=0?'profit':'loss'); showEvents(r.events); loadLB().then(renderArena); loadFunds().then(renderFunds); }).catch(err=>{ toast(err.message); c.disabled=false; }); return; }
+  const cb=t.closest('[data-copy]'); if(cb){ openCopy(+cb.dataset.copy); return; }
+  const sc=t.closest('[data-stopcopy]'); if(sc){ if(!confirm('Kopie beenden? Alle kopierten Positionen werden zum aktuellen Kurs geschlossen.')) return; sc.disabled=true;
+    api(`/api/copy/${sc.dataset.stopcopy}/stop`,{body:{}}).then(r=>{ setState(r.state); render(); toast(`Kopie beendet · ${sgn(r.pl)}`); loadDiscover().then(renderDiscover); }).catch(err=>{ toast(err.message); sc.disabled=false; }); return; }
   const fd=t.closest('[data-fund]'); if(fd){ openFund(+fd.dataset.fund); return; }
   const fq=t.closest('[data-fq]'); if(fq){ const v=+fq.dataset.fq; $('#fdAmt').value=Math.floor(v<1?S.equity*v/100*100/100:v).toLocaleString('de-DE'); updFundAmt(); return; }
   const sk=t.closest('[data-saykey]'); if(sk){ speakKey(sk.dataset.saykey, sk.closest('.coach')); return; }
@@ -1229,7 +1439,7 @@ document.addEventListener('click',e=>{
   const g=t.closest('[data-tab],[data-go]'); if(g){ const tab=g.dataset.tab||g.dataset.go; ui.tab=tab;
     $$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
     ['markt','depot','fonds','arena','lernen'].forEach(k=>$('#tab-'+k).hidden=k!==tab);
-    if(tab==='depot'&&!S.pos.length) coach('empty'); if(tab==='arena'){ coach('arena'); loadLB().then(renderArena); } if(tab==='fonds'){ coach('fundIntro'); loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); }
+    if(tab==='depot'&&!S.pos.length) coach('empty'); if(tab==='arena'){ coach('arena'); loadLB().then(renderArena); } if(tab==='fonds'){ coach('fundIntro'); loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); loadDiscover().then(renderDiscover); }
     window.scrollTo({top:0,behavior:'smooth'}); }
 });
 
@@ -1281,7 +1491,7 @@ async function refresh(manual){
 }
 async function enter(){
   $('#ob').hidden=true;
-  await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(),
+  await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(),
     api('/api/radar').then(d=>{ RD=d.radar||{}; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
     api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{})]);
   render();
@@ -1295,7 +1505,7 @@ async function boot(){
   try{ ME=(await api('/api/me')).user; }catch(e){}
   if(ME) await enter(); else { showAuth(); refresh(false); }
   setInterval(()=>refresh(false),30000);
-  setInterval(()=>{ if(ui.tab==='arena') loadLB().then(renderArena); if(ui.tab==='fonds'){ loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); } },60000);
+  setInterval(()=>{ if(ui.tab==='arena') loadLB().then(renderArena); if(ui.tab==='fonds'){ loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); loadDiscover().then(renderDiscover); } },60000);
 }
 $('#refreshBtn').onclick=()=>refresh(true);
 boot();

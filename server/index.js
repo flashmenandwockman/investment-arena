@@ -12,6 +12,8 @@ const store = require('./store');
 const funds = require('./funds');
 const bots = require('./bots');
 const trcm = require('./trcm');
+const copy = require('./copy');
+const gurus = require('./gurus');
 const pkg = require('../package.json');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -56,7 +58,7 @@ function stateView(userId) {
   });
   const eq = game.equity(st, 'now', funds.navOf), prev = game.equity(st, 'prev', funds.navOf);
   return {cash: st.cash, positions, hist: st.hist.slice(-40), realized: st.realized, badges: st.badges, xp: st.xp, active: st.active,
-    follow: st.follow, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash};
+    follow: st.follow, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash, copies: copy.view(st)};
 }
 function leaderboard(meId) {
   return store.all().map(u => {
@@ -74,7 +76,9 @@ function profile(id) {
     return {name: p.kind === 'fund' ? p.fundName : (market.INSTRUMENTS[p.sym] || {}).n, sym: p.sym, dir: p.dir, kind: p.kind, label: game.label(p), value: v, weight: eq ? v / eq : 0, pl: v / p.stake - 1};
   });
   const own = funds.list().filter(f => f.ownerId === id).map(f => ({id: f.id, name: f.name, perf: f.perf}));
-  return {id, name: u.name, sub: u.bio, color: u.color, badges: Object.keys(st.badges || {}), equity: eq, cashWeight: eq ? st.cash / eq : 0, items, funds: own};
+  const copied = (st.copies || []).reduce((a, c) => a + c.cash, 0);
+  return {id, name: u.name, sub: u.bio, color: u.color, badges: Object.keys(st.badges || {}), equity: eq, cashWeight: eq ? (st.cash + copied) / eq : 0, items, funds: own,
+    stats: copy.statsOf(id), copying: (st.copies || []).map(c => c.leaderName)};
 }
 
 /* ---------- Routen ---------- */
@@ -100,6 +104,7 @@ async function api(req, res, url) {
     if (p === '/api/search') { requireUser(req); limit(req); return send(res, 200, {results: await market.search(url.searchParams.get('q'))}); }
     if (/^\/api\/instrument\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
     if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, {sym: p.split('/').pop().toUpperCase(), radar: await radar.one(p.split('/').pop().toUpperCase())}); }
+    if (p === '/api/chart') { limit(req); return send(res, 200, await market.chart(url.searchParams.get('sym') || '', url.searchParams.get('r'))); }
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status()});
     if (p === '/api/audio') {
       const dir = path.join(PUBLIC, 'audio');
@@ -121,6 +126,7 @@ async function api(req, res, url) {
       return send(res, 200, trcm.view(u));
     }
     if (p === '/api/funds' && m === 'GET') return send(res, 200, {funds: funds.list()});
+    if (p === '/api/discover') { const u = auth.currentUser(req); return send(res, 200, {traders: copy.discover(u && u.id), gurus: funds.list('guru'), min: copy.MIN}); }
     if (p === '/api/funds' && m === 'POST') {
       const u = requireUser(req), id = funds.create(u.id, await body(req));
       const st = store.load(u.id); const ev = []; if (!st.badges.manager) { st.badges.manager = true; st.xp += 40; ev.push({type: 'badge', key: 'manager', xp: 40}); } store.save(u.id, st);
@@ -135,10 +141,13 @@ async function api(req, res, url) {
       if (amt > st.cash + .01) throw new Error('Nicht genug verfügbares Spielgeld');
       if (f.ownerId === u.id) throw new Error('In den eigenen Fonds wird nicht investiert');
       st.cash -= amt;
-      st.pos.push({id: Date.now().toString(36), kind: 'fund', fundId: fid, fundName: f.name, dir: 1, stake: amt, units: amt / f.nav, entry: f.nav, openedTs: Date.now()});
-      st.hist.push({t: `Investiert: ${f.name} · Community-Fonds`, ts: Date.now(), d: 'eröffnet', stake: amt, pl: null});
+      const eqBefore = game.equity(st, 'now', funds.navOf);
+      const pos = {id: Date.now().toString(36), kind: 'fund', fundId: fid, fundName: f.name, fundKind: f.kind, dir: 1, stake: amt, units: amt / f.nav, entry: f.nav, openedTs: Date.now()};
+      st.pos.push(pos);
+      st.hist.push({t: f.kind === 'guru' ? `Kopiert: ${f.manager} · Großinvestor` : `Investiert: ${f.name} · Community-Fonds`, ts: Date.now(), d: 'eröffnet', stake: amt, pl: null});
       const ev = []; if (!st.badges.fund) { st.badges.fund = true; st.xp += 20; ev.push({type: 'badge', key: 'fund', xp: 20}); }
-      store.save(u.id, st); return send(res, 200, {state: stateView(u.id), events: ev});
+      store.save(u.id, st); copy.onOpen(u.id, pos, eqBefore); heldCache.t = 0;
+      return send(res, 200, {state: stateView(u.id), events: ev});
     }
     // Ab hier nur mit Anmeldung
     const u = requireUser(req);
@@ -149,14 +158,27 @@ async function api(req, res, url) {
       if (b.follow && typeof b.follow === 'object') for (const [k, v] of Object.entries(b.follow).slice(0, 50)) { if (v) st.follow[k] = true; else delete st.follow[k]; }
       store.save(u.id, st); return send(res, 200, stateView(u.id));
     }
-    if (p === '/api/state/reset' && m === 'POST') { const st = store.load(u.id), fresh = game.fresh(); fresh.mode = st.mode; store.save(u.id, fresh); return send(res, 200, stateView(u.id)); }
+    if (p === '/api/state/reset' && m === 'POST') {
+      // Nur mit ausdrücklicher Bestätigung: Positionen, Kopien, Verlauf, Abzeichen und Platz in der Rangliste gehen verloren
+      if ((await body(req)).confirm !== true) throw new Error('Bitte das Zurücksetzen ausdrücklich bestätigen');
+      const st = store.load(u.id), fresh = game.fresh(); fresh.mode = st.mode; store.save(u.id, fresh);
+      db.prepare('DELETE FROM equity_hist WHERE user_id = ?').run(u.id);
+      return send(res, 200, stateView(u.id));
+    }
     if (p === '/api/orders' && m === 'POST') {
-      const st = store.load(u.id), r = game.open(st, await body(req), funds.navOf); store.save(u.id, st); heldCache.t = 0;
+      const st = store.load(u.id), eqBefore = game.equity(st, 'now', funds.navOf), r = game.open(st, await body(req), funds.navOf); store.save(u.id, st); heldCache.t = 0;
+      copy.onOpen(u.id, r.position, eqBefore);
       return send(res, 200, {state: stateView(u.id), events: r.events});
     }
     if (/^\/api\/positions\/[\w-]+\/close$/.test(p) && m === 'POST') {
-      const st = store.load(u.id), r = game.close(st, p.split('/')[3], null, funds.navOf); store.save(u.id, st);
+      const pid = p.split('/')[3], st = store.load(u.id), own = !(st.pos.find(x => x.id === pid) || {}).copyId;
+      const r = game.close(st, pid, null, funds.navOf); store.save(u.id, st);
+      if (own) copy.onClose(u.id, pid);
       return send(res, 200, {state: stateView(u.id), pl: r.pl, events: r.events});
+    }
+    if (p === '/api/copy' && m === 'POST') { const b = await body(req); copy.start(u.id, b.leaderId, b.amt); heldCache.t = 0; return send(res, 200, {state: stateView(u.id)}); }
+    if (/^\/api\/copy\/[\w-]+\/stop$/.test(p) && m === 'POST') {
+      const pl = copy.stop(u.id, p.split('/')[3]); return send(res, 200, {state: stateView(u.id), pl});
     }
     return send(res, 404, {error: 'Unbekannte Route'});
   } catch (e) { return fail(res, e); }
@@ -183,12 +205,19 @@ const server = http.createServer((req, res) => {
 
 /* ---------- Hintergrund-Aufgaben ---------- */
 function checkAllBooks() {
-  for (const u of store.all()) { const ev = game.check(u.st, funds.navOf); if (ev.length) store.save(u.userId, u.st); }
+  const closed = [];
+  for (const u of store.all()) {
+    const ev = game.check(u.st, funds.navOf); if (!ev.length) continue;
+    store.save(u.userId, u.st);
+    for (const e of ev) if (!e.copy) closed.push([u.userId, e.id, e.why]);
+  }
+  // Erst danach die Kopierer nachziehen, damit kein veralteter Spielstand gespeichert wird
+  for (const [leader, id, why] of closed) copy.onClose(leader, id, why);
 }
 async function tick() { await market.refresh(); checkAllBooks(); }
 
 // Welche Titel werden gerade gehalten (Positionen und Fonds)? Für die Kursbeobachtung der Zusatztitel.
-const qFundHoldings = db.prepare('SELECT holdings FROM funds');
+const qFundHoldings = db.prepare("SELECT holdings FROM funds WHERE kind != 'guru'");
 let heldCache = {t: 0, set: new Set()};
 function held() {
   if (Date.now() - heldCache.t < 30_000) return heldCache.set;
@@ -201,7 +230,8 @@ function held() {
 
 async function start() {
   market.setHeldProvider(held);
-  market.setPrivateProvider(trcm.symbols);
+  // TRCM- und Großinvestoren-Titel: Kurse holen, aber die Marktliste nicht damit füllen
+  market.setPrivateProvider(() => new Set([...trcm.symbols(), ...gurus.symbols()]));
   bots.seed();
   if (require.main === module) {
     await market.refresh().catch(() => {});
@@ -209,7 +239,11 @@ async function start() {
     setInterval(() => tick().catch(() => {}), 30_000);
     setInterval(() => radar.refresh().catch(() => {}), 30 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
+    gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {});
+    setInterval(() => gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {}), 12 * 3600_000);
+    copy.snapshot(); setInterval(() => copy.snapshot(), 10 * 60_000);
   }
+  if (require.main !== module) await gurus.sync();   // Tests: Großinvestoren aus den mitgelieferten Meldungen
   return new Promise(r => server.listen(config.port, () => { console.log(`Investment Arena läuft auf ${config.baseUrl} (Port ${server.address().port})`); r(server); }));
 }
 

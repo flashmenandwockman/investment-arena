@@ -9,7 +9,9 @@ const TENORS = [21, 63, 126];
 const BADGES = ['first', 'short', 'stop', 'lev', 'opt', 'crypto', 'profit', 'streak', 'fund', 'manager'];
 
 const today = () => new Date().toISOString().slice(0, 10);
-const fresh = () => ({cash: config.startCash, pos: [], hist: [], realized: 0, mode: null, badges: {}, xp: 0, active: {}, follow: {}});
+const fresh = () => ({cash: config.startCash, pos: [], hist: [], realized: 0, mode: null, badges: {}, xp: 0, active: {}, follow: {}, copies: []});
+// Kopierte Anleger haben ein eigenes Guthaben innerhalb des Depots
+const copyOf = (st, p) => p && p.copyId ? (st.copies || []).find(c => c.id === p.copyId) : null;
 
 /* ---------- Preise ---------- */
 function ncdf(x) { const t = 1 / (1 + .2316419 * Math.abs(x)), d = .3989423 * Math.exp(-x * x / 2); const p = d * t * (.3193815 + t * (-.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return x > 0 ? 1 - p : p; }
@@ -47,7 +49,7 @@ function value(p, at = 'now', navOf) {
   }
   return Math.max(p.stake + p.dir * p.units * toEur(P - p.entry, p.sym) - feesOf(p), 0);
 }
-const equity = (st, at, navOf) => st.cash + st.pos.reduce((a, p) => a + value(p, at, navOf), 0);
+const equity = (st, at, navOf) => st.cash + (st.copies || []).reduce((a, c) => a + c.cash, 0) + st.pos.reduce((a, p) => a + value(p, at, navOf), 0);
 
 /* ---------- Abzeichen & Aktivität ---------- */
 function award(st, key, xp, events) { if (!st.badges[key]) { st.badges[key] = true; st.xp += xp; events.push({type: 'badge', key, xp}); } }
@@ -58,14 +60,15 @@ function markActive(st, events) {
 }
 
 /* ---------- Order eröffnen ---------- */
-function open(st, o, navOf) {
-  const events = [];
+// opts.copy: Order wird für einen kopierten Anleger nachgebildet (eigenes Guthaben, gleiche Bedingungen wie beim Vorbild)
+function open(st, o, navOf, opts = {}) {
+  const events = [], cp = opts.copy;
   const sym = o.sym, I = market.INSTRUMENTS[sym], P = px(sym);
   const amt = Math.floor(Number(o.amt) || 0), dir = Number(o.dir) === -1 ? -1 : 1;
-  const mode = st.mode === 'pro' ? 'pro' : 'easy';
+  const mode = st.mode === 'pro' || cp ? 'pro' : 'easy', wallet = cp || st;
   if (!I || P == null) throw new Error('Unbekannter Wert');
-  if (amt < 100) throw new Error('Mindesteinsatz 100 €');
-  if (amt > st.cash + 0.01) throw new Error('Nicht genug verfügbares Spielgeld');
+  if (amt < (cp ? 10 : 100)) throw new Error('Mindesteinsatz 100 €');
+  if (amt > wallet.cash + 0.01) throw new Error('Nicht genug verfügbares Spielgeld');
   const kind = ['stock', 'lev', 'option'].includes(o.kind) ? o.kind : 'stock';
   if (kind === 'option' && mode !== 'pro') throw new Error('Optionen gibt es im Profi-Modus');
   const p = {id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sym, dir, kind, stake: amt, entry: P, openedTs: Date.now()};
@@ -76,7 +79,8 @@ function open(st, o, navOf) {
     const tenor = TENORS.includes(Number(o.tenor)) ? Number(o.tenor) : 63, mny = [0, .05, .1].includes(Number(o.mny)) ? Number(o.mny) : 0;
     p.opt = dir > 0 ? 'call' : 'put'; p.strike = roundK(dir > 0 ? P * (1 + mny) : P * (1 - mny));
     p.expiryTs = Date.now() + tenor / 252 * 365 * DAY;
-    const prem = bs(P, p.strike, tenor / 252, vol(sym), p.opt); if (!(prem > 0)) throw new Error('Option nicht handelbar');
+    if (cp && o.strike > 0 && o.expiryTs > Date.now()) { p.strike = o.strike; p.expiryTs = o.expiryTs; }   // gleiche Option wie das Vorbild
+    const prem = bs(P, p.strike, (p.expiryTs - Date.now()) / DAY / 365, vol(sym), p.opt); if (!(prem > 0)) throw new Error('Option nicht handelbar');
     p.units = amt / toEur(prem, sym); award(st, 'opt', 25, events);
   } else {
     p.units = amt / toEur(P, sym);
@@ -84,14 +88,15 @@ function open(st, o, navOf) {
   if (kind !== 'option' && [0.05, 0.1, 0.2].includes(Number(o.sl))) { p.sl = Number(o.sl); award(st, 'stop', 20, events); }
   if (dir < 0) award(st, 'short', 20, events);
   if (I.g === 'crypto') award(st, 'crypto', 15, events);
-  award(st, 'first', 10, events); st.xp += 5; markActive(st, events);
-  st.cash -= amt; st.pos.push(p);
-  st.hist.push({t: `${dir > 0 ? 'Long' : 'Short'} ${I.n} · ${label(p)}`, ts: Date.now(), d: 'eröffnet', stake: amt, pl: null});
+  if (cp) { p.copyId = cp.id; p.src = opts.src; events.length = 0; }
+  else { award(st, 'first', 10, events); st.xp += 5; markActive(st, events); }
+  wallet.cash -= amt; st.pos.push(p);
+  st.hist.push({t: `${cp ? `Kopie ${cp.leaderName}: ` : ''}${dir > 0 ? 'Long' : 'Short'} ${I.n} · ${label(p)}`, ts: Date.now(), d: 'eröffnet', stake: amt, pl: null});
   return {position: p, events};
 }
 
 function label(p) {
-  if (p.kind === 'fund') return 'Community-Fonds';
+  if (p.kind === 'fund') return p.fundKind === 'guru' ? 'Großinvestor' : 'Community-Fonds';
   const I = market.INSTRUMENTS[p.sym] || {};
   if (p.kind === 'stock') return I.g === 'crypto' ? 'Spot' : I.t === 'Aktie' ? 'Aktie' : 'Direkt';
   if (p.kind === 'lev') return `Hebel ${p.lev}×`;
@@ -100,11 +105,11 @@ function label(p) {
 
 function close(st, id, why, navOf) {
   const i = st.pos.findIndex(p => p.id === id); if (i < 0) throw new Error('Position nicht gefunden');
-  const p = st.pos[i], v = value(p, 'now', navOf), pl = v - p.stake, events = [];
-  st.cash += v; st.realized += pl; st.pos.splice(i, 1);
-  if (pl > 0) award(st, 'profit', 20, events);
+  const p = st.pos[i], v = value(p, 'now', navOf), pl = v - p.stake, events = [], cp = copyOf(st, p);
+  (cp || st).cash += v; st.realized += pl; st.pos.splice(i, 1);
+  if (pl > 0 && !cp) award(st, 'profit', 20, events);
   const name = p.kind === 'fund' ? p.fundName : (market.INSTRUMENTS[p.sym] || {}).n;
-  st.hist.push({t: `${why || 'Geschlossen'}: ${name} · ${label(p)}`, ts: Date.now(), d: `Erlös ${Math.round(v).toLocaleString('de-DE')} €`, pl});
+  st.hist.push({t: `${cp ? `Kopie ${cp.leaderName} · ` : ''}${why || 'Geschlossen'}: ${name} · ${label(p)}`, ts: Date.now(), d: `Erlös ${Math.round(v).toLocaleString('de-DE')} €`, pl});
   if (!why) markActive(st, events);
   return {pl, value: v, events};
 }
@@ -120,9 +125,9 @@ function check(st, navOf) {
     else if (p.kind === 'stock' && p.dir < 0 && v <= 0) why = 'Zwangseindeckung';
     else if (p.kind === 'option' && Date.now() >= p.expiryTs) why = 'Verfall';
     else if (p.sl && p.dir * (P / p.entry - 1) <= -p.sl) why = 'Stop-Loss';
-    if (why) { close(st, p.id, why, navOf); events.push({type: 'closed', why, sym: p.sym}); }
+    if (why) { close(st, p.id, why, navOf); events.push({type: 'closed', why, sym: p.sym, id: p.id, copy: !!p.copyId}); }
   }
   return events;
 }
 
-module.exports = {fresh, open, close, check, value, equity, label, vol, bs, roundK, feesOf, BADGES, LEVS, DAY};
+module.exports = {fresh, copyOf, open, close, check, value, equity, label, vol, bs, roundK, feesOf, BADGES, LEVS, DAY};

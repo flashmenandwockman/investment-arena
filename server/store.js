@@ -5,7 +5,8 @@ const game = require('./game');
 const qGet = db.prepare('SELECT json FROM states WHERE user_id = ?');
 const qPut = db.prepare('INSERT INTO states (user_id, json, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET json = excluded.json, updated_at = excluded.updated_at');
 // Alle Mitglieder, auch solche ohne gespeicherten Spielstand (noch kein Trade)
-const qAll = db.prepare('SELECT u.id AS user_id, s.json, u.name, u.bio, u.color, u.is_bot, u.provider FROM users u LEFT JOIN states s ON s.user_id = u.id');
+// Großinvestoren (13F) haben kein eigenes Spieldepot
+const qAll = db.prepare("SELECT u.id AS user_id, s.json, u.name, u.bio, u.color, u.is_bot, u.provider FROM users u LEFT JOIN states s ON s.user_id = u.id WHERE u.provider != 'guru'");
 
 function load(userId) {
   const row = qGet.get(userId);

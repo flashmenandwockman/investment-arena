@@ -165,6 +165,38 @@ function visible() {
   return {quotes: q, instruments: inst};
 }
 
+/* ---------- Kursverlauf für den Chart: 24h, Woche, Monat, Jahr, 5 Jahre ---------- */
+const RANGES = {'1d': ['1d', '5m', 120_000], '5d': ['5d', '30m', 600_000], '1mo': ['1mo', '60m', 1800_000], '1y': ['1y', '1d', 6 * 3600_000], '5y': ['5y', '1wk', 12 * 3600_000]};
+const chartCache = new Map();
+const yahooSym = s => s.includes('/') ? s.replace('/', '-') : s;
+async function chart(sym, r) {
+  if (!INSTRUMENTS[sym]) throw Object.assign(new Error('Unbekannter Wert'), {status: 404});
+  if (!RANGES[r]) r = '1mo';
+  const key = sym + '|' + r, hit = chartCache.get(key), [range, interval, ttl] = RANGES[r];
+  if (hit && Date.now() - hit.t < ttl) return hit.d;
+  const q = quotes[sym] || {};
+  let d;
+  if (config.offline) {
+    const h = q.hist || [];
+    d = {sym, r, cur: q.cur, points: h.map((v, i) => [Date.now() - (h.length - 1 - i) * 864e5, v]), daily: true};
+  } else {
+    try {
+      const j = (await getJson(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSym(sym))}?range=${range}&interval=${interval}`)).chart.result[0];
+      const ts = j.timestamp || [], c = j.indicators.quote[0].close || [], pts = [];
+      for (let i = 0; i < ts.length; i++) if (c[i] != null) pts.push([ts[i] * 1000, c[i]]);
+      if (q.price && pts.length && r !== '5y') pts.push([Date.now(), q.price]);   // aktueller Kurs als letzter Punkt
+      d = {sym, r, cur: j.meta.currency || q.cur, points: pts, prevClose: r === '1d' ? j.meta.chartPreviousClose : null};
+    } catch (e) {
+      if (hit) return hit.d;
+      const h = q.hist || [];
+      d = {sym, r, cur: q.cur, points: h.map((v, i) => [Date.now() - (h.length - 1 - i) * 864e5, v]), daily: true};
+    }
+  }
+  chartCache.set(key, {t: Date.now(), d});
+  if (chartCache.size > 2000) chartCache.delete(chartCache.keys().next().value);
+  return d;
+}
+
 const fx = () => (quotes['EURUSD=X'] && quotes['EURUSD=X'].price) || 1.12;
-module.exports = {INSTRUMENTS, US, refresh, search, add, touch, visible, cleanName, get: () => quotes, fx, status: () => ({live, updatedAt}),
+module.exports = {INSTRUMENTS, US, refresh, search, add, touch, visible, chart, cleanName, get: () => quotes, fx, status: () => ({live, updatedAt}),
   setHeldProvider: fn => { heldProvider = fn; }, setPrivateProvider: fn => { privateProvider = fn; }};

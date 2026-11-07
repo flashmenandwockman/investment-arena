@@ -1,0 +1,1180 @@
+{
+ "921669": {
+  "filing": {
+   "accession": "0001539497-26-002243",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "IEP",
+    "name": "Icahn Enterprises LP",
+    "w": 53.95168396948314
+   },
+   {
+    "sym": "CVI",
+    "name": "CVR Energy Inc",
+    "w": 23.72795446840776
+   },
+   {
+    "sym": "UAN",
+    "name": "CVR Partners, LP",
+    "w": 5.61747556607265
+   },
+   {
+    "sym": "CTRI",
+    "name": "Centuri Holdings, Inc.",
+    "w": 5.245852156248009
+   },
+   {
+    "sym": "IFF",
+    "name": "International Flavors and Fragrances Inc.",
+    "w": 4.098037152128122
+   },
+   {
+    "sym": "ECHO",
+    "name": "EchoStar Corporation",
+    "w": 1.7250659654408855
+   },
+   {
+    "sym": "JBLU",
+    "name": "JetBlue Airways Corp.",
+    "w": 1.4323580512811482
+   },
+   {
+    "sym": "MNRO",
+    "name": "Monro, Inc.",
+    "w": 1.0514694113905534
+   },
+   {
+    "sym": "CZR",
+    "name": "Caesars Entertainment, Inc.",
+    "w": 0.8911142705567109
+   },
+   {
+    "sym": "SD",
+    "name": "SandRidge Energy, Inc.",
+    "w": 0.8379896104780387
+   },
+   {
+    "sym": "AEP",
+    "name": "American Electric Power Company",
+    "w": 0.7196517852761541
+   },
+   {
+    "sym": "BLCO",
+    "name": "Bausch Plus Lomb Corp.",
+    "w": 0.701347593236825
+   }
+  ]
+ },
+ "1040273": {
+  "filing": {
+   "accession": "0001040273-26-000003",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "AMZN",
+    "name": "AMAZON COM INC",
+    "w": 9.254863442277125
+   },
+   {
+    "sym": "GOOGL",
+    "name": "ALPHABET INC",
+    "w": 8.127874494001944
+   },
+   {
+    "sym": "TDS",
+    "name": "TELEPHONE &amp; DATA SYS INC",
+    "w": 5.153091411768768
+   },
+   {
+    "sym": "TSM",
+    "name": "TAIWAN SEMICONDUCTOR MANUFAC",
+    "w": 4.8744980440883054
+   },
+   {
+    "sym": "LYV",
+    "name": "LIVE NATION ENTERTAINMENT IN",
+    "w": 4.61150788424445
+   },
+   {
+    "sym": "KEYS",
+    "name": "KEYSIGHT TECHNOLOGIES INC",
+    "w": 4.544078151174678
+   },
+   {
+    "sym": "SGI",
+    "name": "SOMNIGROUP INTERNATIONAL INC",
+    "w": 4.472127215561127
+   },
+   {
+    "sym": "XYZ",
+    "name": "BLOCK INC",
+    "w": 4.315282536686828
+   },
+   {
+    "sym": "NSC",
+    "name": "NORFOLK SOUTHN CORP",
+    "w": 4.188236478940233
+   },
+   {
+    "sym": "COF",
+    "name": "CAPITAL ONE FINL CORP",
+    "w": 3.6725118513203237
+   },
+   {
+    "sym": "HUT",
+    "name": "HUT 8 CORP",
+    "w": 3.3684950401543836
+   },
+   {
+    "sym": "CRS",
+    "name": "CARPENTER TECHNOLOGY CORP",
+    "w": 2.9427002065065695
+   },
+   {
+    "sym": "APG",
+    "name": "API GROUP CORP",
+    "w": 2.6922356593244943
+   },
+   {
+    "sym": "MTZ",
+    "name": "MASTEC INC",
+    "w": 2.677250411297685
+   },
+   {
+    "sym": "TDG",
+    "name": "TRANSDIGM GROUP INC",
+    "w": 2.3349596990431793
+   },
+   {
+    "sym": "DHR",
+    "name": "DANAHER CORP DEL",
+    "w": 2.2823286056698624
+   },
+   {
+    "sym": "UNP",
+    "name": "UNION PAC CORP",
+    "w": 2.1123796729876463
+   },
+   {
+    "sym": "TTMI",
+    "name": "TTM TECHNOLOGIES INC",
+    "w": 2.09562930097989
+   },
+   {
+    "sym": "PFGC",
+    "name": "PERFORMANCE FOOD GROUP CO",
+    "w": 1.6743327044035718
+   },
+   {
+    "sym": "SYY",
+    "name": "SYSCO CORP",
+    "w": 1.068554047372607
+   }
+  ]
+ },
+ "1061768": {
+  "filing": {
+   "accession": "0001061768-26-000010",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-13"
+  },
+  "picks": [
+   {
+    "sym": "AMZN",
+    "name": "AMAZON COM INC",
+    "w": 16.475890316816205
+   },
+   {
+    "sym": "ELV",
+    "name": "ELEVANCE HEALTH INC FORMERLY",
+    "w": 9.105490861734983
+   },
+   {
+    "sym": "QSR",
+    "name": "RESTAURANT BRANDS INTL INC",
+    "w": 9.040348768698117
+   },
+   {
+    "sym": "GOOG",
+    "name": "ALPHABET INC",
+    "w": 8.950464497466973
+   },
+   {
+    "sym": "FERG",
+    "name": "FERGUSON ENTERPRISES INC",
+    "w": 6.356690257287263
+   },
+   {
+    "sym": "GPC",
+    "name": "GENUINE PARTS CO",
+    "w": 6.13482308327054
+   },
+   {
+    "sym": "UNP",
+    "name": "UNION PAC CORP",
+    "w": 5.953392752720578
+   },
+   {
+    "sym": "V",
+    "name": "VISA INC",
+    "w": 4.443030488456758
+   },
+   {
+    "sym": "WCC",
+    "name": "WESCO INTL INC",
+    "w": 4.227939716975331
+   },
+   {
+    "sym": "TFX",
+    "name": "TELEFLEX INCORPORATED",
+    "w": 3.2978184599914364
+   },
+   {
+    "sym": "MOH",
+    "name": "MOLINA HEALTHCARE INC",
+    "w": 2.675589607029585
+   },
+   {
+    "sym": "CME",
+    "name": "CME GROUP INC",
+    "w": 2.5239606761852658
+   },
+   {
+    "sym": "EXP",
+    "name": "EAGLE MATLS INC",
+    "w": 2.2050450778483093
+   },
+   {
+    "sym": "GDS",
+    "name": "GDS HLDGS LTD",
+    "w": 2.0903078425503794
+   },
+   {
+    "sym": "COLD",
+    "name": "AMERICOLD REALTY TRUST INC",
+    "w": 1.9825316529086
+   },
+   {
+    "sym": "AERO",
+    "name": "GRUPO AEROMEXICO SAB DE CV",
+    "w": 1.6219605665072518
+   },
+   {
+    "sym": "DNOW",
+    "name": "DNOW INC",
+    "w": 0.6676695250037252
+   }
+  ]
+ },
+ "1067983": {
+  "filing": {
+   "accession": "0001193125-26-352200",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "AAPL",
+    "name": "APPLE INC",
+    "w": 22.04743232523974
+   },
+   {
+    "sym": "AXP",
+    "name": "AMERICAN EXPRESS CO",
+    "w": 17.143872225730508
+   },
+   {
+    "sym": "KO",
+    "name": "COCA COLA CO",
+    "w": 10.867546674819287
+   },
+   {
+    "sym": "GOOGL",
+    "name": "ALPHABET INC",
+    "w": 9.413191374364889
+   },
+   {
+    "sym": "BAC",
+    "name": "BANK OF AMER CORP",
+    "w": 9.207992925503838
+   },
+   {
+    "sym": "CVX",
+    "name": "CHEVRON CORPORATION",
+    "w": 4.675619840969
+   },
+   {
+    "sym": "OXY",
+    "name": "OCCIDENTAL PETE CORP",
+    "w": 4.3018894352890715
+   },
+   {
+    "sym": "MCO",
+    "name": "MOODYS CORP",
+    "w": 3.735321632819897
+   },
+   {
+    "sym": "GOOG",
+    "name": "ALPHABET INC",
+    "w": 3.211485417017336
+   },
+   {
+    "sym": "KHC",
+    "name": "KRAFT HEINZ CO",
+    "w": 2.5712955088587033
+   },
+   {
+    "sym": "DVA",
+    "name": "DAVITA INC",
+    "w": 2.147991560455263
+   },
+   {
+    "sym": "DAL",
+    "name": "DELTA AIR LINES INC",
+    "w": 1.794740231451461
+   },
+   {
+    "sym": "SIRI",
+    "name": "SIRIUSXM HOLDINGS INC",
+    "w": 1.23251185527949
+   },
+   {
+    "sym": "VRSN",
+    "name": "VERISIGN INC",
+    "w": 0.7560260214022292
+   },
+   {
+    "sym": "KR",
+    "name": "KROGER CO",
+    "w": 0.7239916268997135
+   }
+  ]
+ },
+ "1103804": {
+  "filing": {
+   "accession": "0001103804-26-000006",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "V",
+    "name": "VISA INC",
+    "w": 9.564606082787812
+   },
+   {
+    "sym": "TSM",
+    "name": "TAIWAN SEMICONDUCTOR MANUFAC",
+    "w": 6.597035213005078
+   },
+   {
+    "sym": "APD",
+    "name": "AIR PRODUCTS AND CHEMICALS I",
+    "w": 6.059797830816939
+   },
+   {
+    "sym": "SHW",
+    "name": "SHERWIN WILLIAMS CO",
+    "w": 5.8189651290646625
+   },
+   {
+    "sym": "FTV",
+    "name": "FORTIVE CORP",
+    "w": 5.3099994353155
+   },
+   {
+    "sym": "META",
+    "name": "META PLATFORMS INC",
+    "w": 4.587051537777644
+   },
+   {
+    "sym": "SCHW",
+    "name": "SCHWAB CHARLES CORP",
+    "w": 4.280251387136905
+   },
+   {
+    "sym": "TMO",
+    "name": "THERMO FISHER SCIENTIFIC INC",
+    "w": 4.235314196388806
+   },
+   {
+    "sym": "JPM",
+    "name": "JPMORGAN CHASE &amp; CO",
+    "w": 4.13813964740876
+   },
+   {
+    "sym": "LII",
+    "name": "LENNOX INTL INC",
+    "w": 3.974559529699643
+   },
+   {
+    "sym": "AMZN",
+    "name": "AMAZON COM INC",
+    "w": 3.8460340135485875
+   },
+   {
+    "sym": "CVNA",
+    "name": "CARVANA CO",
+    "w": 3.536415929985988
+   },
+   {
+    "sym": "MCD",
+    "name": "MCDONALDS CORP",
+    "w": 3.3345144927380894
+   },
+   {
+    "sym": "BBIO",
+    "name": "BRIDGEBIO PHARMA INC",
+    "w": 3.231037161672481
+   },
+   {
+    "sym": "BA",
+    "name": "BOEING CO",
+    "w": 3.091000739992259
+   },
+   {
+    "sym": "MAA",
+    "name": "MID-AMER APT CMNTYS INC",
+    "w": 3.05532168249299
+   },
+   {
+    "sym": "DIS",
+    "name": "DISNEY WALT CO",
+    "w": 3.0042104989281593
+   },
+   {
+    "sym": "FDX",
+    "name": "FEDEX CORP",
+    "w": 2.938169248124666
+   },
+   {
+    "sym": "MSCI",
+    "name": "MSCI INC",
+    "w": 2.8343107336125453
+   },
+   {
+    "sym": "ADPT",
+    "name": "ADAPTIVE BIOTECHNOLOGIES COR",
+    "w": 2.805244700066861
+   },
+   {
+    "sym": "WAT",
+    "name": "WATERS CORP",
+    "w": 2.7180565364831177
+   },
+   {
+    "sym": "UNP",
+    "name": "UNION PAC CORP",
+    "w": 2.4281218282917383
+   },
+   {
+    "sym": "MSFT",
+    "name": "MICROSOFT CORP",
+    "w": 2.372394894364368
+   }
+  ]
+ },
+ "1167483": {
+  "filing": {
+   "accession": "0000919574-26-005427",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "TSM",
+    "name": "TAIWAN SEMICONDUCTOR MANUFAC",
+    "w": 10.193471901351076
+   },
+   {
+    "sym": "AMZN",
+    "name": "AMAZON COM INC",
+    "w": 10.09270237043807
+   },
+   {
+    "sym": "NVDA",
+    "name": "NVIDIA CORPORATION",
+    "w": 9.798766278842109
+   },
+   {
+    "sym": "GOOGL",
+    "name": "ALPHABET INC",
+    "w": 9.072924216718583
+   },
+   {
+    "sym": "META",
+    "name": "META PLATFORMS INC",
+    "w": 6.954184090707208
+   },
+   {
+    "sym": "LRCX",
+    "name": "LAM RESEARCH CORP",
+    "w": 5.994617569412172
+   },
+   {
+    "sym": "SE",
+    "name": "SEA LTD",
+    "w": 5.2630485686482515
+   },
+   {
+    "sym": "AMAT",
+    "name": "APPLIED MATLS INC",
+    "w": 5.160477688412197
+   },
+   {
+    "sym": "GEV",
+    "name": "GE VERNOVA INC",
+    "w": 4.097305744960534
+   },
+   {
+    "sym": "MSFT",
+    "name": "MICROSOFT CORP",
+    "w": 3.697792555066116
+   },
+   {
+    "sym": "CPAY",
+    "name": "CORPAY INC",
+    "w": 3.133180451505404
+   },
+   {
+    "sym": "CBRS",
+    "name": "CEREBRAS SYSTEMS INC",
+    "w": 2.898306511514611
+   },
+   {
+    "sym": "AVGO",
+    "name": "BROADCOM INC",
+    "w": 2.897510287205588
+   },
+   {
+    "sym": "CPNG",
+    "name": "COUPANG INC",
+    "w": 2.77004614896443
+   },
+   {
+    "sym": "INTC",
+    "name": "INTEL CORP",
+    "w": 2.5966776342930213
+   },
+   {
+    "sym": "TTWO",
+    "name": "TAKE-TWO INTERACTIVE SOFTWAR",
+    "w": 1.977893674182876
+   },
+   {
+    "sym": "RDDT",
+    "name": "REDDIT INC",
+    "w": 1.9195215976390005
+   },
+   {
+    "sym": "AMD",
+    "name": "ADVANCED MICRO DEVICES INC",
+    "w": 1.7140067011773457
+   },
+   {
+    "sym": "XYZ",
+    "name": "BLOCK INC",
+    "w": 1.5208131024784572
+   },
+   {
+    "sym": "APO",
+    "name": "APOLLO GLOBAL MGMT INC",
+    "w": 1.408841751738691
+   },
+   {
+    "sym": "V",
+    "name": "VISA INC",
+    "w": 1.198300351241804
+   },
+   {
+    "sym": "MELI",
+    "name": "MERCADOLIBRE INC",
+    "w": 1.1365960699081161
+   },
+   {
+    "sym": "FWONK",
+    "name": "LIBERTY MEDIA CORP DEL",
+    "w": 0.9479779524521096
+   }
+  ]
+ },
+ "1336528": {
+  "filing": {
+   "accession": "0001172661-26-002336",
+   "reportDate": "2026-03-31",
+   "filingDate": "2026-05-15"
+  },
+  "picks": [
+   {
+    "sym": "BN",
+    "name": "BROOKFIELD CORP",
+    "w": 17.616254803282665
+   },
+   {
+    "sym": "AMZN",
+    "name": "AMAZON COM INC",
+    "w": 17.391365998804158
+   },
+   {
+    "sym": "UBER",
+    "name": "UBER TECHNOLOGIES INC",
+    "w": 15.713047110250871
+   },
+   {
+    "sym": "MSFT",
+    "name": "MICROSOFT CORP",
+    "w": 15.261224227361964
+   },
+   {
+    "sym": "QSR",
+    "name": "RESTAURANT BRANDS INTL INC",
+    "w": 12.20260028555314
+   },
+   {
+    "sym": "META",
+    "name": "META PLATFORMS INC",
+    "w": 11.100518578634862
+   },
+   {
+    "sym": "HHH",
+    "name": "HOWARD HUGHES HOLDINGS INC",
+    "w": 8.695898303867486
+   },
+   {
+    "sym": "SEG",
+    "name": "SEAPORT ENTMT GROUP INC",
+    "w": 0.7868487279242815
+   },
+   {
+    "sym": "GOOG",
+    "name": "ALPHABET INC",
+    "w": 0.6520327024078915
+   },
+   {
+    "sym": "HTZ",
+    "name": "HERTZ GLOBAL HLDGS INC",
+    "w": 0.512323601730528
+   }
+  ]
+ },
+ "1350694": {
+  "filing": {
+   "accession": "0001350694-26-000003",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "SPY",
+    "name": "STATE STR SPDR S&amp;P 500 ETF T",
+    "w": 32.385665660447174
+   },
+   {
+    "sym": "IVV",
+    "name": "ISHARES TR",
+    "w": 18.327333513915477
+   },
+   {
+    "sym": "NVDA",
+    "name": "NVIDIA CORPORATION",
+    "w": 6.305772957884792
+   },
+   {
+    "sym": "AVGO",
+    "name": "BROADCOM INC",
+    "w": 4.058108930143554
+   },
+   {
+    "sym": "AMZN",
+    "name": "AMAZON COM INC",
+    "w": 3.9350866462739886
+   },
+   {
+    "sym": "GOOGL",
+    "name": "ALPHABET INC",
+    "w": 3.851558974384766
+   },
+   {
+    "sym": "LRCX",
+    "name": "LAM RESEARCH CORP",
+    "w": 3.3140151194948833
+   },
+   {
+    "sym": "VOO",
+    "name": "VANGUARD INDEX FDS",
+    "w": 2.5662112737978418
+   },
+   {
+    "sym": "AMD",
+    "name": "ADVANCED MICRO DEVICES INC",
+    "w": 2.550528578143357
+   },
+   {
+    "sym": "EWY",
+    "name": "ISHARES INC",
+    "w": 2.2789971560329625
+   },
+   {
+    "sym": "MSFT",
+    "name": "MICROSOFT CORP",
+    "w": 2.1646010313348687
+   },
+   {
+    "sym": "NEM",
+    "name": "NEWMONT CORP",
+    "w": 2.051928532656415
+   },
+   {
+    "sym": "AMAT",
+    "name": "APPLIED MATLS INC",
+    "w": 1.717496193088273
+   },
+   {
+    "sym": "ORCL",
+    "name": "ORACLE CORP",
+    "w": 1.711792828520608
+   },
+   {
+    "sym": "JNJ",
+    "name": "JOHNSON &amp; JOHNSON",
+    "w": 1.385241061044233
+   },
+   {
+    "sym": "VWO",
+    "name": "VANGUARD INTL EQUITY INDEX F",
+    "w": 1.3364749154286912
+   },
+   {
+    "sym": "GEV",
+    "name": "GE VERNOVA INC",
+    "w": 1.175710745894426
+   },
+   {
+    "sym": "UNP",
+    "name": "UNION PAC CORP",
+    "w": 1.1402127864996994
+   },
+   {
+    "sym": "MU",
+    "name": "MICRON TECHNOLOGY INC",
+    "w": 1.097712048731796
+   },
+   {
+    "sym": "MBB",
+    "name": "ISHARES TR",
+    "w": 1.0684808340050278
+   },
+   {
+    "sym": "MO",
+    "name": "ALTRIA GROUP INC",
+    "w": 1.0129934574179464
+   },
+   {
+    "sym": "APH",
+    "name": "AMPHENOL CORP",
+    "w": 1.0026392705013898
+   },
+   {
+    "sym": "B",
+    "name": "BARRICK MNG CORP",
+    "w": 0.9894690226717349
+   }
+  ]
+ },
+ "1536411": {
+  "filing": {
+   "accession": "0001536411-26-000006",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "NTRA",
+    "name": "Natera Inc",
+    "w": 25.58686404326192
+   },
+   {
+    "sym": "TSM",
+    "name": "Taiwan Semiconductor Manufac",
+    "w": 8.330907541844903
+   },
+   {
+    "sym": "STM",
+    "name": "Stmicroelectronics N V",
+    "w": 6.874308501511682
+   },
+   {
+    "sym": "INSM",
+    "name": "Insmed Inc",
+    "w": 4.493630818201719
+   },
+   {
+    "sym": "YPF",
+    "name": "Ypf Sociedad Anonima",
+    "w": 4.222237999727838
+   },
+   {
+    "sym": "AMZN",
+    "name": "Amazon Com Inc",
+    "w": 3.818698710780572
+   },
+   {
+    "sym": "GOOGL",
+    "name": "Alphabet Inc",
+    "w": 3.5553820029937815
+   },
+   {
+    "sym": "EWZ",
+    "name": "Ishares Inc",
+    "w": 3.5069845045172974
+   },
+   {
+    "sym": "FOXA",
+    "name": "Fox Corp",
+    "w": 3.401787985823911
+   },
+   {
+    "sym": "UAL",
+    "name": "United Airls Hldgs Inc",
+    "w": 3.1974298443351854
+   },
+   {
+    "sym": "SE",
+    "name": "Sea Ltd",
+    "w": 3.1181478786157606
+   },
+   {
+    "sym": "CDW",
+    "name": "Cdw Corp",
+    "w": 3.0952211907677927
+   },
+   {
+    "sym": "SNDK",
+    "name": "Sandisk Corp",
+    "w": 2.347485755870711
+   },
+   {
+    "sym": "RVMD",
+    "name": "Revolution Medicines Inc",
+    "w": 2.2138305614228155
+   },
+   {
+    "sym": "DAL",
+    "name": "Delta Air Lines Inc",
+    "w": 1.6707490962447564
+   },
+   {
+    "sym": "FLR",
+    "name": "Fluor Corp",
+    "w": 1.5222433246359834
+   },
+   {
+    "sym": "DHI",
+    "name": "D R Horton Inc",
+    "w": 1.4407130643663062
+   },
+   {
+    "sym": "CPNG",
+    "name": "Coupang Inc",
+    "w": 1.3706905222551578
+   },
+   {
+    "sym": "AMD",
+    "name": "Advanced Micro Devices Inc",
+    "w": 1.2527733896590283
+   },
+   {
+    "sym": "PANW",
+    "name": "Palo Alto Networks Inc",
+    "w": 1.176804700118923
+   }
+  ]
+ },
+ "1656456": {
+  "filing": {
+   "accession": "0001656456-26-000003",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "AMZN",
+    "name": "AMAZON COM INC",
+    "w": 15.950459750680604
+   },
+   {
+    "sym": "MU",
+    "name": "MICRON TECHNOLOGY INC",
+    "w": 15.063497340750848
+   },
+   {
+    "sym": "TSM",
+    "name": "TAIWAN SEMICONDUCTOR MANUFAC",
+    "w": 10.54695875989652
+   },
+   {
+    "sym": "GOOG",
+    "name": "ALPHABET INC",
+    "w": 8.749001842627974
+   },
+   {
+    "sym": "UBER",
+    "name": "UBER TECHNOLOGIES INC",
+    "w": 7.431200516356308
+   },
+   {
+    "sym": "EWY",
+    "name": "ISHARES INC",
+    "w": 6.553213663154614
+   },
+   {
+    "sym": "META",
+    "name": "META PLATFORMS INC",
+    "w": 5.089112838171177
+   },
+   {
+    "sym": "VST",
+    "name": "VISTRA CORP",
+    "w": 4.703472923128003
+   },
+   {
+    "sym": "NVDA",
+    "name": "NVIDIA CORPORATION",
+    "w": 4.084148212266816
+   },
+   {
+    "sym": "NRG",
+    "name": "NRG ENERGY INC",
+    "w": 3.4407271176341023
+   },
+   {
+    "sym": "BABA",
+    "name": "ALIBABA GROUP HLDG LTD",
+    "w": 2.5693129594198614
+   },
+   {
+    "sym": "BA",
+    "name": "BOEING CO",
+    "w": 2.317896129717097
+   },
+   {
+    "sym": "LRCX",
+    "name": "LAM RESEARCH CORP",
+    "w": 2.2184848257440026
+   },
+   {
+    "sym": "BIDU",
+    "name": "BAIDU INC",
+    "w": 1.9809990502243395
+   },
+   {
+    "sym": "AAL",
+    "name": "AMERICAN AIRLINES GROUP INC",
+    "w": 1.8139515462876468
+   },
+   {
+    "sym": "AMD",
+    "name": "ADVANCED MICRO DEVICES INC",
+    "w": 1.535614551329323
+   },
+   {
+    "sym": "CRWV",
+    "name": "COREWEAVE INC",
+    "w": 1.4365560125800174
+   },
+   {
+    "sym": "AVGO",
+    "name": "BROADCOM INC",
+    "w": 0.7584064157279011
+   },
+   {
+    "sym": "QCOM",
+    "name": "QUALCOMM INC",
+    "w": 0.6183362963263129
+   },
+   {
+    "sym": "SPCX",
+    "name": "SPACE EXPLORATION TECHN CORP",
+    "w": 0.514551900163875
+   }
+  ]
+ },
+ "1697748": {
+  "filing": {
+   "accession": "0001104659-26-096910",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "TSLA",
+    "name": "Tesla Inc",
+    "w": 11.109908155354313
+   },
+   {
+    "sym": "AMD",
+    "name": "Advanced Micro Devices Inc",
+    "w": 7.875380562427744
+   },
+   {
+    "sym": "SPCX",
+    "name": "Space Exploration Technologies Corp",
+    "w": 7.323003781769823
+   },
+   {
+    "sym": "TEM",
+    "name": "Tempus AI Inc",
+    "w": 5.557109148309131
+   },
+   {
+    "sym": "HOOD",
+    "name": "Robinhood Markets Inc",
+    "w": 5.025508769014212
+   },
+   {
+    "sym": "SHOP",
+    "name": "Shopify Inc",
+    "w": 4.541728937434978
+   },
+   {
+    "sym": "TWST",
+    "name": "Twist Bioscience Corp",
+    "w": 4.480093602470119
+   },
+   {
+    "sym": "TXG",
+    "name": "10X Genomics Inc",
+    "w": 3.670695757276837
+   },
+   {
+    "sym": "AMZN",
+    "name": "Amazon.com Inc",
+    "w": 3.6297687154664255
+   },
+   {
+    "sym": "PLTR",
+    "name": "Palantir Technologies Inc",
+    "w": 3.587045535005933
+   },
+   {
+    "sym": "GOOG",
+    "name": "Alphabet Inc",
+    "w": 3.5283163799800636
+   },
+   {
+    "sym": "COIN",
+    "name": "Coinbase Global Inc",
+    "w": 3.513848659358286
+   },
+   {
+    "sym": "RBLX",
+    "name": "ROBLOX Corp",
+    "w": 3.3653562066404463
+   },
+   {
+    "sym": "BEAM",
+    "name": "Beam Therapeutics Inc",
+    "w": 3.361961745593014
+   },
+   {
+    "sym": "TER",
+    "name": "Teradyne Inc",
+    "w": 2.9859210984786206
+   },
+   {
+    "sym": "NTLA",
+    "name": "Intellia Therapeutics Inc",
+    "w": 2.7329095840888984
+   },
+   {
+    "sym": "CRCL",
+    "name": "Circle Internet Group Inc",
+    "w": 2.7323458345678
+   },
+   {
+    "sym": "NVDA",
+    "name": "NVIDIA Corp",
+    "w": 2.6452108954306497
+   },
+   {
+    "sym": "CRWV",
+    "name": "CoreWeave Inc",
+    "w": 2.531536084418637
+   },
+   {
+    "sym": "DE",
+    "name": "Deere &amp; Co",
+    "w": 2.3861569788930446
+   },
+   {
+    "sym": "XYZ",
+    "name": "Block Inc",
+    "w": 2.2534853662439414
+   },
+   {
+    "sym": "KTOS",
+    "name": "Kratos Defense &amp; Security Solutions Inc.",
+    "w": 2.2298271052002314
+   },
+   {
+    "sym": "TSM",
+    "name": "Taiwan Semiconductor Manufacturing Company Ltd",
+    "w": 2.204475164524511
+   },
+   {
+    "sym": "NTRA",
+    "name": "Natera Inc",
+    "w": 1.7897029412140033
+   }
+  ]
+ },
+ "1709323": {
+  "filing": {
+   "accession": "0002043585-26-000022",
+   "reportDate": "2026-06-30",
+   "filingDate": "2026-08-14"
+  },
+  "picks": [
+   {
+    "sym": "GOOGL",
+    "name": "ALPHABET INC",
+    "w": 24.545462803554056
+   },
+   {
+    "sym": "GOOG",
+    "name": "ALPHABET INC",
+    "w": 23.39012379264309
+   },
+   {
+    "sym": "PDD",
+    "name": "PDD HOLDINGS INC",
+    "w": 22.16785437911919
+   },
+   {
+    "sym": "EWBC",
+    "name": "EAST WEST BANCORP INC",
+    "w": 9.678822243789861
+   },
+   {
+    "sym": "CROX",
+    "name": "CROCS INC",
+    "w": 2.8901209920163087
+   },
+   {
+    "sym": "TME",
+    "name": "TENCENT MUSIC ENTERTAINM",
+    "w": 1.4862180297296148
+   },
+   {
+    "sym": "AAPL",
+    "name": "APPLE INC",
+    "w": 0.8642694549619946
+   }
+  ]
+ }
+}

@@ -14,10 +14,11 @@ function nav(fund, at = 'now') {
   let sum = 0, wsum = 0;
   for (const h of hs) {
     const p = q[h.sym]; if (!p) continue;
-    const P = at === 'prev' && Date.now() - fund.created_at > 864e5 ? p.prev : p.price;
+    const P = at === 'prev' && Date.now() - Math.max(fund.created_at, fund.rebalanced_at || 0) > 864e5 ? p.prev : p.price;
     sum += h.w * (1 + h.dir * (P / h.p0 - 1)); wsum += h.w;
   }
-  return wsum ? Math.max(100 * sum / wsum, 0) : 100;
+  const base = fund.nav_base || 100;
+  return wsum ? Math.max(base * sum / wsum, 0) : base;
 }
 const cache = new Map();
 function navOf(fundId, at = 'now') {
@@ -35,13 +36,14 @@ function investors(fundId) {
 function summary(f) {
   const hs = JSON.parse(f.holdings), now = nav(f), prev = nav(f, 'prev'), inv = investors(f.id);
   return {
-    id: f.id, name: f.name, strategy: f.strategy, manager: f.manager, color: f.color, ownerId: f.owner_id,
+    id: f.id, kind: f.kind || 'community', name: f.name, strategy: f.strategy, manager: f.manager, color: f.color, ownerId: f.owner_id,
+    source: f.source ? JSON.parse(f.source) : null, rebalancedAt: f.rebalanced_at || null,
     createdAt: f.created_at, nav: now, perf: now / 100 - 1, day: prev ? now / prev - 1 : 0,
     investors: inv.n, aum: inv.aum, longs: hs.filter(h => h.dir > 0).length, shorts: hs.filter(h => h.dir < 0).length,
-    top: hs.slice().sort((a, b) => b.w - a.w).slice(0, 3).map(h => ({sym: h.sym, dir: h.dir, w: h.w})),
+    top: hs.slice().sort((a, b) => b.w - a.w).slice(0, 3).map(h => ({sym: h.sym, name: (market.INSTRUMENTS[h.sym] || {}).n, dir: h.dir, w: h.w})),
   };
 }
-function list() { return qAll.all().map(summary).sort((a, b) => b.perf - a.perf); }
+function list(kind = 'community') { return qAll.all().filter(f => (f.kind || 'community') === kind).map(summary).sort((a, b) => b.perf - a.perf); }
 function detail(id) {
   const f = qOne.get(id); if (!f) return null;
   const q = market.get(), hs = JSON.parse(f.holdings), wsum = hs.reduce((a, h) => a + h.w, 0);

@@ -11,8 +11,11 @@ Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglie
 | **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
 | **Märkte** | 19 Werte als feste Auswahl (US- und DAX-Aktien, DAX, S&P 500, Gold, 6 Kryptowährungen) plus **Suche nach jeder US-Aktie und jedem US-ETF**. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
+| **Kurs-Charts** | Zeiträume 24h, Woche, Monat, Jahr und Max (5 Jahre); beim Darüberfahren oder Tippen erscheinen Kurs, Veränderung und Zeitpunkt |
+| **Anleger kopieren** | Copy Trading wie bei Social-Trading-Plattformen: Trader der Arena mit Rendite (Woche, Monat, gesamt), Risikowert 1–7 und Zahl der Kopierer. Beim Kopieren werden die offenen Positionen anteilig übernommen und jeder neue Trade sowie jedes Schließen automatisch nachgebildet |
+| **Großinvestoren** | Depots bekannter Investoren (Buffett, Ackman, Dalio, Druckenmiller u. a.) aus den öffentlichen 13F-Meldungen an die SEC, als kopierbares Depot mit Anteilswert |
 | **Community-Fonds** | Mitglieder gründen eigene Aktienpakete (3–10 Werte, long/short, Gewichte), andere investieren Spielgeld; Anteilswert startet bei 100 |
-| **TRCM Portfolio** | Musterdepot des Analystenteams von Florian Homm. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
+| **TRCM Portfolio** | Portfolio des Analystenteams von Florian Homm, mit Verweis auf den Homm Long Short Börsenbrief. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
 | **Arena** | Ranglisten (Heute, Woche, Depotwert), Preise, Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
 | **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
@@ -47,6 +50,8 @@ Tests: `npm test`
 | `FREEHOMES_CLIENT_ID` / `FREEHOMES_CLIENT_SECRET` | Aktiviert „Mit Free Homes anmelden“ (siehe unten) |
 | `FREEHOMES_ISSUER` | Standard: `https://keycloak.free-homes.de/realms/freehomes` |
 | `ADMIN_EMAILS` | Kommagetrennte E-Mail-Adressen, die beim Login über Free Homes (bestätigte Adresse) automatisch Admin werden |
+| `SEC_USER_AGENT` | Kennung für Abrufe bei der SEC. Die SEC verlangt Name und Kontakt-E-Mail, z. B. `Investment Arena kontakt@ihre-domain.de` |
+| `GURUS` | `0` = Großinvestoren ausschalten |
 | `DATA_DIR` | Speicherort der Datenbank (Docker: `/data`) |
 | `MARKET_OFFLINE` | `1` = nur mitgelieferte Kurse (Tests, Offline-Demo) |
 | `SEED_BOTS` | `0` = keine Beispiel-Community anlegen |
@@ -106,9 +111,23 @@ Danach `FREEHOMES_CLIENT_ID=investment-arena` und `FREEHOMES_CLIENT_SECRET=…` 
 
 Verhalten: Ein Free-Homes-Mitglied bekommt beim ersten Login automatisch ein Arena-Konto. Existiert bereits ein eigenes Arena-Konto mit derselben **bestätigten** E-Mail-Adresse, werden beide verknüpft.
 
+## Copy Trading
+
+Im Bereich **Entdecken** stehen unter „Anleger kopieren“ die Trader der Arena, sortierbar nach Beliebtheit (Kopierer), Rendite im Monat, Rendite der Woche und geringem Risiko.
+
+- **Kopieren:** Betrag wählen (mindestens 500 €, höchstens 5 Anleger gleichzeitig). Die Kopie bekommt ein eigenes Guthaben im Depot. Offene Positionen des Vorbilds werden im Verhältnis zu dessen Depotwert übernommen, neue Orders im gleichen Verhältnis nachgebildet, Schließen, Stop-Loss, Knock-out und Verfall ebenfalls. Kopiert werden nur eigene Positionen des Vorbilds, keine Kopien von Kopien.
+- **Beenden:** schließt alle kopierten Positionen zum aktuellen Kurs; das Guthaben fließt zurück.
+- **Kennzahlen:** Rendite 1 Woche und 1 Monat aus dem täglichen Depotwert-Verlauf, Risikowert 1–7 aus Schwankung und Hebel der Positionen, größter Rückgang, Zahl der Kopierer.
+
+## Großinvestoren (SEC 13F)
+
+US-Vermögensverwalter mit mehr als 100 Mio. $ melden ihre Aktienpositionen jedes Quartal der SEC (Formular 13F, bis 45 Tage nach Quartalsende). Diese Daten sind öffentlich und kostenlos. Der Server lädt alle 12 Stunden die neueste Meldung von 12 bekannten Investoren, übernimmt die 10 größten Aktienpositionen (CUSIP → Börsenkürzel über OpenFIGI) und legt sie als kopierbares Depot mit Anteilswert an. Bei einer neuen Meldung wird zum aktuellen Kurs umgeschichtet, der Anteilswert läuft ohne Sprung weiter. Optionen und Leerverkäufe sind in 13F nicht enthalten. Ohne Netz werden die mitgelieferten Meldungen aus `server/fallback/gurus.json` verwendet (`npm run snapshot` aktualisiert sie).
+
+Hinweis in der App: keine Verbindung zu den genannten Personen, keine Anlageberatung.
+
 ## TRCM Portfolio und Admin-Zugang
 
-Das TRCM Portfolio steht im Bereich „Fonds“ ganz oben. Alle sehen Name, Team, Strategie, Wertentwicklung und die Zahl der Titel. **Welche Titel gehalten werden** (mit Gewichtung, Einstiegskurs, Datum und Notiz) sehen nur Mitglieder, die über Free Homes angemeldet sind, sowie Admins. Die Titel des Portfolios tauchen auch nicht in der öffentlichen Kursliste auf.
+Das TRCM Portfolio steht im Bereich „Entdecken“ ganz oben, darunter der Verweis auf den [Homm Long Short Börsenbrief](https://homm-longshort.com/). Alle sehen Name, Team, Strategie, Wertentwicklung und die Zahl der Titel. **Welche Titel gehalten werden** (mit Gewichtung, Einstiegskurs, Datum und Notiz) sehen nur Mitglieder, die über Free Homes angemeldet sind, sowie Admins. Die Titel des Portfolios tauchen auch nicht in der öffentlichen Kursliste auf.
 
 **Admins** sehen im Portfolio zusätzlich den Bereich „Admin“:
 
@@ -157,12 +176,15 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | GET | `/api/auth/freehomes/start`, `/api/auth/freehomes/callback` | Login über Free Homes |
 | GET | `/api/quotes`, `/api/radar` | Kurse, Smart-Money-Radar |
 | GET/PATCH | `/api/state` | Spielstand, Modus, Folgen |
-| POST | `/api/state/reset` | Neustart mit 100.000 € |
 | POST | `/api/orders`, `/api/positions/:id/close` | Order eröffnen, Position schließen |
 | GET | `/api/leaderboard`, `/api/profile/:id` | Rangliste, Trader-Profil |
 | GET/POST | `/api/funds`, `/api/funds/:id`, `/api/funds/:id/invest` | Community-Fonds |
 | GET | `/api/trcm` | TRCM Portfolio (Titel nur für Free-Homes-Mitglieder und Admins) |
 | PATCH/POST/DELETE | `/api/admin/trcm`, `/api/admin/trcm/holdings[/:id[/close]]` | Pflege des TRCM Portfolios (nur Admins) |
+| GET | `/api/chart?sym=…&r=1d\|5d\|1mo\|1y\|5y` | Kursverlauf für den Chart |
+| GET | `/api/discover` | Trader zum Kopieren mit Kennzahlen, Großinvestoren |
+| POST | `/api/copy`, `/api/copy/:id/stop` | Kopieren starten, beenden |
+| POST | `/api/state/reset` | Neustart, nur mit `{"confirm": true}` |
 | GET | `/api/audio`, `/healthz` | vorhandene Tonspuren, Statusprüfung |
 
 ## Aufbau
@@ -173,7 +195,9 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   auth.js      Konten, Sessions (HttpOnly-Cookie), Demo, Free Homes (OIDC + PKCE)
   game.js      Orders, Bewertung, Stop-Loss/Knock-out/Verfall, Abzeichen
   funds.js     Community-Fonds und Anteilswerte
-  trcm.js      TRCM Portfolio (Musterdepot, Admin-Pflege, Protokoll)
+  trcm.js      TRCM Portfolio (Admin-Pflege, Protokoll)
+  copy.js      Copy Trading und Kennzahlen (Rendite, Risiko, Kopierer)
+  gurus.js     Großinvestoren aus SEC-13F-Meldungen
   market.js    Kurse (Finnhub, Yahoo, ccxt)
   radar.js     Smart-Money-Daten (Finnhub)
   bots.js      Beispiel-Community für die Demo
