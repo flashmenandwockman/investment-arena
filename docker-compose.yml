@@ -4,6 +4,8 @@ services:
     build: .
     restart: unless-stopped
     env_file: .env
+    ports:
+      - "127.0.0.1:8080:8080"   # nur lokal erreichbar; öffentlich über Caddy bzw. vorhandenen Webserver
     volumes:
       - arena-data:/data
       # Florians Tonspuren ohne neuen Build austauschen:

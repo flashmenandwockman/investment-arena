@@ -1,0 +1,9 @@
+# Nur nötig, wenn auf dem Server bereits ein Caddy (außerhalb dieses Projekts) läuft.
+# In dessen Caddyfile ergänzen und Caddy neu laden (caddy reload):
+
+www.investment-arena.com {
+	reverse_proxy 127.0.0.1:8080
+}
+investment-arena.com {
+	redir https://www.investment-arena.com{uri} permanent
+}

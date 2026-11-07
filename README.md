@@ -51,6 +51,14 @@ Tests: `npm test`
 
 ## Deployment auf www.investment-arena.com
 
+**Kurzweg auf einem vorhandenen Server (z. B. Hetzner):** als root einen Befehl ausführen. Das Skript installiert bei Bedarf Docker, lädt den Code nach `/opt/investment-arena`, legt die `.env` an, startet alles und prüft den Status. Sind die Ports 80/443 schon durch einen anderen Webserver belegt, startet es die Arena nur intern auf `127.0.0.1:8080`; die passende Webserver-Konfiguration liegt in `deploy/`.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/flashmenandwockman/investment-arena/main/deploy/install.sh | bash
+```
+
+Erneut ausführen aktualisiert auf den neuesten Stand. Alternativ Schritt für Schritt:
+
 Empfohlen: ein kleiner Linux-Server (VPS, 2 vCPU, 2–4 GB RAM, z. B. Hostinger VPS oder Hetzner Cloud) mit Docker.
 
 1. **Server anlegen** (Ubuntu 24.04) und Docker installieren: `curl -fsSL https://get.docker.com | sh`
