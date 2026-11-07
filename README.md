@@ -1,0 +1,150 @@
+# Investment Arena mit Florian Homm
+
+Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglied startet mit 100.000 €, handelt mit echten Kursen long und short, mit Hebel und Optionen, gründet Community-Fonds und tritt in Ranglisten gegen die Community an. Florian Homm erklärt jeden Schritt.
+
+> Simulation zu Lernzwecken. Kein echtes Geld, keine Orders an Börsen, keine Anlageberatung.
+
+## Funktionen
+
+| Bereich | Inhalt |
+|---|---|
+| **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
+| **Märkte** | 19 Werte: US- und DAX-Aktien, DAX, S&P 500, Gold, 6 Kryptowährungen. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
+| **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
+| **Community-Fonds** | Mitglieder gründen eigene Aktienpakete (3–10 Werte, long/short, Gewichte), andere investieren Spielgeld; Anteilswert startet bei 100 |
+| **Arena** | Ranglisten (Heute, Woche, Depotwert), Preise, Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
+| **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
+| **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
+
+Alle Orders, Stop-Loss, Knock-outs und Depotwerte werden **auf dem Server mit Server-Kursen** berechnet. Die Rangliste lässt sich dadurch nicht über den Browser manipulieren. Kursbewegungen gibt es nur durch den echten Markt, nicht durch Vorspulen.
+
+## Schnellstart (lokal)
+
+Voraussetzung: Node.js 22.13 oder neuer (für das eingebaute SQLite).
+
+```bash
+npm install
+npm run dev          # Offline-Demo mit mitgelieferten Kursen → http://localhost:8080
+```
+
+Mit Live-Daten:
+
+```bash
+cp .env.example .env     # FINNHUB_KEY eintragen
+set -a && . ./.env && set +a
+npm start
+```
+
+Tests: `npm test`
+
+## Konfiguration (`.env`)
+
+| Variable | Bedeutung |
+|---|---|
+| `BASE_URL` | Öffentliche Adresse, z. B. `https://www.investment-arena.com` (wichtig für sichere Cookies und den Free-Homes-Login) |
+| `FINNHUB_KEY` | Kostenloser Schlüssel von [finnhub.io](https://finnhub.io): US-Kurse in Echtzeit und Smart-Money-Daten |
+| `FREEHOMES_CLIENT_ID` / `FREEHOMES_CLIENT_SECRET` | Aktiviert „Mit Free Homes anmelden“ (siehe unten) |
+| `FREEHOMES_ISSUER` | Standard: `https://keycloak.free-homes.de/realms/freehomes` |
+| `DATA_DIR` | Speicherort der Datenbank (Docker: `/data`) |
+| `MARKET_OFFLINE` | `1` = nur mitgelieferte Kurse (Tests, Offline-Demo) |
+| `SEED_BOTS` | `0` = keine Beispiel-Community anlegen |
+
+## Deployment auf www.investment-arena.com
+
+Empfohlen: ein kleiner Linux-Server (VPS, 2 vCPU, 2–4 GB RAM, z. B. Hostinger VPS oder Hetzner Cloud) mit Docker.
+
+1. **Server anlegen** (Ubuntu 24.04) und Docker installieren: `curl -fsSL https://get.docker.com | sh`
+2. **DNS einrichten** (siehe nächster Abschnitt) und warten, bis die Domain auf die Server-IP zeigt.
+3. **Code holen und starten:**
+   ```bash
+   git clone https://github.com/flashmenandwockman/investment-arena.git && cd investment-arena
+   cp .env.example .env && nano .env      # BASE_URL, FINNHUB_KEY
+   docker compose up -d --build
+   ```
+   Caddy holt automatisch HTTPS-Zertifikate für `investment-arena.com` und `www.investment-arena.com`. Die Adresse ohne www leitet auf www weiter.
+4. **Prüfen:** `https://www.investment-arena.com/healthz` liefert `{"ok":true,…}`.
+5. **Updates:** `git pull && docker compose up -d --build`
+6. **Datensicherung:** Die Datenbank liegt im Docker-Volume `arena-data` (`/data/arena.sqlite`). Sicherung z. B. täglich per `docker compose exec app sh -c 'cp /data/arena.sqlite /data/backup.sqlite'` und Abholen der Datei.
+
+### DNS-Einträge
+
+| Typ | Name | Inhalt | TTL |
+|---|---|---|---|
+| A | `@` | **IP-Adresse des Servers** | 300 |
+| CNAME | `www` | `investment-arena.com` | 300 |
+
+Den bisherigen A-Eintrag `@ → 2.57.91.91` (Parkseite des Domain-Anbieters) durch die Server-IP ersetzen. Hat der Server eine IPv6-Adresse, zusätzlich `AAAA @ → IPv6-Adresse` anlegen. Ports 80 und 443 müssen in der Firewall offen sein.
+
+## Login über Free Homes (Keycloak)
+
+app.free-homes.de nutzt Keycloak (`https://keycloak.free-homes.de`, Realm `freehomes`). Die Arena ist als OpenID-Connect-Client vorbereitet (Authorization Code Flow mit PKCE S256).
+
+**Was der Free-Homes-Administrator in Keycloak anlegen muss:**
+
+| Einstellung | Wert |
+|---|---|
+| Client-ID | `investment-arena` |
+| Client authentication | an (vertraulicher Client, Secret an uns übergeben) |
+| Standard flow | an · Direct access grants: aus |
+| Valid redirect URIs | `https://www.investment-arena.com/api/auth/freehomes/callback` |
+| Web origins | `https://www.investment-arena.com` |
+| Valid post logout redirect URIs | `https://www.investment-arena.com/` |
+| PKCE (Advanced → Proof Key for Code Exchange) | S256 |
+| Scopes | `openid`, `email`, `profile` |
+
+Danach `FREEHOMES_CLIENT_ID=investment-arena` und `FREEHOMES_CLIENT_SECRET=…` in `.env` setzen und neu starten. Der Button „Mit Free Homes anmelden“ wird dann aktiv.
+
+Verhalten: Ein Free-Homes-Mitglied bekommt beim ersten Login automatisch ein Arena-Konto. Existiert bereits ein eigenes Arena-Konto mit derselben **bestätigten** E-Mail-Adresse, werden beide verknüpft.
+
+## Florians Tonspuren
+
+MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUFNAHMELISTE.md) in `public/audio/` legen (29 Texte). Die App erkennt sie automatisch; fehlt eine Datei, liest die Browser-Stimme vor. Im Docker-Betrieb ist der Ordner eingebunden, ein neuer Build ist nicht nötig.
+
+## Datenquellen und offene Lizenzfragen
+
+| Quelle | Daten | Hinweis |
+|---|---|---|
+| Finnhub (Free) | US-Kurse in Echtzeit, Insider-Trades, Insider-Stimmung, Analystenkonsens, Quartalstermine, News | Anzeigerecht in einer öffentlichen App vor dem Launch mit Finnhub klären |
+| Yahoo Finance | DAX-Werte, Indizes, Gold, Tagesvolumen | Inoffizielle Schnittstelle, **vor dem öffentlichen Start durch lizenzierten Anbieter ersetzen** (15 Minuten Verzögerung genügt) |
+| ccxt / Kraken | Krypto in Echtzeit | Öffentliche Börsendaten |
+| Unusual Whales | Kongress-Trades, Options-Flow, Dark Pool | Nicht eingebunden: braucht Enterprise-Lizenz |
+
+Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-Daten lauffähig. Aktualisieren mit `npm run snapshot`.
+
+## API
+
+| Methode | Pfad | Zweck |
+|---|---|---|
+| GET | `/api/config`, `/api/me` | Konfiguration, angemeldeter Nutzer |
+| POST | `/api/auth/register`, `/api/auth/login`, `/api/auth/demo`, `/api/auth/logout` | Anmeldung |
+| GET | `/api/auth/freehomes/start`, `/api/auth/freehomes/callback` | Login über Free Homes |
+| GET | `/api/quotes`, `/api/radar` | Kurse, Smart-Money-Radar |
+| GET/PATCH | `/api/state` | Spielstand, Modus, Folgen |
+| POST | `/api/state/reset` | Neustart mit 100.000 € |
+| POST | `/api/orders`, `/api/positions/:id/close` | Order eröffnen, Position schließen |
+| GET | `/api/leaderboard`, `/api/profile/:id` | Rangliste, Trader-Profil |
+| GET/POST | `/api/funds`, `/api/funds/:id`, `/api/funds/:id/invest` | Community-Fonds |
+| GET | `/api/audio`, `/healthz` | vorhandene Tonspuren, Statusprüfung |
+
+## Aufbau
+
+```
+server/        Node-Server ohne Framework (http, node:sqlite)
+  index.js     Routen, Hintergrund-Aufgaben (Kurse alle 30 s, Radar alle 30 min)
+  auth.js      Konten, Sessions (HttpOnly-Cookie), Demo, Free Homes (OIDC + PKCE)
+  game.js      Orders, Bewertung, Stop-Loss/Knock-out/Verfall, Abzeichen
+  funds.js     Community-Fonds und Anteilswerte
+  market.js    Kurse (Finnhub, Yahoo, ccxt)
+  radar.js     Smart-Money-Daten (Finnhub)
+  bots.js      Beispiel-Community für die Demo
+public/        App (eine HTML-Datei, mobil optimiert), Bilder, Tonspuren
+test/          API-Tests (node --test)
+```
+
+## Vor dem öffentlichen Start
+
+- [ ] Yahoo durch lizenzierten Kursanbieter ersetzen, Finnhub-Anzeigerechte klären
+- [ ] Impressum, Datenschutzerklärung und Teilnahmebedingungen für Preise verlinken
+- [ ] Erklärtexte von Florian Homm freigeben lassen, Tonspuren einspielen
+- [ ] Keycloak-Client bei Free Homes anlegen lassen
+- [ ] Datensicherung der Datenbank einrichten

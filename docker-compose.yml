@@ -1,0 +1,27 @@
+# Produktion: App + Caddy (holt automatisch HTTPS-Zertifikate für die Domain)
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - arena-data:/data
+      # Florians Tonspuren ohne neuen Build austauschen:
+      - ./public/audio:/app/public/audio:ro
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - app
+volumes:
+  arena-data:
+  caddy-data:
+  caddy-config:
