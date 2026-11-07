@@ -265,6 +265,38 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 .nfrow .dirb.l{color:var(--up);border-color:rgba(60,207,145,.45)} .nfrow .dirb.s{color:var(--down);border-color:rgba(255,107,107,.45)}
 .nfrow .rm{height:48px;border-radius:12px;background:var(--card);font-size:18px;color:var(--muted)}
 .bot{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:0 5px;margin-left:6px;vertical-align:middle}
+
+/* Lesbarkeit: einheitliche, großzügige Abstände in allen Bereichen */
+.hero{margin-bottom:18px} .stats{gap:10px} .stat{padding:12px} .stat small{margin-bottom:3px} .rankline{margin-top:14px;padding:12px 14px}
+.coach{padding:16px;gap:14px;margin-bottom:18px} .coach p{margin-top:6px;line-height:1.5}
+.sec-h{margin:34px 2px 14px}
+.chips{margin-bottom:16px} .search{margin-bottom:16px}
+.list{gap:12px} .lb{gap:10px}
+.row{padding:14px;gap:14px} .row .n small,.row .p small{display:block;margin-top:3px}
+.bd{height:22px;padding:0 9px;font-size:11px;margin:6px 6px 0 0;white-space:nowrap}
+.radar{gap:12px} .rc{width:262px;padding:16px;gap:8px} .rc small{line-height:1.5}
+.smart{padding:16px} .sm-row{padding:12px 0} .tx{padding:8px 0} .news a{padding:10px 0;line-height:1.45} .news a small{margin-top:3px}
+.card p{line-height:1.55}
+.pos{padding:18px} .pos-h small{display:block;margin-top:5px;line-height:1.5} .tag{margin-right:6px}
+.kv{gap:12px;margin:16px 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)} .kv small{margin-bottom:4px} .kv b{font-size:13.5px}
+.hist .h{padding:14px 2px;line-height:1.5}
+.prizes{gap:12px} .prize{padding:16px} .prize b{margin-top:10px} .prize small{margin-top:4px;line-height:1.45} .prize .win{margin-top:12px;line-height:1.4}
+.badges{gap:8px;margin-top:16px} .streak{gap:8px;margin-top:14px} .lvl{margin-top:10px}
+.lbr{padding:12px 14px;gap:12px} .lbr .nm small,.lbr .vv small{display:block;margin-top:2px}
+.hd{padding:14px 4px;gap:6px 12px} .hd .w{margin:4px 0 2px}
+.fund{padding:18px}
+.fund-t{display:flex;flex-direction:column;gap:6px;min-width:0} .fund-t b{font-size:17px;line-height:1.3}
+.fund .perf small{display:block;margin-top:4px}
+.fund .strat{margin:12px 0 0;font-size:13.5px;line-height:1.55;color:var(--muted)}
+.fund .chips2{gap:8px;margin-top:14px} .fund .chips2 .bd{margin:0;height:26px;padding:0 11px;font-size:12px}
+.fund .meta{flex-wrap:wrap;gap:6px 18px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px}
+.hrow{padding:14px 0;gap:6px 12px} .hrow .w{margin:4px 0 2px}
+.step{margin-top:24px} .step > label{margin-bottom:10px}
+.summary{padding:6px 16px} .summary div{padding:11px 0}
+.alert{line-height:1.5}
+.nfrow{gap:8px;margin-bottom:10px}
+.coach.mini{margin-top:20px}
+.fine{line-height:1.55}
 </style>
 </head>
 <body>
@@ -342,7 +374,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 
     <div class="sec-h"><h2>Fair Play</h2><span class="muted num" style="font-size:12px" id="lastUpd"></span></div>
     <div class="card">
-      <p style="margin:0 0 12px;font-size:13.5px">Alle Teilnehmer handeln mit denselben echten Kursen. Kein Vorspulen, keine Wiederholung: Ihre Positionen bewegen sich nur mit dem echten Markt. Aktien zu Börsenzeiten, Krypto rund um die Uhr.</p>
+      <p style="margin:0 0 16px;font-size:13.5px;line-height:1.55">Alle Teilnehmer handeln mit denselben echten Kursen. Kein Vorspulen, keine Wiederholung: Ihre Positionen bewegen sich nur mit dem echten Markt. Aktien zu Börsenzeiten, Krypto rund um die Uhr.</p>
       <button class="btn2" id="refreshBtn">Kurse jetzt aktualisieren</button>
     </div>
   </main>
@@ -386,8 +418,8 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
   <!-- FONDS -->
   <main id="tab-fonds" hidden>
     <div class="sec-h"><h2>Community-Fonds</h2><span class="muted" style="font-size:12px" id="fundCount"></span></div>
-    <p class="muted" style="font-size:13.5px;margin:-4px 2px 14px">Mitglieder stellen eigene Aktienpakete zusammen, long und short. Investieren Sie Spielgeld in die Ideen, die Sie überzeugen. Die besten Fondsmanager stehen oben.</p>
-    <button class="cta" id="newFundBtn" style="margin:0 0 14px">+ Eigenen Fonds gründen</button>
+    <p class="muted" style="font-size:13.5px;line-height:1.55;margin:0 2px 18px">Mitglieder stellen eigene Aktienpakete zusammen, long und short. Investieren Sie Spielgeld in die Ideen, die Sie überzeugen. Die besten Fondsmanager stehen oben.</p>
+    <button class="cta" id="newFundBtn" style="margin:0 0 20px">+ Eigenen Fonds gründen</button>
     <div class="list" id="funds"></div>
   </main>
 
@@ -784,7 +816,7 @@ function renderPositions(){
     const extra = fund ? `Anteilswert ${nf(p.price||p.entry,2)} · Einstieg ${nf(p.entry,2)}` : p.kind==='option' ? `Verfall in ${Math.ceil(T)} Tagen${pro()&&T>0&&q.price?` · Δ ${delta(q.price,p.strike,T/365,q.vol,p.opt).toFixed(2)}`:''}` : p.kind==='lev' ? `Knock-out bei ${fmt(p.ko,q.cur)}${pro()?` · Gebühren ${eur(p.fees||0)}`:''}` : (p.dir<0?'Leerverkauf':'Direktanlage');
     const right = fund ? `<div><small>Anteile</small><b>${nf(p.units,2)}</b></div>` : `<div><small>${p.kind==='option'?'Basiswert':'Einstieg → jetzt'}</small><b>${p.kind==='option'?fmt(q.price,q.cur):`${fmt(p.entry,q.cur)} → ${fmt(q.price,q.cur)}`}</b></div>`;
     return `<div class="pos ${warn?'warn':''}">
-      <div class="pos-h"><div>${fund?'<span class="tag kind">FONDS</span>':`<span class="tag ${p.dir>0?'long':'short'}">${p.dir>0?'LONG':'SHORT'}</span><span class="tag kind">${esc(p.label)}</span>`}<div style="margin-top:6px;font-weight:600">${esc(p.name)}</div><small class="muted">${extra}${p.sl?` · Stop −${p.sl*100} %`:''}</small></div>
+      <div class="pos-h"><div>${fund?'<span class="tag kind">FONDS</span>':`<span class="tag ${p.dir>0?'long':'short'}">${p.dir>0?'LONG':'SHORT'}</span><span class="tag kind">${esc(p.label)}</span>`}<div style="margin-top:10px;font-weight:600;font-size:15px">${esc(p.name)}</div><small class="muted">${extra}${p.sl?` · Stop −${p.sl*100} %`:''}</small></div>
       <div style="text-align:right" class="num"><b class="${cls(pl/p.stake)}" style="font-size:16px;white-space:nowrap">${sgn(pl)}</b><br><small class="${cls(pl/p.stake)}">${pct(pl/p.stake,1)}</small></div></div>
       <div class="kv num"><div><small>Einsatz</small><b>${eur(p.stake,0)}</b></div><div><small>Wert</small><b>${eur(v,0)}</b></div>${right}</div>
       ${warn?`<div class="alert" style="margin:0 0 10px">Nachschussalarm: nur noch ${Math.round(v/p.stake*100)} % vom Einsatz übrig.</div>`:''}
@@ -964,9 +996,9 @@ $('#pfFollow').onclick=async e=>{ const b=e.currentTarget, id=b.dataset.id, on=!
 function renderFunds(){
   $('#fundCount').textContent = FUNDS.length ? FUNDS.length+' Fonds' : '';
   $('#funds').innerHTML = FUNDS.length ? FUNDS.map((f,i)=>`<button class="fund" data-fund="${f.id}">
-    <div class="fund-h"><div><small>${i<3?['🥇','🥈','🥉'][i]+' ':''}Manager: ${esc(f.manager)}</small><br><b>${esc(f.name)}</b></div>
+    <div class="fund-h"><div class="fund-t"><small>${i<3?['🥇','🥈','🥉'][i]+' ':''}Manager: ${esc(f.manager)}</small><b>${esc(f.name)}</b></div>
     <div class="perf num"><b class="${cls(f.perf)}">${pct(f.perf,1)}</b><small class="${cls(f.day)}">heute ${pct(f.day,1)}</small></div></div>
-    <small style="display:block;margin-top:6px">${esc(f.strategy)}</small>
+    <p class="strat">${esc(f.strategy)}</p>
     <div class="chips2">${f.top.map(h=>`<span class="bd ${h.dir<0?'red':''}">${h.dir<0?'▼':'▲'} ${esc((META[h.sym]||{}).n||h.sym)} ${Math.round(h.w)} %</span>`).join('')}</div>
     <div class="meta num"><span>${f.longs} long · ${f.shorts} short</span><span>${f.investors} Anleger</span><span>${eur(f.aum,0)} investiert</span></div></button>`).join('')
     : '<div class="empty">Noch keine Fonds. Gründen Sie den ersten!</div>';
@@ -975,8 +1007,8 @@ async function openFund(id){
   try{ FD=await api('/api/funds/'+id); }catch(e){ return toast(e.message); }
   $('#fdName').textContent=FD.name;
   $('#fdBody').innerHTML=`<div class="valbtn" style="margin-top:10px;cursor:default"><span><small>Anteilswert · Start 100</small><b class="num">${nf(FD.nav,2)}</b></span><span class="num" style="text-align:right"><b class="${cls(FD.perf)}" style="font-family:var(--sans);font-size:18px">${pct(FD.perf,1)}</b><br><small class="muted">seit ${new Date(FD.createdAt).toLocaleDateString('de-DE')}</small></span></div>
-    <p style="font-size:14px;margin:14px 2px 4px">${esc(FD.strategy)}</p>
-    <p class="muted" style="font-size:12.5px;margin:0 2px 8px">Manager: <b>${esc(FD.manager)}</b> · ${FD.investors} Anleger · ${eur(FD.aum,0)} investiert</p>
+    <p style="font-size:14px;line-height:1.55;margin:20px 2px 8px">${esc(FD.strategy)}</p>
+    <p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px 16px">Manager: <b>${esc(FD.manager)}</b> · ${FD.investors} Anleger · ${eur(FD.aum,0)} investiert</p>
     ${FD.holdings.map(h=>`<div class="hrow"><span><span class="tag ${h.dir>0?'long':'short'}">${h.dir>0?'LONG':'SHORT'}</span> <b>${esc(h.name||h.sym)}</b></span><b class="num">${nf(h.w*100,0)} %</b><span class="w"><i style="width:${h.w*100}%"></i></span><small class="muted num">Beitrag seit Start</small><small class="num ${cls(h.perf)}">${pct(h.perf,1)}</small></div>`).join('')}`;
   const own = ME && FD.ownerId===ME.id; $('#fdInvest').hidden=own;
   $('#fdAmt').value=Math.min(5000,Math.floor(S.cash)).toLocaleString('de-DE'); updFundAmt();
