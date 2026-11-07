@@ -126,9 +126,16 @@ async function freehomesCallback(params) {
   const ur = await fetch(d.userinfo_endpoint, {headers: {Authorization: `Bearer ${tok.access_token}`}, signal: AbortSignal.timeout(10000)});
   if (!ur.ok) throw new Error('Free-Homes-Profil nicht lesbar');
   const info = await ur.json();
+  const email = info.email ? String(info.email).toLowerCase() : null;
+  const id = linkOrCreate(info, email);
+  // Admin-Rechte nur für bestätigte E-Mail-Adressen aus ADMIN_EMAILS
+  if (email && info.email_verified && config.adminEmails.includes(email)) qSetRole.run('admin', id);
+  return id;
+}
+const qSetRole = db.prepare('UPDATE users SET role = ? WHERE id = ?');
+function linkOrCreate(info, email) {
   const existing = qBySub.get(info.sub);
   if (existing) return existing.id;
-  const email = info.email ? String(info.email).toLowerCase() : null;
   // Bestehendes eigenes Konto nur bei bestätigter E-Mail-Adresse verknüpfen
   const local = email && info.email_verified ? qByEmail.get(email) : null;
   if (local) { qLink.run(info.sub, local.id); return local.id; }

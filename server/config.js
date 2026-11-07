@@ -10,6 +10,8 @@ module.exports = {
   // true = keine externen Kursabrufe, nur die mitgelieferten Fallback-Daten (Tests, Offline-Demo)
   offline: env('MARKET_OFFLINE', '0') === '1',
   finnhubKey: env('FINNHUB_KEY', ''),
+  // E-Mail-Adressen, die beim Login über Free Homes (bestätigte Adresse) Admin-Rechte erhalten
+  adminEmails: env('ADMIN_EMAILS', '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean),
   startCash: 100000,
   sessionDays: 30,
   demoUserDays: 7,

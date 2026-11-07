@@ -11,6 +11,7 @@ const game = require('./game');
 const store = require('./store');
 const funds = require('./funds');
 const bots = require('./bots');
+const trcm = require('./trcm');
 const pkg = require('../package.json');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -34,7 +35,7 @@ function requireUser(req) {
   if (!u) throw Object.assign(new Error('Bitte anmelden'), {status: 401});
   return u;
 }
-const publicUser = u => u && {id: u.id, name: u.name, provider: u.provider, color: u.color, email: u.email || null};
+const publicUser = u => u && {id: u.id, name: u.name, provider: u.provider, color: u.color, email: u.email || null, admin: trcm.isAdmin(u), member: trcm.isMember(u)};
 
 // Schutz vor zu vielen Such- und Kursanfragen je Adresse (Finnhub-Limit)
 const hits = new Map();
@@ -106,6 +107,19 @@ async function api(req, res, url) {
     }
     if (p === '/api/leaderboard') { const u = auth.currentUser(req); return send(res, 200, {rows: leaderboard(u && u.id)}); }
     if (p.startsWith('/api/profile/')) { const pr = profile(Number(p.split('/').pop())); return pr ? send(res, 200, pr) : send(res, 404, {error: 'Nicht gefunden'}); }
+    // TRCM-Portfolio: Wertentwicklung öffentlich, Titel nur für Free-Homes-Mitglieder, Pflege nur für Admins
+    if (p === '/api/trcm' && m === 'GET') return send(res, 200, trcm.view(auth.currentUser(req)));
+    if (p.startsWith('/api/admin/')) {
+      const u = requireUser(req), b = m === 'GET' || m === 'DELETE' ? {} : await body(req), id = Number(p.split('/')[5]);
+      if (p === '/api/admin/trcm' && m === 'PATCH') trcm.updateMeta(u, b);
+      else if (p === '/api/admin/trcm/holdings' && m === 'POST') { limit(req); await trcm.addHolding(u, b); heldCache.t = 0; }
+      else if (/^\/api\/admin\/trcm\/holdings\/\d+$/.test(p) && m === 'PATCH') trcm.updateHolding(u, id, b);
+      else if (/^\/api\/admin\/trcm\/holdings\/\d+$/.test(p) && m === 'DELETE') trcm.deleteHolding(u, id);
+      else if (/^\/api\/admin\/trcm\/holdings\/\d+\/close$/.test(p) && m === 'POST') trcm.closeHolding(u, id, b);
+      else if (!trcm.isAdmin(u)) throw Object.assign(new Error('Nur für Admins'), {status: 403});
+      else return send(res, 404, {error: 'Unbekannte Route'});
+      return send(res, 200, trcm.view(u));
+    }
     if (p === '/api/funds' && m === 'GET') return send(res, 200, {funds: funds.list()});
     if (p === '/api/funds' && m === 'POST') {
       const u = requireUser(req), id = funds.create(u.id, await body(req));
@@ -187,6 +201,7 @@ function held() {
 
 async function start() {
   market.setHeldProvider(held);
+  market.setPrivateProvider(trcm.symbols);
   bots.seed();
   if (require.main === module) {
     await market.refresh().catch(() => {});

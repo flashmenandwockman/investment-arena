@@ -47,4 +47,8 @@ CREATE TABLE IF NOT EXISTS oidc_states (
 );
 `);
 
+// Spätere Erweiterungen bestehender Datenbanken
+const cols = db.prepare('PRAGMA table_info(users)').all().map(c => c.name);
+if (!cols.includes('role')) db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT ''");   // '' | admin
+
 module.exports = db;

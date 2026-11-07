@@ -297,6 +297,31 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 .nfrow{gap:8px;margin-bottom:10px}
 .coach.mini{margin-top:20px}
 .fine{line-height:1.55}
+/* TRCM-Portfolio */
+.trcm{display:block;width:100%;text-align:left;padding:20px;border-radius:22px;background:linear-gradient(160deg,#18233f,#0b1126);border:1px solid var(--gold);position:relative;overflow:hidden;box-shadow:0 18px 40px -26px rgba(198,164,108,.7)}
+.trcm::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(224,194,138,.16),transparent 70%);pointer-events:none}
+.trcm .kick{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--gold-l)}
+.trcm h3{font-family:var(--serif);font-weight:400;font-size:24px;margin:8px 0 4px}
+.trcm .team{font-size:13px;color:var(--muted)}
+.trcm .nums{display:flex;align-items:baseline;gap:16px;margin-top:16px}
+.trcm .nums b{font-size:26px} .trcm .nums small{font-size:13px;font-weight:600}
+.trcm .foot2{display:flex;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--gold-p);font-weight:600}
+.trcm .foot2 span:first-child{color:var(--muted);font-weight:500}
+.lock{margin-top:20px;padding:20px;border-radius:18px;border:1px dashed var(--line-gold);background:rgba(198,164,108,.06);text-align:center}
+.lock .ic{font-size:26px} .lock b{display:block;font-size:16px;margin:8px 0 6px} .lock p{margin:0;font-size:13.5px;line-height:1.55;color:var(--muted)}
+.tc-h{display:flex;justify-content:space-between;align-items:baseline;margin:28px 2px 6px} .tc-h h4{margin:0;font-family:var(--serif);font-weight:400;font-size:19px} .tc-h small{color:var(--muted);font-size:12px}
+.hrow .sub{grid-column:1/-1;font-size:12px;color:var(--muted);line-height:1.5}
+.hrow .note{grid-column:1/-1;font-size:12.5px;line-height:1.5;color:var(--text);opacity:.85}
+.tedit{grid-column:1/-1;justify-self:start;margin-top:4px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line-gold);color:var(--gold-p);font-size:12.5px;font-weight:600}
+.admin{margin-top:30px;padding:18px;border-radius:20px;border:1px solid rgba(240,177,74,.4);background:rgba(240,177,74,.05)}
+.admin > .kick{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--warn)}
+.admin h4{margin:6px 0 0;font-family:var(--serif);font-weight:400;font-size:19px}
+.admin .step:first-of-type{margin-top:18px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f2 label{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
+.sel{margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line-gold);font-size:14px}
+.logrow{padding:12px 0;border-top:1px solid var(--line);font-size:13px;line-height:1.5} .logrow small{display:block;color:var(--muted);font-size:11.5px}
+.btn2.danger{color:#ff9a9a;border-color:rgba(255,107,107,.4)}
 </style>
 </head>
 <body>
@@ -417,6 +442,8 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 
   <!-- FONDS -->
   <main id="tab-fonds" hidden>
+    <div class="sec-h"><h2>TRCM Portfolio</h2><span class="muted" style="font-size:12px">Musterdepot</span></div>
+    <button class="trcm" id="trcmCard"><span class="kick">Gemanagt von Florian Homm</span><h3>TRCM Portfolio</h3><div class="team">wird geladen …</div></button>
     <div class="sec-h"><h2>Community-Fonds</h2><span class="muted" style="font-size:12px" id="fundCount"></span></div>
     <p class="muted" style="font-size:13.5px;line-height:1.55;margin:0 2px 18px">Mitglieder stellen eigene Aktienpakete zusammen, long und short. Investieren Sie Spielgeld in die Ideen, die Sie überzeugen. Die besten Fondsmanager stehen oben.</p>
     <button class="cta" id="newFundBtn" style="margin:0 0 20px">+ Eigenen Fonds gründen</button>
@@ -552,6 +579,52 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
     </div>
     <div class="coach mini" id="fdTip"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundInvest"></p></div><button class="say" data-saykey="fundInvest" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
     <p class="fine">Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.</p>
+  </div>
+</section>
+
+<!-- TRCM-Portfolio -->
+<section class="sheet" id="trcmSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Musterdepot</span><h3 id="tcName">TRCM Portfolio</h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div id="tcBody"></div>
+    <div class="admin" id="tcAdmin" hidden>
+      <span class="kick">Admin</span><h4>Titel hinzufügen</h4>
+      <div class="step"><label>Titel suchen</label>
+        <div class="search" style="margin:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="taQ" type="search" autocomplete="off" placeholder="Name oder Kürzel, z. B. Apple, SAP, BTC"><div class="sres" id="taRes" hidden></div></div>
+        <div class="sel" id="taSel" hidden></div></div>
+      <div class="step"><label>Richtung</label><div class="seg c2"><button class="opt long on" data-tdir="1">▲ Long</button><button class="opt short" data-tdir="-1">▼ Short</button></div></div>
+      <div class="step f2"><div><label>Gewichtung in %</label><input class="inp" id="taW" inputmode="decimal" placeholder="z. B. 10"></div><div><label>Einstiegskurs</label><input class="inp" id="taP0" inputmode="decimal" placeholder="leer = aktuell"></div></div>
+      <div class="step"><label>Einstiegsdatum</label><input class="inp" id="taSince" type="date"></div>
+      <div class="step"><label>Notiz für Mitglieder (optional)</label><textarea class="inp" id="taNote" rows="2" maxlength="300" placeholder="Warum ist der Titel im Portfolio?"></textarea></div>
+      <div class="alert" id="taErr" hidden></div>
+      <button class="cta" id="taGo">Titel hinzufügen</button>
+      <h4 style="margin-top:34px">Beschreibung</h4>
+      <div class="step"><label>Name</label><input class="inp" id="tmName" maxlength="60"></div>
+      <div class="step"><label>Team</label><input class="inp" id="tmTeam" maxlength="60"></div>
+      <div class="step"><label>Strategie</label><textarea class="inp" id="tmStrat" rows="3" maxlength="600"></textarea></div>
+      <button class="btn2" id="tmSave" style="margin-top:14px">Beschreibung speichern</button>
+      <h4 style="margin-top:34px">Änderungsprotokoll</h4>
+      <div id="tcLog" style="margin-top:12px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRCM-Position bearbeiten (Admin) -->
+<section class="sheet" id="trcmEdit" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Position korrigieren</span><h3 id="teName"></h3></div><button class="x" id="teBack" aria-label="Zurück">×</button></div>
+    <div class="step"><label>Richtung</label><div class="seg c2"><button class="opt long" data-edir="1">▲ Long</button><button class="opt short" data-edir="-1">▼ Short</button></div></div>
+    <div class="step f2"><div><label>Gewichtung in %</label><input class="inp" id="teW" inputmode="decimal"></div><div><label>Einstiegskurs</label><input class="inp" id="teP0" inputmode="decimal"></div></div>
+    <div class="step f2"><div><label>Einstiegsdatum</label><input class="inp" id="teSince" type="date"></div><div id="teP1Box"><label>Ausstiegskurs</label><input class="inp" id="teP1" inputmode="decimal"></div></div>
+    <div class="step"><label>Notiz für Mitglieder</label><textarea class="inp" id="teNote" rows="2" maxlength="300"></textarea></div>
+    <div class="alert" id="teErr" hidden></div>
+    <button class="cta" id="teSave">Änderungen speichern</button>
+    <button class="btn2" id="teClose" style="margin-top:14px">Titel verkaufen (zum aktuellen Kurs schließen)</button>
+    <button class="btn2 danger" id="teDel" style="margin-top:12px">Eintrag löschen (Fehleingabe)</button>
+    <p class="fine">Verkaufen schließt die Position und zeigt sie unter „Verkaufte Titel“. Löschen entfernt den Eintrag vollständig. Jede Änderung steht im Protokoll.</p>
   </div>
 </section>
 
@@ -839,7 +912,7 @@ function renderArena(){
     <span class="vv num">${k==='eq'?`<b>${eur(r.eq,0)}</b><small class="${cls(r.tot)}">${pct(r.tot,1)}</small>`:`<b class="${cls(r[k])}">${pct(r[k],2)}</b><small class="muted">${eur(r.eq,0)}</small>`}</span></button>`).join('');
 }
 function renderLessons(){ $('#lessons').innerHTML = LESSONS.map(([k,l],i)=>`<button class="row lesson" style="grid-template-columns:42px 1fr auto" data-lesson="${k}"><span class="logo">${i+1}</span><span class="n"><b>${l}</b><small>Florian erklärt · ca. 30 Sek.</small></span><span class="say" style="width:40px;height:40px"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg></span></button>`).join(''); }
-function render(){ renderHeader(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); }
+function render(){ renderHeader(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); }
 
 /* ---------- coach / voice ---------- */
 let curCoach='welcome';
@@ -992,6 +1065,92 @@ $('#pfVal').onclick=()=>{ const on=$('#pfHold').classList.toggle('on'); $('#pfVa
 $('#pfFollow').onclick=async e=>{ const b=e.currentTarget, id=b.dataset.id, on=!S.follow[id];
   try{ setState(await api('/api/state',{method:'PATCH',body:{follow:{[id]:on}}})); b.textContent=on?'✓ Sie folgen '+b.dataset.name:'+ Folgen'; renderArena(); }catch(err){ toast(err.message); } };
 
+/* ---------- TRCM-Portfolio ---------- */
+let TC = null, TA = {sym:null, dir:1}, TE = null;
+async function loadTrcm(){ try{ TC=await api('/api/trcm'); }catch(e){} }
+const dshort2 = ts => new Date(ts).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+const isoDate = ts => new Date(ts - new Date(ts).getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const px = (v,cur) => v==null ? '–' : fmt(v,cur);
+function renderTrcm(){
+  if(!TC) return;
+  $('#trcmCard').innerHTML=`<span class="kick">Gemanagt von Florian Homm</span><h3>${esc(TC.name)}</h3><div class="team">${esc(TC.team)}</div>
+    <div class="nums num"><b class="${cls(TC.perf)}">${pct(TC.perf,1)}</b><small class="${cls(TC.day)}">heute ${pct(TC.day,1)}</small></div>
+    <div class="foot2"><span>${TC.count} Titel${TC.member?'':' · 🔒 nur für Free-Homes-Mitglieder'}</span><span>${TC.member?'Titel ansehen →':'Mehr erfahren →'}</span></div>`;
+}
+function holdingRow(h, closed){
+  return `<div class="hrow"><span><span class="tag ${h.dir>0?'long':'short'}">${h.dir>0?'LONG':'SHORT'}</span> <b>${esc(h.name)}</b></span>
+    <b class="num ${h.perf==null?'muted':cls(h.perf)}">${h.perf==null?'–':pct(h.perf,1)}</b>
+    ${closed?'':`<span class="w"><i style="width:${Math.min(h.share*100,100)}%"></i></span>`}
+    <span class="sub num">${closed?`Verkauft ${dshort2(h.closedAt)} zu ${px(h.price,h.cur)} · Einstieg ${px(h.p0,h.cur)}`:`${nf(h.share*100,1)} % Gewicht · Einstieg ${px(h.p0,h.cur)} am ${dshort2(h.since)} · jetzt ${px(h.price,h.cur)}`}</span>
+    ${h.note?`<span class="note">${esc(h.note)}</span>`:''}
+    ${TC.admin?`<button class="tedit" data-tedit="${h.id}">Bearbeiten</button>`:''}</div>`;
+}
+function renderTrcmSheet(){
+  $('#tcName').textContent=TC.name;
+  let h=`<div class="valbtn" style="margin-top:12px;cursor:default"><span><small>Wertentwicklung der aktuellen Titel</small><b class="num ${cls(TC.perf)}">${pct(TC.perf,1)}</b></span><span class="num" style="text-align:right"><b class="${cls(TC.day)}" style="font-family:var(--sans);font-size:17px">${pct(TC.day,1)}</b><br><small class="muted">heute</small></span></div>
+    <p style="font-size:14px;line-height:1.55;margin:20px 2px 8px">${esc(TC.strategy)}</p>
+    <p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px">${esc(TC.team)} · ${TC.count} Titel</p>`;
+  if(!TC.member){
+    h+=`<div class="lock"><div class="ic">🔒</div><b>Die Titel sehen nur Free-Homes-Mitglieder</b><p>Welche Aktien Florian Homm und das Analystenteam halten, mit Einstiegskurs, Gewichtung und Begründung, ist Mitgliedern von Free Homes vorbehalten.</p>
+      ${CFG.freehomes?'<button class="cta" id="tcFh" style="margin-top:18px">Mit Free Homes anmelden</button>':'<p style="margin-top:12px;color:var(--gold-p)">Der Login über Free Homes wird in Kürze freigeschaltet.</p>'}</div>`;
+  } else {
+    const tw=TC.holdings.reduce((a,x)=>a+x.w,0);
+    h+=`<div class="tc-h"><h4>Aktuelle Titel</h4><small class="num">${TC.admin?`Investiert ${nf(tw,1)} %`:''}</small></div>`
+      + (TC.holdings.length?TC.holdings.map(x=>holdingRow(x,false)).join(''):'<div class="empty" style="margin-top:10px">Noch keine Titel im Portfolio.</div>')
+      + (TC.holdings.length&&TC.cash>0.0005?`<div class="hrow"><span><b>Barreserve</b></span><b class="num">${nf(TC.cash*100,1)} %</b><span class="w"><i style="width:${TC.cash*100}%"></i></span></div>`:'');
+    if(TC.closed.length) h+=`<div class="tc-h"><h4>Verkaufte Titel</h4></div>`+TC.closed.map(x=>holdingRow(x,true)).join('');
+    h+=`<p class="fine" style="text-align:left;margin-top:16px">Wertentwicklung je Titel seit Einstieg, Portfolio gewichtet. Musterdepot zu Informationszwecken, keine Anlageberatung.</p>`;
+  }
+  $('#tcBody').innerHTML=h;
+  $('#tcAdmin').hidden=!TC.admin;
+  if(TC.admin){
+    $('#tmName').value=TC.name; $('#tmTeam').value=TC.team; $('#tmStrat').value=TC.strategy;
+    $('#tcLog').innerHTML=(TC.log||[]).map(l=>`<div class="logrow"><b>${esc(l.action)}</b> · ${esc(l.detail)}<small>${dstr(l.ts)} · ${esc(l.user||'')}</small></div>`).join('')||'<p class="muted" style="font-size:13px">Noch keine Änderungen.</p>';
+    if(!$('#taSince').value) $('#taSince').value=today();
+  }
+}
+async function openTrcm(){ await loadTrcm(); if(!TC) return toast('Portfolio nicht erreichbar'); renderTrcm(); renderTrcmSheet(); openSheet('#trcmSheet'); }
+async function trcmAdmin(path, method, body, errBox){
+  try{ TC=await api('/api/admin/trcm'+path,{method,body}); renderTrcm(); renderTrcmSheet(); if(errBox) $(errBox).hidden=true; return true; }
+  catch(e){ if(errBox){ $(errBox).textContent=e.message; $(errBox).hidden=false; } else toast(e.message); return false; }
+}
+$('#trcmCard').onclick=openTrcm;
+$('#tcBody').addEventListener('click',e=>{
+  if(e.target.closest('#tcFh')){ location.href='/api/auth/freehomes/start'; return; }
+  const b=e.target.closest('[data-tedit]'); if(!b) return;
+  TE=[...TC.holdings,...TC.closed].find(x=>x.id===+b.dataset.tedit); if(!TE) return;
+  $('#teName').textContent=TE.name; $$('[data-edir]').forEach(o=>o.classList.toggle('on',+o.dataset.edir===TE.dir));
+  $('#teW').value=String(TE.w).replace('.',','); $('#teP0').value=String(TE.p0).replace('.',','); $('#teSince').value=isoDate(TE.since);
+  $('#teP1Box').style.visibility=TE.closedAt?'visible':'hidden'; $('#teP1').value=TE.closedAt?String(TE.price).replace('.',','):'';
+  $('#teNote').value=TE.note||''; $('#teClose').hidden=!!TE.closedAt; $('#teErr').hidden=true;
+  $('#trcmEdit').classList.add('on');
+});
+let taTimer=0;
+$('#taQ').addEventListener('input',e=>{ clearTimeout(taTimer); const v=e.target.value.trim(); if(!v){ $('#taRes').hidden=true; return; }
+  taTimer=setTimeout(async()=>{ try{ const r=(await api('/api/search?q='+encodeURIComponent(v))).results;
+    $('#taRes').innerHTML=r.length?r.map(x=>`<button data-tpick="${esc(x.sym)}" data-tname="${esc(x.name)}"><span class="logo">${esc(x.sym.replace(/[.^=].*|\/.*/,'').slice(0,5))}</span><span><b>${esc(x.name)}</b><br><small>${esc(x.type)} · ${esc(x.sym)}</small></span><span class="go">Wählen</span></button>`).join(''):'<div class="note">Kein Treffer.</div>';
+    $('#taRes').hidden=false; }catch(err){ toast(err.message); } },280); });
+$('#taRes').addEventListener('click',e=>{ const b=e.target.closest('[data-tpick]'); if(!b) return;
+  TA.sym=b.dataset.tpick; $('#taSel').innerHTML=`Ausgewählt: <b>${esc(b.dataset.tname)}</b> <span class="muted">(${esc(TA.sym)})</span>`; $('#taSel').hidden=false; $('#taRes').hidden=true; $('#taQ').value=''; });
+$('#tcAdmin').addEventListener('click',e=>{ const d=e.target.closest('[data-tdir]'); if(!d) return; TA.dir=+d.dataset.tdir; $$('[data-tdir]').forEach(o=>o.classList.toggle('on',o===d)); });
+$('#trcmEdit').addEventListener('click',e=>{ const d=e.target.closest('[data-edir]'); if(!d) return; $$('[data-edir]').forEach(o=>o.classList.toggle('on',o===d)); });
+$('#taGo').onclick=async()=>{
+  if(!TA.sym){ $('#taErr').textContent='Bitte zuerst einen Titel auswählen.'; $('#taErr').hidden=false; return; }
+  const ok=await trcmAdmin('/holdings','POST',{sym:TA.sym,dir:TA.dir,w:$('#taW').value,p0:$('#taP0').value,since:$('#taSince').value,note:$('#taNote').value},'#taErr');
+  if(ok){ toast('Titel hinzugefügt'); TA.sym=null; $('#taSel').hidden=true; ['#taW','#taP0','#taNote'].forEach(s=>$(s).value=''); }
+};
+$('#tmSave').onclick=async()=>{ if(await trcmAdmin('','PATCH',{name:$('#tmName').value,team:$('#tmTeam').value,strategy:$('#tmStrat').value})) toast('Beschreibung gespeichert'); };
+$('#teBack').onclick=()=>$('#trcmEdit').classList.remove('on');
+$('#teSave').onclick=async()=>{
+  const dir=+($('[data-edir].on')||{dataset:{edir:TE.dir}}).dataset.edir;
+  const b={dir,w:$('#teW').value,p0:$('#teP0').value,since:$('#teSince').value,note:$('#teNote').value}; if(TE.closedAt) b.p1=$('#teP1').value;
+  if(await trcmAdmin('/holdings/'+TE.id,'PATCH',b,'#teErr')){ $('#trcmEdit').classList.remove('on'); toast('Korrektur gespeichert'); }
+};
+$('#teClose').onclick=async()=>{ if(!confirm(`${TE.name} zum aktuellen Kurs verkaufen?`)) return;
+  if(await trcmAdmin('/holdings/'+TE.id+'/close','POST',{},'#teErr')){ $('#trcmEdit').classList.remove('on'); toast('Titel verkauft'); } };
+$('#teDel').onclick=async()=>{ if(!confirm(`Eintrag „${TE.name}“ endgültig löschen? Nur für Fehleingaben gedacht.`)) return;
+  if(await trcmAdmin('/holdings/'+TE.id,'DELETE',undefined,'#teErr')){ $('#trcmEdit').classList.remove('on'); toast('Eintrag gelöscht'); } };
+
 /* ---------- Community-Fonds ---------- */
 function renderFunds(){
   $('#fundCount').textContent = FUNDS.length ? FUNDS.length+' Fonds' : '';
@@ -1070,7 +1229,7 @@ document.addEventListener('click',e=>{
   const g=t.closest('[data-tab],[data-go]'); if(g){ const tab=g.dataset.tab||g.dataset.go; ui.tab=tab;
     $$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
     ['markt','depot','fonds','arena','lernen'].forEach(k=>$('#tab-'+k).hidden=k!==tab);
-    if(tab==='depot'&&!S.pos.length) coach('empty'); if(tab==='arena'){ coach('arena'); loadLB().then(renderArena); } if(tab==='fonds'){ coach('fundIntro'); loadFunds().then(renderFunds); }
+    if(tab==='depot'&&!S.pos.length) coach('empty'); if(tab==='arena'){ coach('arena'); loadLB().then(renderArena); } if(tab==='fonds'){ coach('fundIntro'); loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); }
     window.scrollTo({top:0,behavior:'smooth'}); }
 });
 
@@ -1122,7 +1281,7 @@ async function refresh(manual){
 }
 async function enter(){
   $('#ob').hidden=true;
-  await Promise.all([refresh(false), loadLB(), loadFunds(),
+  await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(),
     api('/api/radar').then(d=>{ RD=d.radar||{}; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
     api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{})]);
   render();
@@ -1136,7 +1295,7 @@ async function boot(){
   try{ ME=(await api('/api/me')).user; }catch(e){}
   if(ME) await enter(); else { showAuth(); refresh(false); }
   setInterval(()=>refresh(false),30000);
-  setInterval(()=>{ if(ui.tab==='arena') loadLB().then(renderArena); if(ui.tab==='fonds') loadFunds().then(renderFunds); },60000);
+  setInterval(()=>{ if(ui.tab==='arena') loadLB().then(renderArena); if(ui.tab==='fonds'){ loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); } },60000);
 }
 $('#refreshBtn').onclick=()=>refresh(true);
 boot();

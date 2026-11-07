@@ -12,6 +12,7 @@ Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglie
 | **Märkte** | 19 Werte als feste Auswahl (US- und DAX-Aktien, DAX, S&P 500, Gold, 6 Kryptowährungen) plus **Suche nach jeder US-Aktie und jedem US-ETF**. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
 | **Community-Fonds** | Mitglieder gründen eigene Aktienpakete (3–10 Werte, long/short, Gewichte), andere investieren Spielgeld; Anteilswert startet bei 100 |
+| **TRCM Portfolio** | Musterdepot von Florian Homm und dem Analystenteam. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
 | **Arena** | Ranglisten (Heute, Woche, Depotwert), Preise, Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
 | **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
@@ -45,6 +46,7 @@ Tests: `npm test`
 | `FINNHUB_KEY` | Kostenloser Schlüssel von [finnhub.io](https://finnhub.io): US-Kurse in Echtzeit und Smart-Money-Daten |
 | `FREEHOMES_CLIENT_ID` / `FREEHOMES_CLIENT_SECRET` | Aktiviert „Mit Free Homes anmelden“ (siehe unten) |
 | `FREEHOMES_ISSUER` | Standard: `https://keycloak.free-homes.de/realms/freehomes` |
+| `ADMIN_EMAILS` | Kommagetrennte E-Mail-Adressen, die beim Login über Free Homes (bestätigte Adresse) automatisch Admin werden |
 | `DATA_DIR` | Speicherort der Datenbank (Docker: `/data`) |
 | `MARKET_OFFLINE` | `1` = nur mitgelieferte Kurse (Tests, Offline-Demo) |
 | `SEED_BOTS` | `0` = keine Beispiel-Community anlegen |
@@ -104,6 +106,31 @@ Danach `FREEHOMES_CLIENT_ID=investment-arena` und `FREEHOMES_CLIENT_SECRET=…` 
 
 Verhalten: Ein Free-Homes-Mitglied bekommt beim ersten Login automatisch ein Arena-Konto. Existiert bereits ein eigenes Arena-Konto mit derselben **bestätigten** E-Mail-Adresse, werden beide verknüpft.
 
+## TRCM Portfolio und Admin-Zugang
+
+Das TRCM Portfolio steht im Bereich „Fonds“ ganz oben. Alle sehen Name, Team, Strategie, Wertentwicklung und die Zahl der Titel. **Welche Titel gehalten werden** (mit Gewichtung, Einstiegskurs, Datum und Notiz) sehen nur Mitglieder, die über Free Homes angemeldet sind, sowie Admins. Die Titel des Portfolios tauchen auch nicht in der öffentlichen Kursliste auf.
+
+**Admins** sehen im Portfolio zusätzlich den Bereich „Admin“:
+
+- Titel hinzufügen (Suche über alle Werte der Arena und jede US-Aktie), long oder short, Gewichtung in %, Einstiegskurs (leer = aktueller Kurs), Einstiegsdatum, Notiz für Mitglieder
+- Jede Position nachträglich korrigieren: Richtung, Gewichtung, Einstiegskurs, Datum, Notiz, bei verkauften Titeln auch den Ausstiegskurs
+- Titel verkaufen (schließt zum aktuellen Kurs, erscheint unter „Verkaufte Titel“) oder Fehleingaben löschen
+- Name, Team und Strategie bearbeiten
+- Änderungsprotokoll: wer hat wann was geändert
+
+Berechnung: Wertentwicklung je Titel seit Einstieg; das Portfolio gewichtet die Titel mit ihren Prozentwerten, der nicht investierte Rest gilt als Barreserve.
+
+**Admin-Rechte vergeben** (das Konto muss vorher in der Arena registriert sein):
+
+```bash
+cd /opt/investment-arena
+docker compose exec app node scripts/admin.js grant name@beispiel.de
+docker compose exec app node scripts/admin.js list
+docker compose exec app node scripts/admin.js revoke name@beispiel.de
+```
+
+Wichtig: Eigene Konten (E-Mail + Passwort) prüfen die E-Mail-Adresse nicht. Vor dem Vergeben daher sicherstellen, dass das Konto wirklich der richtigen Person gehört (Name wird angezeigt). Sobald der Free-Homes-Login aktiv ist, genügt `ADMIN_EMAILS` in der `.env`: Diese Adressen werden beim Login über Free Homes automatisch Admin, wenn Keycloak die Adresse als bestätigt meldet.
+
 ## Florians Tonspuren
 
 MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUFNAHMELISTE.md) in `public/audio/` legen (29 Texte). Die App erkennt sie automatisch; fehlt eine Datei, liest die Browser-Stimme vor. Im Docker-Betrieb ist der Ordner eingebunden, ein neuer Build ist nicht nötig.
@@ -134,6 +161,8 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | POST | `/api/orders`, `/api/positions/:id/close` | Order eröffnen, Position schließen |
 | GET | `/api/leaderboard`, `/api/profile/:id` | Rangliste, Trader-Profil |
 | GET/POST | `/api/funds`, `/api/funds/:id`, `/api/funds/:id/invest` | Community-Fonds |
+| GET | `/api/trcm` | TRCM Portfolio (Titel nur für Free-Homes-Mitglieder und Admins) |
+| PATCH/POST/DELETE | `/api/admin/trcm`, `/api/admin/trcm/holdings[/:id[/close]]` | Pflege des TRCM Portfolios (nur Admins) |
 | GET | `/api/audio`, `/healthz` | vorhandene Tonspuren, Statusprüfung |
 
 ## Aufbau
@@ -144,6 +173,7 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   auth.js      Konten, Sessions (HttpOnly-Cookie), Demo, Free Homes (OIDC + PKCE)
   game.js      Orders, Bewertung, Stop-Loss/Knock-out/Verfall, Abzeichen
   funds.js     Community-Fonds und Anteilswerte
+  trcm.js      TRCM Portfolio (Musterdepot, Admin-Pflege, Protokoll)
   market.js    Kurse (Finnhub, Yahoo, ccxt)
   radar.js     Smart-Money-Daten (Finnhub)
   bots.js      Beispiel-Community für die Demo

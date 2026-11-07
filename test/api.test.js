@@ -115,3 +115,48 @@ test('Free-Homes-Login ist ohne Konfiguration aus', async () => {
   const r = await client()('/api/auth/freehomes/start');
   assert.strictEqual(r.status, 404);
 });
+
+test('TRCM-Portfolio: Admin pflegt, nur Mitglieder sehen die Titel', async () => {
+  const db = require('../server/db');
+  const admin = client(), member = client(), guest = client();
+  await admin('/api/auth/register', {name: 'Analyst', email: 'analyst@trcm.de', password: 'geheim1234'});
+  await member('/api/auth/register', {name: 'Mitglied', email: 'm@fh.de', password: 'geheim1234'});
+  await guest('/api/auth/demo', {});
+
+  // Ohne Admin-Rolle keine Pflege
+  assert.strictEqual((await admin('/api/admin/trcm/holdings', {sym: 'AAPL', w: 10})).status, 403);
+  db.prepare("UPDATE users SET role = 'admin' WHERE email = ?").run('analyst@trcm.de');
+  db.prepare("UPDATE users SET provider = 'freehomes', provider_sub = 'fh-1' WHERE email = ?").run('m@fh.de');
+  assert.strictEqual((await admin('/api/me')).data.user.admin, true);
+
+  const a = await admin('/api/admin/trcm/holdings', {sym: 'AAPL', dir: 1, w: 20, note: 'Kernposition'});
+  assert.strictEqual(a.status, 200);
+  assert.strictEqual((await admin('/api/admin/trcm/holdings', {sym: 'AAPL', w: 5})).status, 400, 'kein Titel doppelt');
+  const t = await admin('/api/admin/trcm/holdings', {sym: 'TSLA', dir: -1, w: 10, p0: '500,5', since: '2026-01-15'});
+  const tsla = t.data.holdings.find(h => h.sym === 'TSLA');
+  assert.strictEqual(tsla.p0, 500.5);
+  assert.ok(tsla.perf > 0, 'Short gewinnt, wenn der Kurs unter dem Einstieg liegt');
+
+  // Korrektur, Verkauf, Löschen
+  const aapl = t.data.holdings.find(h => h.sym === 'AAPL');
+  const c = await admin(`/api/admin/trcm/holdings/${aapl.id}`, {w: 25, p0: 100}, 'PATCH');
+  assert.strictEqual(c.data.holdings.find(h => h.sym === 'AAPL').w, 25);
+  const cl = await admin(`/api/admin/trcm/holdings/${tsla.id}/close`, {});
+  assert.strictEqual(cl.data.holdings.length, 1);
+  assert.strictEqual(cl.data.closed[0].sym, 'TSLA');
+  assert.ok(cl.data.log.length >= 4, 'Änderungen werden protokolliert');
+
+  // Sichtbarkeit
+  const pub = await guest('/api/trcm');
+  assert.strictEqual(pub.data.count, 1);
+  assert.ok(pub.data.perf !== 0);
+  assert.strictEqual(pub.data.holdings, undefined, 'Gäste sehen keine Titel');
+  assert.strictEqual(pub.data.log, undefined);
+  assert.strictEqual((await client()('/api/trcm')).data.holdings, undefined, 'ohne Anmeldung keine Titel');
+  const mem = await member('/api/trcm');
+  assert.strictEqual(mem.data.holdings[0].sym, 'AAPL');
+  assert.strictEqual(mem.data.log, undefined, 'Protokoll nur für Admins');
+  assert.strictEqual((await member(`/api/admin/trcm/holdings/${aapl.id}`, undefined, 'DELETE')).status, 403);
+
+  assert.strictEqual((await admin(`/api/admin/trcm/holdings/${aapl.id}`, undefined, 'DELETE')).data.holdings.length, 0);
+});

@@ -37,6 +37,7 @@ let live = false, updatedAt = 0, kraken = null, cryptoHist = {};
 const viewed = new Map();            // Symbol → Zeitpunkt des letzten Aufrufs
 const histAt = new Map();            // Symbol → Zeitpunkt des letzten Kursverlaufs von Yahoo
 let heldProvider = () => new Set();  // wird von index.js gesetzt (Positionen und Fonds)
+let privateProvider = () => new Set(); // TRCM-Portfolio: Kurse holen, aber nicht öffentlich listen
 let rr = 0;                          // Round-Robin-Zeiger für viele beobachtete Titel
 
 async function getJson(url, headers = {}) {
@@ -66,11 +67,12 @@ async function finnhubQuote(s, priority) {
 }
 
 /* ---------- welche Zusatztitel werden beobachtet? ---------- */
-function watchedExtras() {
-  const held = heldProvider(), now = Date.now(), out = [];
+// withPrivate: auch Titel, die nur intern beobachtet werden (TRCM-Portfolio) – sie erscheinen nicht in der öffentlichen Liste
+function watchedExtras(withPrivate) {
+  const held = heldProvider(), priv = withPrivate ? privateProvider() : new Set(), now = Date.now(), out = [];
   for (const s of Object.keys(INSTRUMENTS)) {
     if (!INSTRUMENTS[s].x) continue;
-    if (held.has(s) || now - (viewed.get(s) || 0) < 30 * 60_000) out.push(s);
+    if (held.has(s) || priv.has(s) || now - (viewed.get(s) || 0) < 30 * 60_000) out.push(s);
   }
   return out;
 }
@@ -84,7 +86,7 @@ async function refresh() {
     ...CRYPTO.map(async s => { try { next[s] = await crypto(s); ok++; } catch (e) {} }),
   ]);
   // Zusatztitel: höchstens 20 Finnhub-Kurse je Durchlauf (alle 30 s), der Rest kommt im nächsten Durchlauf dran
-  const extras = watchedExtras(), batch = [];
+  const extras = watchedExtras(true), batch = [];
   for (let i = 0; i < Math.min(20, extras.length); i++) batch.push(extras[(rr + i) % extras.length]);
   rr = extras.length ? (rr + batch.length) % extras.length : 0;
   await Promise.all([...US, ...batch].map(async s => {
@@ -134,9 +136,9 @@ async function search(q) {
   return out;
 }
 
-async function add(sym) {
+async function add(sym, {silent} = {}) {
   sym = String(sym || '').toUpperCase();
-  touch(sym);
+  if (!silent) touch(sym);
   if (INSTRUMENTS[sym] && quotes[sym]) return {sym, meta: INSTRUMENTS[sym], quote: quotes[sym]};
   if (!SYMBOL.test(sym)) throw new Error('Unbekanntes Kürzel');
   if (config.offline) throw new Error('Im Offline-Modus sind keine weiteren Titel verfügbar');
@@ -165,4 +167,4 @@ function visible() {
 
 const fx = () => (quotes['EURUSD=X'] && quotes['EURUSD=X'].price) || 1.12;
 module.exports = {INSTRUMENTS, US, refresh, search, add, touch, visible, cleanName, get: () => quotes, fx, status: () => ({live, updatedAt}),
-  setHeldProvider: fn => { heldProvider = fn; }};
+  setHeldProvider: fn => { heldProvider = fn; }, setPrivateProvider: fn => { privateProvider = fn; }};
