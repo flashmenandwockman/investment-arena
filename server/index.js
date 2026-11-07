@@ -36,6 +36,14 @@ function requireUser(req) {
 }
 const publicUser = u => u && {id: u.id, name: u.name, provider: u.provider, color: u.color, email: u.email || null};
 
+// Schutz vor zu vielen Such- und Kursanfragen je Adresse (Finnhub-Limit)
+const hits = new Map();
+function limit(req) {
+  const k = req.socket.remoteAddress, now = Date.now(), a = (hits.get(k) || []).filter(t => now - t < 60_000);
+  if (a.length >= 40) throw Object.assign(new Error('Zu viele Anfragen, bitte kurz warten'), {status: 429});
+  a.push(now); hits.set(k, a);
+}
+
 /* ---------- Ansichten ---------- */
 function stateView(userId) {
   const st = store.load(userId), q = market.get();
@@ -87,7 +95,10 @@ async function api(req, res, url) {
       catch (e) { res.writeHead(302, {Location: '/?login=fehler'}); }
       return res.end();
     }
-    if (p === '/api/quotes') return send(res, 200, {quotes: market.get(), instruments: market.INSTRUMENTS, ...market.status()});
+    if (p === '/api/quotes') return send(res, 200, {...market.visible(), ...market.status()});
+    if (p === '/api/search') { requireUser(req); limit(req); return send(res, 200, {results: await market.search(url.searchParams.get('q'))}); }
+    if (/^\/api\/instrument\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
+    if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, {sym: p.split('/').pop().toUpperCase(), radar: await radar.one(p.split('/').pop().toUpperCase())}); }
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status()});
     if (p === '/api/audio') {
       const dir = path.join(PUBLIC, 'audio');
@@ -126,7 +137,7 @@ async function api(req, res, url) {
     }
     if (p === '/api/state/reset' && m === 'POST') { const st = store.load(u.id), fresh = game.fresh(); fresh.mode = st.mode; store.save(u.id, fresh); return send(res, 200, stateView(u.id)); }
     if (p === '/api/orders' && m === 'POST') {
-      const st = store.load(u.id), r = game.open(st, await body(req), funds.navOf); store.save(u.id, st);
+      const st = store.load(u.id), r = game.open(st, await body(req), funds.navOf); store.save(u.id, st); heldCache.t = 0;
       return send(res, 200, {state: stateView(u.id), events: r.events});
     }
     if (/^\/api\/positions\/[\w-]+\/close$/.test(p) && m === 'POST') {
@@ -162,7 +173,20 @@ function checkAllBooks() {
 }
 async function tick() { await market.refresh(); checkAllBooks(); }
 
+// Welche Titel werden gerade gehalten (Positionen und Fonds)? Für die Kursbeobachtung der Zusatztitel.
+const qFundHoldings = db.prepare('SELECT holdings FROM funds');
+let heldCache = {t: 0, set: new Set()};
+function held() {
+  if (Date.now() - heldCache.t < 30_000) return heldCache.set;
+  const set = new Set();
+  for (const u of store.all()) for (const p of u.st.pos) if (p.sym) set.add(p.sym);
+  for (const r of qFundHoldings.all()) for (const h of JSON.parse(r.holdings)) set.add(h.sym);
+  heldCache = {t: Date.now(), set};
+  return set;
+}
+
 async function start() {
+  market.setHeldProvider(held);
   bots.seed();
   if (require.main === module) {
     await market.refresh().catch(() => {});

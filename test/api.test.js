@@ -99,6 +99,18 @@ test('Rangliste und Profile', async () => {
   assert.ok(pr.data.equity > 0 && pr.data.items.length > 0);
 });
 
+test('Suche nach Titeln', async () => {
+  const c = client();
+  assert.strictEqual((await c('/api/search?q=apple')).status, 401, 'nur angemeldet');
+  await c('/api/auth/demo', {});
+  const r = await c('/api/search?q=nvid');
+  assert.ok(r.data.results.some(x => x.sym === 'NVDA'), 'lokale Titel werden gefunden');
+  const add = await c('/api/instrument/NVDA');
+  assert.strictEqual(add.data.sym, 'NVDA');
+  const bad = await c('/api/instrument/ZZZZZ');
+  assert.strictEqual(bad.status, 400, 'offline keine neuen Titel');
+});
+
 test('Free-Homes-Login ist ohne Konfiguration aus', async () => {
   const r = await client()('/api/auth/freehomes/start');
   assert.strictEqual(r.status, 404);

@@ -215,6 +215,16 @@ input[type=range]{width:100%;accent-color:var(--gold);height:34px}
 .ob .choice b{display:block;font-size:17px} .ob .choice small{color:var(--muted);font-size:13px}
 .ob .choice:hover{border-color:var(--gold)}
 .ob .fine{margin:10px 0 0;font-size:12px;line-height:1.5}
+.search{position:relative;margin:0 0 12px}
+.search input{width:100%;height:52px;border-radius:14px;background:var(--card);border:1.5px solid var(--line);color:var(--text);font:500 15px var(--sans);padding:0 14px 0 44px;outline:none;-webkit-appearance:none}
+.search input:focus{border-color:var(--gold)}
+.search svg{position:absolute;left:14px;top:16px;width:20px;height:20px;color:var(--muted);pointer-events:none}
+.sres{position:absolute;left:0;right:0;top:58px;z-index:8;background:var(--bg-2);border:1px solid var(--line-gold);border-radius:16px;padding:6px;box-shadow:0 24px 50px -20px #000;max-height:60vh;overflow-y:auto}
+.sres button{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;padding:10px;border-radius:12px}
+.sres button:hover,.sres button:focus{background:var(--card)}
+.sres .logo{width:52px;font-size:11px}
+.sres small{color:var(--muted);font-size:12px} .sres .go{color:var(--gold-p);font-size:12.5px;font-weight:600}
+.sres .note{padding:10px 12px;font-size:12.5px;color:var(--muted)}
 .ob #demoBtn{height:54px}
 .ob #demoBtn + .fine{margin-top:12px}
 
@@ -324,6 +334,9 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
     <div class="sec-h"><h2>Smart-Money-Radar</h2><span class="muted" style="font-size:12px" id="radarAsof"></span></div>
     <div class="radar" id="radar"></div>
     <div class="sec-h"><h2>Märkte</h2><span class="muted" style="font-size:12px" id="asof"></span></div>
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Jede US-Aktie suchen, z. B. Netflix, Coca-Cola" autocomplete="off" enterkeyhint="search" aria-label="Aktie suchen">
+      <div class="sres" id="sres" hidden></div></div>
     <div class="chips" id="filters"></div>
     <div class="list" id="market"></div>
 
@@ -695,7 +708,7 @@ function radarCards(){
   $('#radar').innerHTML = cards.map(c=>`<button class="rc ${c.c}" data-radar="${c.s}" data-tip="${c.tip}"><span class="kick">${c.k}</span><b>${c.t}</b><small>${c.d}</small><span class="go">Ansehen und handeln →</span></button>`).join('') || '<div class="empty" style="width:100%">Radar-Daten werden geladen …</div>';
 }
 function smartPanel(s){
-  const r=RD[s]; if(!r) return '';
+  const r=RD[s]; if(!r){ loadRadar(s); return ''; }
   const rows=[], ri=recInfo(r.rec), vr=volRatio(s), full=pro();
   if(ri) rows.push(`<div class="sm-row"><div class="l"><span>Analysten (${ri.n})</span><b>${Math.round(ri.share*100)} % Kaufen</b></div>
     <div class="stack"><i style="width:${ri.buy/ri.n*100}%;background:var(--up)"></i><i style="width:${ri.hold/ri.n*100}%;background:var(--gold)"></i><i style="width:${ri.sell/ri.n*100}%;background:var(--down)"></i></div>
@@ -706,7 +719,7 @@ function smartPanel(s){
       ${full?i.top.map(t=>`<div class="tx"><span>${t.n}</span><b class="${t.c==='P'?'up':'down'}">${t.c==='P'?'Kauf':'Verkauf'}</b><small class="muted">${dshort(t.d)} · ${nf(t.sh,0)} Aktien à ${nf(t.p,2)} $</small><small class="muted">${usd(t.sh*t.p)}</small></div>`).join(''):''}</div>`); }
   if(r.next||r.last){ const x=surprise(r.last);
     rows.push(`<div class="sm-row"><div class="l"><span>Nächste Quartalszahlen</span><b>${r.next?dshort(r.next.date)+(r.next.hour==='amc'?' · nach Börsenschluss':r.next.hour==='bmo'?' · vor Börsenstart':''):'noch offen'}</b></div>
-      ${r.last?`<div class="legend"><span>Letzte Zahlen ${dshort(r.last.date)}:</span><span class="${x<0?'down':'up'}">${x<0?'Erwartung verfehlt':'Erwartung übertroffen'} (${pct(x,0)})</span></div>`:''}</div>`); }
+      ${r.last?`<div class="legend"><span>Letzte Zahlen ${dshort(r.last.date)}:</span><span class="${x<0?'down':'up'}">${x<0?'Erwartung verfehlt':'Erwartung übertroffen'} (${pct(x,Math.abs(x)<.01?1:0)})</span></div>`:''}</div>`); }
   if(vr) rows.push(`<div class="sm-row"><div class="l"><span>Handelsvolumen heute</span><b class="${vr>=1.6?'up':''}">${nf(vr,1)}× Durchschnitt</b></div></div>`);
   if(full && r.news && r.news.length) rows.push(`<div class="sm-row news"><div class="l"><span>Schlagzeilen (englisch)</span></div>${r.news.map(n=>`<a href="${n.url}" target="_blank" rel="noopener">${n.h}<small>${n.src} · ${new Date(n.t*1000).toLocaleDateString('de-DE')}</small></a>`).join('')}</div>`);
   if(!rows.length) return '';
@@ -714,9 +727,38 @@ function smartPanel(s){
   return `<div class="smart"><h4>Smart Money <small>Quelle: Finnhub${r.ins?' · SEC':''}</small></h4>${rows.join('')}<button class="explain" data-explain="${tip}">Florian ordnet ein</button></div>`;
 }
 
+/* ---------- Suche nach jeder US-Aktie ---------- */
+let RAW = {}, RECENT = [];
+try{ RECENT = JSON.parse(localStorage.getItem('iaRecent')||'[]'); }catch(e){}
+const mine = s => RECENT.includes(s) || S.pos.some(p=>p.sym===s);
+function remember(s){ RECENT=[s,...RECENT.filter(x=>x!==s)].slice(0,12); try{ localStorage.setItem('iaRecent',JSON.stringify(RECENT)); }catch(e){} }
+let sTimer, sSeq=0;
+$('#q').addEventListener('input',e=>{ clearTimeout(sTimer); const v=e.target.value.trim(); if(!v){ $('#sres').hidden=true; return; } sTimer=setTimeout(()=>doSearch(v),280); });
+$('#q').addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('#sres').hidden=true; e.target.blur(); } if(e.key==='Enter'){ const f=$('#sres [data-add]'); if(f) f.click(); } });
+document.addEventListener('click',e=>{ if(!e.target.closest('.search')) $('#sres').hidden=true; });
+async function doSearch(v){
+  const seq=++sSeq; $('#sres').hidden=false; $('#sres').innerHTML='<div class="note">Suche läuft …</div>';
+  try{ const r=(await api('/api/search?q='+encodeURIComponent(v))).results; if(seq!==sSeq) return;
+    $('#sres').innerHTML = r.length ? r.map(x=>`<button data-add="${esc(x.sym)}"><span class="logo">${esc(x.sym.replace(/[.^=].*|\/.*/,'').slice(0,5))}</span><span><b>${esc(x.name)}</b><br><small>${esc(x.type)} · ${esc(x.sym)}</small></span><span class="go">Öffnen →</span></button>`).join('')+'<div class="note">US-Aktien und ETFs mit Echtzeitkursen. Weitere deutsche Titel folgen mit dem lizenzierten Datenanbieter.</div>'
+      : '<div class="note">Kein passender US-Titel gefunden. Suchen Sie nach Firmenname oder Kürzel, z. B. „KO“ für Coca-Cola.</div>';
+  }catch(e){ if(seq===sSeq) $('#sres').innerHTML=`<div class="note">${esc(e.message)}</div>`; }
+}
+async function addInstrument(sym){
+  $('#sres').innerHTML='<div class="note">Kurs wird geladen …</div>';
+  try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym);
+    $('#sres').hidden=true; $('#q').value=''; $('#q').blur(); renderMarket(); openTrade(r.sym); }
+  catch(e){ $('#sres').innerHTML=`<div class="note">${esc(e.message)}</div>`; }
+}
+const radarPending=new Set();
+function loadRadar(s){
+  if(RD[s]||radarPending.has(s)||!META[s]||META[s].g!=='us') return;
+  radarPending.add(s);
+  api('/api/radar/'+encodeURIComponent(s)).then(d=>{ RD[s]=d.radar||{}; if(ui.sym===s && $('#sheet').classList.contains('on')) $('#smart').innerHTML=smartPanel(s); renderMarket(); }).catch(()=>{}).finally(()=>radarPending.delete(s));
+}
+
 function renderMarket(){
   $('#filters').innerHTML = FILTERS.map(([k,l])=>`<button class="chip ${ui.filter===k?'on':''}" data-f="${k}">${l}</button>`).join('');
-  $('#market').innerHTML = Object.keys(META).filter(s=>Q[s] && (ui.filter==='all'||META[s].g===ui.filter)).map(s=>{
+  $('#market').innerHTML = Object.keys(META).filter(s=>Q[s] && (!META[s].x || mine(s)) && (ui.filter==='all'||META[s].g===ui.filter)).map(s=>{
     const q=Q[s], m=META[s], c=chg(s);
     return `<button class="row" data-sym="${s}"><span class="logo">${m.s}</span><span class="n"><b>${m.n}</b><small>${m.t}${pro()?` · Vol. ${Math.round(q.vol*100)} %`:''}</small>${badges(s)}</span>${spark(q.hist.slice(-40),70,30,c>=0?'#3ccf91':'#ff6b6b')}<span class="p num"><b>${fmt(q.price,q.cur)}</b><small class="${cls(c)}">${pct(c)}</small></span></button>`;
   }).join('');
@@ -983,6 +1025,7 @@ document.addEventListener('click',e=>{
   const sk=t.closest('[data-saykey]'); if(sk){ speakKey(sk.dataset.saykey, sk.closest('.coach')); return; }
   const rc=t.closest('[data-radar]'); if(rc){ openTrade(rc.dataset.radar); ui.tip=rc.dataset.tip; $('#tip').textContent=TIPS[rc.dataset.tip]; coach(rc.dataset.tip); return; }
   const ex=t.closest('[data-explain]'); if(ex){ ui.tip=ex.dataset.explain; $('#tip').textContent=TIPS[ui.tip]; speakKey(ui.tip,$('#tipBox')); $('#tipBox').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+  const ad=t.closest('[data-add]'); if(ad){ addInstrument(ad.dataset.add); return; }
   const r=t.closest('[data-sym]'); if(r){ openTrade(r.dataset.sym); return; }
   const f=t.closest('[data-f]'); if(f){ ui.filter=f.dataset.f; renderMarket(); return; }
   const l=t.closest('[data-lb]'); if(l){ ui.lb=l.dataset.lb; renderArena(); return; }
@@ -1038,7 +1081,7 @@ function setFeed(live,t){
 async function refresh(manual){
   try{
     const [q, st] = await Promise.all([api('/api/quotes'), ME?api('/api/state'):null]);
-    initQuotes(q.quotes); setFeed(q.live, Math.max(...Object.values(q.quotes).map(x=>x.time||0)));
+    Object.assign(META, q.instruments||{}); RAW=q.quotes; initQuotes(q.quotes); setFeed(q.live, Math.max(...Object.values(q.quotes).map(x=>x.time||0)));
     if(st){ const before=S.pos.length; setState(st); if(st.positions.length<before){ toast('Eine Position wurde automatisch geschlossen (Stop-Loss, Knock-out oder Verfall).'); coach('knock'); } }
     render();
     $('#lastUpd').textContent='Aktualisiert '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});

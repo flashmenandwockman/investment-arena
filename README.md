@@ -9,7 +9,7 @@ Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglie
 | Bereich | Inhalt |
 |---|---|
 | **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
-| **Märkte** | 19 Werte: US- und DAX-Aktien, DAX, S&P 500, Gold, 6 Kryptowährungen. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
+| **Märkte** | 19 Werte als feste Auswahl (US- und DAX-Aktien, DAX, S&P 500, Gold, 6 Kryptowährungen) plus **Suche nach jeder US-Aktie und jedem US-ETF**. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
 | **Community-Fonds** | Mitglieder gründen eigene Aktienpakete (3–10 Werte, long/short, Gewichte), andere investieren Spielgeld; Anteilswert startet bei 100 |
 | **Arena** | Ranglisten (Heute, Woche, Depotwert), Preise, Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
@@ -116,6 +116,8 @@ MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUF
 | Yahoo Finance | DAX-Werte, Indizes, Gold, Tagesvolumen | Inoffizielle Schnittstelle, **vor dem öffentlichen Start durch lizenzierten Anbieter ersetzen** (15 Minuten Verzögerung genügt) |
 | ccxt / Kraken | Krypto in Echtzeit | Öffentliche Börsendaten |
 | Unusual Whales | Kongress-Trades, Options-Flow, Dark Pool | Nicht eingebunden: braucht Enterprise-Lizenz |
+
+**Suche nach weiteren Titeln:** Gesuchte US-Titel werden in der Datenbank gespeichert. Ihre Kurse holt der Server nur, solange sie jemand hält, sie in einem Fonds stecken oder sie in den letzten 30 Minuten angesehen wurden (höchstens 20 Titel pro 30-Sekunden-Durchlauf, reihum). Alle Finnhub-Abrufe laufen über eine gemeinsame Drosselung auf 55 pro Minute (`server/finnhub.js`). Für mehrere hundert gleichzeitig gehaltene Titel oder deutsche Titel außerhalb der Auswahl ist ein bezahlter Datenanbieter nötig.
 
 Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-Daten lauffähig. Aktualisieren mit `npm run snapshot`.
 
