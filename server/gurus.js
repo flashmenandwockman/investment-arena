@@ -24,7 +24,8 @@ const GURUS = [
   {cik: '1697748', person: 'Cathie Wood', firm: 'ARK Invest', style: 'Disruptive Innovation', c: '#ff9aa8'},
   {cik: '1103804', person: 'Andreas Halvorsen', firm: 'Viking Global', style: 'Long/Short, Qualitätswachstum', c: '#a6f0c6'},
 ];
-const TOP = 10, SYMBOL = /^[A-Z]{1,5}$/;
+const TOP = 10, SYMBOL = /^[A-Z]{1,5}(\.[A-Z])?$/;
+const norm = t => String(t || '').replace('/', '.');   // OpenFIGI schreibt BRK/B, Finnhub BRK.B
 const FALLBACK = path.join(__dirname, 'fallback', 'gurus.json');
 
 db.exec('CREATE TABLE IF NOT EXISTS cusips (cusip TEXT PRIMARY KEY, ticker TEXT, name TEXT, checked_at INTEGER NOT NULL)');
@@ -76,8 +77,8 @@ async function tickers(cusips) {
         body: JSON.stringify(batch.map(c => ({idType: 'ID_CUSIP', idValue: c, exchCode: 'US'}))), signal: AbortSignal.timeout(20000)});
       if (!r.ok) throw new Error('OpenFIGI ' + r.status);
       (await r.json()).forEach((res, k) => {
-        const d = (res.data || []).find(x => SYMBOL.test(x.ticker || '')) || null;
-        qPutCusip.run(batch[k], d ? d.ticker : null, d ? d.name : null, Date.now());
+        const d = (res.data || []).find(x => SYMBOL.test(norm(x.ticker))) || null;
+        qPutCusip.run(batch[k], d ? norm(d.ticker) : null, d ? d.name : null, Date.now());
       });
     } catch (e) { break; }
     await sleep(2600);   // ohne Schlüssel 25 Anfragen pro Minute

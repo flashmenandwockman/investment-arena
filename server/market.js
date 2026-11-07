@@ -23,7 +23,8 @@ const INSTRUMENTS = {...CORE};
 const YAHOO = Object.keys(CORE).filter(s => !s.includes('/')).concat(['EURUSD=X']);
 const CRYPTO = Object.keys(CORE).filter(s => s.includes('/'));
 const US = Object.keys(CORE).filter(s => CORE[s].g === 'us');
-const SYMBOL = /^[A-Z]{1,5}$/;      // US-Kürzel, die Finnhub und Yahoo gleich schreiben
+const SYMBOL = /^[A-Z]{1,5}(\.[A-Z])?$/;   // US-Kürzel, auch Aktienklassen wie BRK.B (bei Yahoo: BRK-B)
+const CLASS = /^[A-Z]{1,5}\.[A-Z]$/;
 
 /* ---------- gesuchte Titel dauerhaft speichern ---------- */
 db.exec('CREATE TABLE IF NOT EXISTS instruments (sym TEXT PRIMARY KEY, name TEXT NOT NULL, type TEXT NOT NULL, added_at INTEGER NOT NULL)');
@@ -39,6 +40,7 @@ const histAt = new Map();            // Symbol → Zeitpunkt des letzten Kursver
 let heldProvider = () => new Set();  // wird von index.js gesetzt (Positionen und Fonds)
 let privateProvider = () => new Set(); // TRCM-Portfolio: Kurse holen, aber nicht öffentlich listen
 let rr = 0;                          // Round-Robin-Zeiger für viele beobachtete Titel
+const privAt = new Map();            // Symbol → letzter Yahoo-Abruf für private Titel
 
 async function getJson(url, headers = {}) {
   const r = await fetch(url, {headers: {'User-Agent': 'Mozilla/5.0', ...headers}, signal: AbortSignal.timeout(15000)});
@@ -46,6 +48,7 @@ async function getJson(url, headers = {}) {
   return r.json();
 }
 async function yahoo(s) {
+  if (CLASS.test(s)) s = s.replace('.', '-');
   const j = (await getJson(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(s)}?range=3mo&interval=1d`)).chart.result[0];
   const m = j.meta, q = j.indicators.quote[0];
   const closes = q.close.filter(c => c != null), vols = (q.volume || []).filter(v => v != null);
@@ -85,9 +88,13 @@ async function refresh() {
     ...YAHOO.map(async s => { try { next[s] = await yahoo(s); ok++; } catch (e) {} }),
     ...CRYPTO.map(async s => { try { next[s] = await crypto(s); ok++; } catch (e) {} }),
   ]);
-  // Zusatztitel: höchstens 20 Finnhub-Kurse je Durchlauf (alle 30 s), der Rest kommt im nächsten Durchlauf dran
-  const extras = watchedExtras(true), batch = [];
-  for (let i = 0; i < Math.min(20, extras.length); i++) batch.push(extras[(rr + i) % extras.length]);
+  // Titel, die nur intern gebraucht werden (TRCM, Großinvestoren): alle 5 Minuten über Yahoo, schont das Finnhub-Kontingent
+  const pub = new Set(watchedExtras(false));
+  const priv = [...privateProvider()].filter(s => !pub.has(s) && INSTRUMENTS[s] && INSTRUMENTS[s].x && Date.now() - (privAt.get(s) || 0) > 5 * 60_000).slice(0, 15);
+  await Promise.all(priv.map(async s => { try { next[s] = await yahoo(s); next[s].src = 'yahoo'; privAt.set(s, Date.now()); ok++; } catch (e) {} }));
+  // Zusatztitel: höchstens 12 Finnhub-Kurse je Durchlauf (alle 30 s), der Rest kommt im nächsten Durchlauf dran
+  const extras = [...pub], batch = [];
+  for (let i = 0; i < Math.min(12, extras.length); i++) batch.push(extras[(rr + i) % extras.length]);
   rr = extras.length ? (rr + batch.length) % extras.length : 0;
   await Promise.all([...US, ...batch].map(async s => {
     try {
@@ -109,9 +116,40 @@ function cleanName(raw) {
   if (n === n.toUpperCase()) n = n.toLowerCase().replace(/(^|[\s.&/-])([a-zà-ÿ])/g, (m, a, b) => a + b.toUpperCase());
   n = n.replace(/-us$/i, '').replace(/^ss\s+/i, '')
     .replace(/\b(etf|spdr|usd|reit|adr|s&p|msci|esg|ai|qqq|dow|nyse)\b/gi, m => m.toUpperCase()).replace(/\bishares\b/gi, 'iShares');
-  for (let i = 0; i < 3; i++) n = n.replace(/\s*\/the$/i, '').replace(/[,\s]+(inc|corp|corporation|co|company|plc|ltd|limited|sa|nv|ag|se|lp)\.?$/i, '').trim();
+  for (let i = 0; i < 3; i++) n = n.replace(/\s*\/the$/i, '').replace(/[-\s]+(cl(ass)?\.?\s*)?[a-c](\s+shares)?$/i, '').replace(/[,\s]+(inc|corp|corporation|co|company|plc|ltd|limited|sa|nv|ag|se|lp)\.?$/i, '').trim();
   return n;
 }
+/* ---------- Verzeichnis aller US-Aktien, ETFs und ADRs (einmal täglich, ein einziger Abruf) ---------- */
+// Damit läuft die Suche lokal in Millisekunden statt über einen Finnhub-Abruf je Tastendruck.
+const fs = require('fs');
+const path = require('path');
+const DIR_FILE = path.join(config.dataDir, 'symbols.json');
+const MAJOR = new Set(['XNAS', 'XNYS', 'ARCX', 'BATS', 'XASE']);
+let directory = [], dirBySym = new Map(), dirAt = 0;
+function setDirectory(list, at) {
+  directory = list.map(x => ({...x, k: x.n.toLowerCase(), ks: x.s.toLowerCase()}));
+  dirBySym = new Map(directory.map(x => [x.s, x])); dirAt = at;
+}
+const DIR_VERSION = 2;   // erhöhen, wenn sich die Namensbereinigung ändert
+try { const d = JSON.parse(fs.readFileSync(DIR_FILE, 'utf8')); if (d.v === DIR_VERSION) setDirectory(d.list, d.at); } catch (e) {}
+async function loadDirectory() {
+  if (config.offline || (directory.length && Date.now() - dirAt < 24 * 3600_000)) return;
+  try {
+    const raw = await finnhub.get('stock/symbol?exchange=US');
+    const list = raw.filter(r => SYMBOL.test(r.symbol) && ['Common Stock', 'ETP', 'ADR'].includes(r.type))
+      .map(r => ({s: r.symbol, n: cleanName(r.description) || r.symbol, t: r.type === 'ETP' ? 'ETF' : 'Aktie', m: MAJOR.has(r.mic) ? 1 : 0}));
+    if (list.length < 1000) return;
+    setDirectory(list, Date.now());
+    fs.writeFileSync(DIR_FILE, JSON.stringify({v: DIR_VERSION, at: dirAt, list}));
+  } catch (e) { console.warn('Symbolverzeichnis', e.message); }
+}
+// Treffer bewerten: Kürzel exakt > Name beginnt mit Suchwort > Kürzel beginnt > Wortanfang im Namen; Börse vor OTC, kurze Namen zuerst
+function scoreDir(x, key) {
+  let sc = x.ks === key ? 100 : x.k.startsWith(key) ? 60 : x.ks.startsWith(key) ? 45 : x.k.includes(' ' + key) || x.k.includes('-' + key) ? 30 : x.k.includes(key) ? 10 : 0;
+  if (!sc) return 0;
+  return sc + x.m * 25 + (x.t === 'Aktie' ? 5 : 0) - Math.min(x.n.length, 40) / 4;
+}
+
 /* ---------- Suche und Hinzufügen ---------- */
 const searchCache = new Map();
 async function search(q) {
@@ -119,6 +157,19 @@ async function search(q) {
   if (q.length < 1) return [];
   const key = q.toLowerCase();
   const hit = searchCache.get(key); if (hit && Date.now() - hit.t < 3600_000) return hit.r;
+  if (directory.length) {
+    const local = Object.entries(INSTRUMENTS).filter(([s, m]) => !m.x && (s.toLowerCase().startsWith(key) || m.n.toLowerCase().includes(key)))
+      .map(([s, m]) => ({sym: s, name: m.n, type: m.t}));
+    const found = [];
+    for (const x of directory) { const sc = scoreDir(x, key); if (sc > 0) found.push([sc + (INSTRUMENTS[x.s] ? 20 : 0), x]); }
+    found.sort((a, b) => b[0] - a[0]);
+    const seen = new Set(local.map(x => x.sym)), out = local.slice(0, 4);
+    for (const [, x] of found) { if (out.length >= 10) break; if (!seen.has(x.s)) { seen.add(x.s); out.push({sym: x.s, name: x.n, type: x.t}); } }
+    searchCache.set(key, {t: Date.now(), r: out});
+    if (searchCache.size > 5000) searchCache.delete(searchCache.keys().next().value);
+    return out;
+  }
+  // Ohne Verzeichnis (erster Start, Offline): wie bisher
   const local = Object.entries(INSTRUMENTS).filter(([s, m]) => s.toLowerCase().startsWith(key) || m.n.toLowerCase().includes(key))
     .slice(0, 5).map(([s, m]) => ({sym: s, name: m.n, type: m.t}));
   let remote = [];
@@ -142,14 +193,16 @@ async function add(sym, {silent} = {}) {
   if (INSTRUMENTS[sym] && quotes[sym]) return {sym, meta: INSTRUMENTS[sym], quote: quotes[sym]};
   if (!SYMBOL.test(sym)) throw new Error('Unbekanntes Kürzel');
   if (config.offline) throw new Error('Im Offline-Modus sind keine weiteren Titel verfügbar');
-  const q = await finnhubQuote(sym, true);
-  if (!q) throw new Error('Für diesen Titel gibt es keinen Kurs');
-  let name = sym, type = 'Common Stock';
-  const found = (await search(sym)).find(x => x.sym === sym);
-  if (found) { name = cleanName(found.name) || sym; type = found.type === 'ETF' ? 'ETP' : 'Common Stock'; }
-  let hist = {hist: [q.prev, q.price], vol: []};
-  try { hist = await yahoo(sym); histAt.set(sym, Date.now()); } catch (e) {}
-  quotes = {...quotes, [sym]: {...hist, ...q, cur: 'USD', src: 'finnhub'}};
+  // Name aus dem Verzeichnis, Kurs und Verlauf in einem Abruf von Yahoo; Finnhub nur als Ersatz
+  const d = dirBySym.get(sym);
+  if (directory.length && !d) throw new Error('Unbekanntes Kürzel');
+  let data = null;
+  try { const y = await yahoo(sym); if (y.price) { data = {...y, cur: 'USD', src: 'yahoo'}; histAt.set(sym, Date.now()); } } catch (e) {}
+  if (!data) { const q = await finnhubQuote(sym, true); if (q) data = {hist: [q.prev, q.price], vol: [], ...q, cur: 'USD', src: 'finnhub'}; }
+  if (!data) throw new Error('Für diesen Titel gibt es keinen Kurs');
+  let name = d ? d.n : sym, type = d && d.t === 'ETF' ? 'ETP' : 'Common Stock';
+  if (!d) { const found = (await search(sym)).find(x => x.sym === sym); if (found) { name = cleanName(found.name) || sym; type = found.type === 'ETF' ? 'ETP' : 'Common Stock'; } }
+  quotes = {...quotes, [sym]: data};
   qAddInstr.run(sym, name, type, Date.now());
   INSTRUMENTS[sym] = meta(sym, name, type);
   return {sym, meta: INSTRUMENTS[sym], quote: quotes[sym]};
@@ -168,7 +221,7 @@ function visible() {
 /* ---------- Kursverlauf für den Chart: 24h, Woche, Monat, Jahr, 5 Jahre ---------- */
 const RANGES = {'1d': ['1d', '5m', 120_000], '5d': ['5d', '30m', 600_000], '1mo': ['1mo', '60m', 1800_000], '1y': ['1y', '1d', 6 * 3600_000], '5y': ['5y', '1wk', 12 * 3600_000]};
 const chartCache = new Map();
-const yahooSym = s => s.includes('/') ? s.replace('/', '-') : s;
+const yahooSym = s => s.includes('/') ? s.replace('/', '-') : CLASS.test(s) ? s.replace('.', '-') : s;
 async function chart(sym, r) {
   if (!INSTRUMENTS[sym]) throw Object.assign(new Error('Unbekannter Wert'), {status: 404});
   if (!RANGES[r]) r = '1mo';
@@ -198,5 +251,5 @@ async function chart(sym, r) {
 }
 
 const fx = () => (quotes['EURUSD=X'] && quotes['EURUSD=X'].price) || 1.12;
-module.exports = {INSTRUMENTS, US, refresh, search, add, touch, visible, chart, cleanName, get: () => quotes, fx, status: () => ({live, updatedAt}),
+module.exports = {INSTRUMENTS, US, refresh, search, add, loadDirectory, directorySize: () => directory.length, touch, visible, chart, cleanName, get: () => quotes, fx, status: () => ({live, updatedAt}),
   setHeldProvider: fn => { heldProvider = fn; }, setPrivateProvider: fn => { privateProvider = fn; }};

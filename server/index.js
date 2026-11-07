@@ -41,9 +41,9 @@ const publicUser = u => u && {id: u.id, name: u.name, provider: u.provider, colo
 
 // Schutz vor zu vielen Such- und Kursanfragen je Adresse (Finnhub-Limit)
 const hits = new Map();
-function limit(req) {
-  const k = req.socket.remoteAddress, now = Date.now(), a = (hits.get(k) || []).filter(t => now - t < 60_000);
-  if (a.length >= 40) throw Object.assign(new Error('Zu viele Anfragen, bitte kurz warten'), {status: 429});
+function limit(req, max = 40, bucket = '') {
+  const k = req.socket.remoteAddress + bucket, now = Date.now(), a = (hits.get(k) || []).filter(t => now - t < 60_000);
+  if (a.length >= max) throw Object.assign(new Error('Zu viele Anfragen, bitte kurz warten'), {status: 429});
   a.push(now); hits.set(k, a);
 }
 
@@ -61,10 +61,12 @@ function stateView(userId) {
     follow: st.follow, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash, copies: copy.view(st)};
 }
 function leaderboard(meId) {
+  const ps = copy.periodStarts();
   return store.all().map(u => {
     const eq = game.equity(u.st, 'now', funds.navOf), prev = game.equity(u.st, 'prev', funds.navOf);
+    const wk = eq / copy.baseline(u.userId, ps.week) - 1, mon = eq / copy.baseline(u.userId, ps.month) - 1;
     return {id: u.userId, name: u.name, sub: u.bio || (u.provider === 'freehomes' ? 'Free-Homes-Mitglied' : 'Mitglied'), color: u.color,
-      eq, day: prev ? eq / prev - 1 : 0, tot: eq / config.startCash - 1, me: u.userId === meId, bot: u.isBot, badges: Object.keys(u.st.badges || {})};
+      eq, day: prev ? eq / prev - 1 : 0, wk, mon, tot: eq / config.startCash - 1, me: u.userId === meId, bot: u.isBot, badges: Object.keys(u.st.badges || {})};
   });
 }
 const qUser = db.prepare('SELECT * FROM users WHERE id = ?');
@@ -101,8 +103,8 @@ async function api(req, res, url) {
       return res.end();
     }
     if (p === '/api/quotes') return send(res, 200, {...market.visible(), ...market.status()});
-    if (p === '/api/search') { requireUser(req); limit(req); return send(res, 200, {results: await market.search(url.searchParams.get('q'))}); }
-    if (/^\/api\/instrument\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
+    if (p === '/api/search') { requireUser(req); limit(req, 150, ':s'); /* Suche läuft lokal, darf öfter */ return send(res, 200, {results: await market.search(url.searchParams.get('q'))}); }
+    if (/^\/api\/instrument\/[A-Za-z]{1,5}(\.[A-Za-z])?$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
     if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, {sym: p.split('/').pop().toUpperCase(), radar: await radar.one(p.split('/').pop().toUpperCase())}); }
     if (p === '/api/chart') { limit(req); return send(res, 200, await market.chart(url.searchParams.get('sym') || '', url.searchParams.get('r'))); }
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status()});
@@ -239,6 +241,7 @@ async function start() {
     setInterval(() => tick().catch(() => {}), 30_000);
     setInterval(() => radar.refresh().catch(() => {}), 30 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
+    market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);
     gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {});
     setInterval(() => gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {}), 12 * 3600_000);
     copy.snapshot(); setInterval(() => copy.snapshot(), 10 * 60_000);

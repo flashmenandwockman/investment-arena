@@ -96,6 +96,15 @@ const qHist = db.prepare('SELECT day, eq FROM equity_hist WHERE user_id = ? AND 
 const qOldHist = db.prepare('DELETE FROM equity_hist WHERE day < ?');
 const dayStr = (ago = 0) => new Date(Date.now() - ago * 864e5).toISOString().slice(0, 10);
 
+// Depotwert zu Beginn eines Zeitraums: letzter Tageswert vor dem Stichtag, sonst Startkapital (Einstieg im laufenden Zeitraum)
+const qBase = db.prepare('SELECT eq FROM equity_hist WHERE user_id = ? AND day < ? ORDER BY day DESC LIMIT 1');
+function baseline(userId, day) { const r = qBase.get(userId, day); return r ? r.eq : config.startCash; }
+function periodStarts(now = new Date()) {
+  const m = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)), w = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  w.setUTCDate(w.getUTCDate() - ((w.getUTCDay() + 6) % 7));   // Montag
+  return {month: m.toISOString().slice(0, 10), week: w.toISOString().slice(0, 10)};
+}
+
 function snapshot() {
   const d = dayStr();
   for (const u of store.all()) qPutHist.run(u.userId, d, game.equity(u.st, 'now', funds.navOf));
@@ -136,4 +145,4 @@ function discover(meId) {
 }
 function statsOf(userId) { return discover(null).find(x => x.id === userId) || null; }
 
-module.exports = {start, stop, onOpen, onClose, view, snapshot, discover, statsOf, MIN};
+module.exports = {baseline, periodStarts, start, stop, onOpen, onClose, view, snapshot, discover, statsOf, MIN};

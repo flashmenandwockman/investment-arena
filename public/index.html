@@ -128,6 +128,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .empty{padding:28px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:16px}
 
 /* Arena / community */
+.prize .win .val{display:inline-block;margin-top:4px;font-size:11.5px;font-weight:600;color:var(--muted)}
+.prize.partner{background:none;border-style:dashed}
 .prizes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .prize{padding:14px;border-radius:16px;background:linear-gradient(160deg,#141f3d,#0c1329);border:1px solid var(--line-gold)}
 .prize .ic{font-size:20px} .prize b{display:block;font-size:14px;margin-top:6px} .prize small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
@@ -409,7 +411,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
       <div class="stat"><small>Investiert</small><b class="num" id="invested">–</b></div>
       <div class="stat"><small>Heute</small><b class="num" id="today">–</b></div>
     </div>
-    <button class="rankline" data-go="arena"><span>🏆 Rang <b class="num" id="myRank">–</b> von <span id="nPlayers">–</span> · Tageswertung</span><span class="muted">Arena ›</span></button>
+    <button class="rankline" data-go="arena"><span>🏆 Rang <b class="num" id="myRank">–</b> von <span id="nPlayers">–</span> · Monatswertung</span><span class="muted">Arena ›</span></button>
   </section>
 
   <div class="coach" id="coach">
@@ -451,14 +453,14 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 
   <!-- ARENA / COMMUNITY -->
   <main id="tab-arena" hidden>
-    <div class="sec-h"><h2>Preise dieser Woche</h2><span class="muted" style="font-size:12px" id="countdown"></span></div>
+    <div class="sec-h"><h2>Preise des Monats</h2><span class="muted" style="font-size:12px" id="countdown"></span></div>
     <div class="prizes">
-      <div class="prize"><div class="ic">☀️</div><b>Tagessieger</b><small>Höchster Tagesgewinn in %, long oder short</small><div class="win">1 Monat Börsenbrief Plus</div></div>
-      <div class="prize"><div class="ic">🏆</div><b>Wochensieger</b><small>Bester Depotwert am Sonntag</small><div class="win">Long &amp; Short Workshop</div></div>
-      <div class="prize"><div class="ic">🔥</div><b>Dranbleiben</b><small>5 Handelstage in Folge aktiv</small><div class="win">Verlosung: Homm-Buch signiert</div></div>
-      <div class="prize"><div class="ic">👑</div><b>Monats-Champion</b><small>Höchste Rendite im Monat</small><div class="win">Live-Call mit Florian Homm</div></div>
+      <div class="prize"><div class="ic">🏆</div><b>Monatssieger</b><small>Höchste Rendite im Monat, long oder short</small><div class="win">Short-Selling-Kurs<br><span class="val">Wert 1.100 €</span></div></div>
+      <div class="prize"><div class="ic">🥈</div><b>Platz 2 und 3</b><small>Monatswertung</small><div class="win">Abo Homm Long Short Börsenbrief<br><span class="val">Wert 99 €</span></div></div>
+      <div class="prize"><div class="ic">🔥</div><b>Dranbleiben</b><small>Verlosung unter allen, die an mindestens 10 Tagen im Monat gehandelt haben</small><div class="win">Free-Homes-Abo<br><span class="val">Wert 9,90 €</span></div></div>
+      <div class="prize partner"><div class="ic">🤝</div><b>Partner &amp; Sponsoren</b><small>Weitere Preise unserer Partner folgen.</small><div class="win">Bald mehr</div></div>
     </div>
-    <p class="fine" style="text-align:left">Teilnahme kostenlos und ohne Kaufzwang. Preise sind Beispiele, Teilnahmebedingungen folgen.</p>
+    <p class="fine" style="text-align:left">Gewertet wird die Rendite im Kalendermonat. Teilnahme kostenlos und ohne Kaufzwang, Teilnahmebedingungen folgen.</p>
 
     <div class="sec-h"><h2>Mein Profil</h2></div>
     <div class="card">
@@ -790,7 +792,7 @@ const BADGES = [['first','🥇 Erster Trade'],['short','📉 Erster Short'],['st
 let Q = {}, fx = 1.12;
 let S = {cash:START, pos:[], hist:[], realized:0, mode:null, badges:{}, xp:0, active:{}, follow:{}, equity:START, eqPrev:START};
 let ME = null, CFG = {freehomes:false}, LB = [], FUNDS = [], AUDIO = new Set(), FD = null, DISC = {traders:[], gurus:[]};
-let ui = {tab:'markt', filter:'all', lb:'day', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
+let ui = {tab:'markt', filter:'all', lb:'mon', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
 async function api(path, opts={}){
   const r = await fetch(path, {method:opts.method||(opts.body?'POST':'GET'), credentials:'same-origin', cache:'no-store',
     headers: opts.body!==undefined ? {'Content-Type':'application/json'} : {}, body: opts.body!==undefined ? JSON.stringify(opts.body) : undefined});
@@ -843,7 +845,8 @@ const val = p => p.value!=null ? p.value : p.stake;
 const equity = () => S.equity;
 
 /* ---------- Community (Server) ---------- */
-function ranked(mode){ const k=mode==='day'?'day':mode==='week'?'tot':'eq'; return LB.slice().sort((a,b)=>b[k]-a[k]); }
+const LBKEY={day:'day', week:'wk', mon:'mon', all:'eq'};
+function ranked(mode){ const k=LBKEY[mode]||'eq'; return LB.slice().sort((a,b)=>(b[k]??0)-(a[k]??0)); }
 async function loadLB(){ try{ LB=(await api('/api/leaderboard')).rows; }catch(e){} }
 async function loadFunds(){ try{ FUNDS=(await api('/api/funds')).funds; }catch(e){} }
 
@@ -919,13 +922,13 @@ let RAW = {}, RECENT = [];
 try{ RECENT = JSON.parse(localStorage.getItem('iaRecent')||'[]'); }catch(e){}
 const mine = s => RECENT.includes(s) || S.pos.some(p=>p.sym===s);
 function remember(s){ RECENT=[s,...RECENT.filter(x=>x!==s)].slice(0,12); try{ localStorage.setItem('iaRecent',JSON.stringify(RECENT)); }catch(e){} }
-let sTimer, sSeq=0;
-$('#q').addEventListener('input',e=>{ clearTimeout(sTimer); const v=e.target.value.trim(); if(!v){ $('#sres').hidden=true; return; } sTimer=setTimeout(()=>doSearch(v),280); });
+let sTimer, sSeq=0; const SC=new Map();   // Zwischenspeicher: gleiche Suche sofort anzeigen
+$('#q').addEventListener('input',e=>{ clearTimeout(sTimer); const v=e.target.value.trim(); if(!v){ $('#sres').hidden=true; return; } sTimer=setTimeout(()=>doSearch(v),SC.has(v.toLowerCase())?0:140); });
 $('#q').addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('#sres').hidden=true; e.target.blur(); } if(e.key==='Enter'){ const f=$('#sres [data-add]'); if(f) f.click(); } });
 document.addEventListener('click',e=>{ if(!e.target.closest('.search')) $('#sres').hidden=true; });
 async function doSearch(v){
-  const seq=++sSeq; $('#sres').hidden=false; $('#sres').innerHTML='<div class="note">Suche läuft …</div>';
-  try{ const r=(await api('/api/search?q='+encodeURIComponent(v))).results; if(seq!==sSeq) return;
+  const seq=++sSeq, key=v.toLowerCase(); $('#sres').hidden=false; if(!SC.has(key)) $('#sres').innerHTML='<div class="note">Suche läuft …</div>';
+  try{ const r=SC.get(key)||(await api('/api/search?q='+encodeURIComponent(v))).results; SC.set(key,r); if(seq!==sSeq) return;
     $('#sres').innerHTML = r.length ? r.map(x=>`<button data-add="${esc(x.sym)}"><span class="logo">${esc(x.sym.replace(/[.^=].*|\/.*/,'').slice(0,5))}</span><span><b>${esc(x.name)}</b><br><small>${esc(x.type)} · ${esc(x.sym)}</small></span><span class="go">Öffnen →</span></button>`).join('')+'<div class="note">US-Aktien und ETFs mit Echtzeitkursen. Weitere deutsche Titel folgen mit dem lizenzierten Datenanbieter.</div>'
       : '<div class="note">Kein passender US-Titel gefunden. Suchen Sie nach Firmenname oder Kürzel, z. B. „KO“ für Coca-Cola.</div>';
   }catch(e){ if(seq===sSeq) $('#sres').innerHTML=`<div class="note">${esc(e.message)}</div>`; }
@@ -956,7 +959,7 @@ function renderHeader(){
   $('#equityChg').innerHTML=`<span class="${cls(d)}">${sgn(d)} (${pct(d/START)})</span> <span class="muted">seit Start</span>`;
   $('#cash').textContent=eur(S.cash,0); $('#invested').textContent=eur(inv,0);
   $('#today').innerHTML=`<span class="${cls(td)}">${pct(td/Math.max(eq-td,1),1)}</span>`;
-  const r=ranked('day'), ix=r.findIndex(x=>x.me); $('#myRank').textContent=ix>=0?ix+1:'–'; $('#nPlayers').textContent=r.length||'–';
+  const r=ranked('mon'), ix=r.findIndex(x=>x.me); $('#myRank').textContent=ix>=0?ix+1:'–'; $('#nPlayers').textContent=r.length||'–';
   if(ME){ $('#acctInit').textContent=initials(ME.name); $('#acctBtn').style.background=ME.color||''; }
   $('#navBadge').hidden=!S.pos.length; $('#navBadge').textContent=S.pos.length;
   document.body.classList.toggle('pro',pro());
@@ -986,10 +989,10 @@ function renderArena(){
   const lv=level(); $('#myLevel').textContent=`Level ${lv.n} · ${lv.name}`; $('#myXp').textContent=`${S.xp} XP · nächstes Level bei ${lv.next} XP`; $('#xpBar').style.width=Math.min(lv.prog*100,100)+'%';
   $('#streak').innerHTML=lastDays(5).map(d=>`<i class="${S.active[d]?'on':''}">${new Date(d).toLocaleDateString('de-DE',{weekday:'short'})}</i>`).join('');
   $('#badges').innerHTML=BADGES.map(([k,l])=>`<span class="bdg ${S.badges[k]?'on':''}">${l}</span>`).join('');
-  const now=new Date(), sun=new Date(now); sun.setDate(now.getDate()+((7-now.getDay())%7)); sun.setHours(23,59,0,0);
-  const h=Math.max(0,Math.round((sun-now)/36e5)); $('#countdown').textContent=`noch ${Math.floor(h/24)} T ${h%24} Std.`;
-  $('#lbTabs').innerHTML=[['day','Heute'],['week','Woche'],['all','Depotwert']].map(([k,l])=>`<button class="chip ${ui.lb===k?'on':''}" data-lb="${k}">${l}</button>`).join('');
-  const k = ui.lb==='day'?'day':ui.lb==='week'?'tot':'eq';
+  const now=new Date(), end=new Date(now.getFullYear(), now.getMonth()+1, 1);
+  const h=Math.max(0,Math.round((end-now)/36e5)); $('#countdown').textContent=`noch ${Math.floor(h/24)} T ${h%24} Std.`;
+  $('#lbTabs').innerHTML=[['mon','Monat'],['day','Heute'],['week','Woche'],['all','Depotwert']].map(([k,l])=>`<button class="chip ${ui.lb===k?'on':''}" data-lb="${k}">${l}</button>`).join('');
+  const k = LBKEY[ui.lb]||'eq';
   $('#leaderboard').innerHTML = ranked(ui.lb).map((r,i)=>`<button class="lbr ${r.me?'mine':''}" ${r.me?'data-go="depot"':`data-person="${r.id}"`}>
     <span class="rk ${i<3?'top':''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</span>${avatar(r)}
     <span class="nm"><b>${esc(r.me?r.name+' (Sie)':r.name)}${r.bot?'<span class="bot">Beispiel</span>':''}${S.follow[r.id]?' <span class="muted" style="font-size:11px">· folge ich</span>':''}</b><small>${esc(r.sub)}</small></span>

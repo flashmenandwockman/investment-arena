@@ -16,7 +16,7 @@ Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglie
 | **Großinvestoren** | Depots bekannter Investoren (Buffett, Ackman, Dalio, Druckenmiller u. a.) aus den öffentlichen 13F-Meldungen an die SEC, als kopierbares Depot mit Anteilswert |
 | **Community-Fonds** | Mitglieder gründen eigene Aktienpakete (3–10 Werte, long/short, Gewichte), andere investieren Spielgeld; Anteilswert startet bei 100 |
 | **TRCM Portfolio** | Portfolio des Analystenteams von Florian Homm, mit Verweis auf den Homm Long Short Börsenbrief. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
-| **Arena** | Ranglisten (Heute, Woche, Depotwert), Preise, Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
+| **Arena** | Ranglisten (Monat, Heute, Woche, Depotwert), Monatspreise (Short-Selling-Kurs, Börsenbrief-Abo, Free-Homes-Abo, Partnerpreise), Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
 | **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
 

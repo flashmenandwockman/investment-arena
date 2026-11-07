@@ -2,7 +2,9 @@
 // Alle Module (Kurse, Suche, Radar) holen ihre Daten hierüber, damit das Limit nie überschritten wird.
 const config = require('./config');
 
-const LIMIT = 55, WINDOW = 60_000;
+// Hintergrundabrufe (Kurse, Radar) dürfen nur einen Teil des Limits nutzen,
+// damit Suchen und neu geöffnete Titel nie auf ein ausgeschöpftes Kontingent warten.
+const LIMIT = 55, BACKGROUND = 38, WINDOW = 60_000;
 const stamps = [];
 const queue = [];
 let timer = null;
@@ -11,7 +13,7 @@ function pump() {
   timer = null;
   const now = Date.now();
   while (stamps.length && now - stamps[0] > WINDOW) stamps.shift();
-  while (queue.length && stamps.length < LIMIT) {
+  while (queue.length && stamps.length < (queue[0].priority ? LIMIT : BACKGROUND)) {
     stamps.push(Date.now());
     const job = queue.shift();
     job.run().then(job.resolve, job.reject);
@@ -27,7 +29,9 @@ function get(path, {priority = false} = {}) {
       if (!r.ok) throw new Error(`Finnhub ${r.status}`);
       return r.json();
     };
-    queue[priority ? 'unshift' : 'push']({run, resolve, reject});
+    // Hintergrundabrufe verfallen, wenn sie zu lange warten (der nächste Durchlauf holt sie ohnehin)
+    if (!priority && queue.filter(j => !j.priority).length > 60) return reject(new Error('Finnhub-Warteschlange voll'));
+    queue[priority ? 'unshift' : 'push']({run, resolve, reject, priority});
     pump();
   });
 }
