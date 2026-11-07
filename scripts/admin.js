@@ -4,6 +4,7 @@
 //   node scripts/admin.js revoke name@beispiel.de
 // Im Docker-Betrieb: docker compose exec app node scripts/admin.js grant name@beispiel.de
 // Das Konto muss vorher in der Arena registriert sein (eigenes Konto oder Login über Free Homes).
+process.removeAllListeners('warning');   // Hinweis „SQLite is experimental“ ausblenden
 const db = require('../server/db');
 
 const [cmd, email] = process.argv.slice(2);
