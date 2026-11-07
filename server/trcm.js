@@ -1,4 +1,4 @@
-// TRCM-Portfolio: Musterdepot von Florian Homm und dem Analystenteam.
+// TRCM-Portfolio: Musterdepot des Analystenteams von Florian Homm.
 // Gepflegt über den Admin-Zugang (Titel hinzufügen, korrigieren, schließen, löschen).
 // Die Wertentwicklung ist für alle sichtbar, die gehaltenen Titel nur für Free-Homes-Mitglieder und Admins.
 const db = require('./db');
@@ -23,11 +23,13 @@ CREATE TABLE IF NOT EXISTS trcm_log (
 );
 `);
 
-const DEFAULTS = {name: 'TRCM Portfolio', team: 'Florian Homm & Analystenteam',
-  strategy: 'Das Musterdepot von Florian Homm und dem TRCM-Analystenteam. Long und short, aktiv gemanagt.'};
+const DEFAULTS = {name: 'TRCM Portfolio', team: 'Analystenteam von Florian Homm',
+  strategy: 'Das Musterdepot des TRCM-Analystenteams. Long und short, aktiv gemanagt.'};
+// Frühere Standardtexte mit Florians Namen durch die neuen ersetzen
+const OLD = {team: 'Florian Homm & Analystenteam', strategy: 'Das Musterdepot von Florian Homm und dem TRCM-Analystenteam. Long und short, aktiv gemanagt.'};
 const qMeta = db.prepare('SELECT v FROM trcm_meta WHERE k = ?');
 const qSetMeta = db.prepare('INSERT INTO trcm_meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v');
-const meta = k => { const r = qMeta.get(k); return r ? r.v : DEFAULTS[k]; };
+const meta = k => { const r = qMeta.get(k); return r && r.v !== OLD[k] ? r.v : DEFAULTS[k]; };
 
 const qOpen = db.prepare('SELECT * FROM trcm_holdings WHERE closed_at IS NULL ORDER BY w DESC, id');
 const qClosed = db.prepare('SELECT * FROM trcm_holdings WHERE closed_at IS NOT NULL ORDER BY closed_at DESC LIMIT 100');

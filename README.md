@@ -12,7 +12,7 @@ Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglie
 | **Märkte** | 19 Werte als feste Auswahl (US- und DAX-Aktien, DAX, S&P 500, Gold, 6 Kryptowährungen) plus **Suche nach jeder US-Aktie und jedem US-ETF**. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
 | **Community-Fonds** | Mitglieder gründen eigene Aktienpakete (3–10 Werte, long/short, Gewichte), andere investieren Spielgeld; Anteilswert startet bei 100 |
-| **TRCM Portfolio** | Musterdepot von Florian Homm und dem Analystenteam. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
+| **TRCM Portfolio** | Musterdepot des Analystenteams von Florian Homm. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
 | **Arena** | Ranglisten (Heute, Woche, Depotwert), Preise, Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
 | **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |

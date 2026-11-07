@@ -443,7 +443,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
   <!-- FONDS -->
   <main id="tab-fonds" hidden>
     <div class="sec-h"><h2>TRCM Portfolio</h2><span class="muted" style="font-size:12px">Musterdepot</span></div>
-    <button class="trcm" id="trcmCard"><span class="kick">Gemanagt von Florian Homm</span><h3>TRCM Portfolio</h3><div class="team">wird geladen …</div></button>
+    <button class="trcm" id="trcmCard"><span class="kick">Musterdepot</span><h3>TRCM Portfolio</h3><div class="team">wird geladen …</div></button>
     <div class="sec-h"><h2>Community-Fonds</h2><span class="muted" style="font-size:12px" id="fundCount"></span></div>
     <p class="muted" style="font-size:13.5px;line-height:1.55;margin:0 2px 18px">Mitglieder stellen eigene Aktienpakete zusammen, long und short. Investieren Sie Spielgeld in die Ideen, die Sie überzeugen. Die besten Fondsmanager stehen oben.</p>
     <button class="cta" id="newFundBtn" style="margin:0 0 20px">+ Eigenen Fonds gründen</button>
@@ -1073,7 +1073,7 @@ const isoDate = ts => new Date(ts - new Date(ts).getTimezoneOffset()*6e4).toISOS
 const px = (v,cur) => v==null ? '–' : fmt(v,cur);
 function renderTrcm(){
   if(!TC) return;
-  $('#trcmCard').innerHTML=`<span class="kick">Gemanagt von Florian Homm</span><h3>${esc(TC.name)}</h3><div class="team">${esc(TC.team)}</div>
+  $('#trcmCard').innerHTML=`<span class="kick">Musterdepot</span><h3>${esc(TC.name)}</h3><div class="team">${esc(TC.team)}</div>
     <div class="nums num"><b class="${cls(TC.perf)}">${pct(TC.perf,1)}</b><small class="${cls(TC.day)}">heute ${pct(TC.day,1)}</small></div>
     <div class="foot2"><span>${TC.count} Titel${TC.member?'':' · 🔒 nur für Free-Homes-Mitglieder'}</span><span>${TC.member?'Titel ansehen →':'Mehr erfahren →'}</span></div>`;
 }
@@ -1091,7 +1091,7 @@ function renderTrcmSheet(){
     <p style="font-size:14px;line-height:1.55;margin:20px 2px 8px">${esc(TC.strategy)}</p>
     <p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px">${esc(TC.team)} · ${TC.count} Titel</p>`;
   if(!TC.member){
-    h+=`<div class="lock"><div class="ic">🔒</div><b>Die Titel sehen nur Free-Homes-Mitglieder</b><p>Welche Aktien Florian Homm und das Analystenteam halten, mit Einstiegskurs, Gewichtung und Begründung, ist Mitgliedern von Free Homes vorbehalten.</p>
+    h+=`<div class="lock"><div class="ic">🔒</div><b>Die Titel sehen nur Free-Homes-Mitglieder</b><p>Welche Aktien das Analystenteam hält, mit Einstiegskurs, Gewichtung und Begründung, ist Mitgliedern von Free Homes vorbehalten.</p>
       ${CFG.freehomes?'<button class="cta" id="tcFh" style="margin-top:18px">Mit Free Homes anmelden</button>':'<p style="margin-top:12px;color:var(--gold-p)">Der Login über Free Homes wird in Kürze freigeschaltet.</p>'}</div>`;
   } else {
     const tw=TC.holdings.reduce((a,x)=>a+x.w,0);
