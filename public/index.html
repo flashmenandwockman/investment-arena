@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05070f">
 <meta property="og:title" content="Investment Arena mit Florian Homm">
 <meta property="og:description" content="100.000 € Spielgeld, echte Kurse, Long und Short, Community-Fonds. Lernen wie ein Hedgefonds-Manager, ohne echtes Geld zu riskieren.">
@@ -359,6 +359,34 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 .sel{margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line-gold);font-size:14px}
 .logrow{padding:12px 0;border-top:1px solid var(--line);font-size:13px;line-height:1.5} .logrow small{display:block;color:var(--muted);font-size:11.5px}
 .btn2.danger{color:#ff9a9a;border-color:rgba(255,107,107,.4)}
+/* Mobil: kein Zoom, kein seitliches Verschieben, Menü bleibt unten */
+html,body{overflow-x:hidden;max-width:100%}
+@supports (overflow:clip){html,body{overflow-x:clip}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{touch-action:pan-x pan-y;}
+button,a,input,select,textarea,label{touch-action:manipulation}
+body{overscroll-behavior-x:none;min-height:100dvh}
+.app{overflow-x:clip}
+/* iOS zoomt beim Tippen in Felder unter 16 px hinein */
+input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
+.sheet{max-height:92dvh}
+.nav{transform:translateZ(0);-webkit-transform:translateZ(0)}
+/* Kopfzeile auf schmalen Handys */
+.top{min-width:0} .brand{min-width:0;flex:0 1 auto} .top-r{flex:none}
+@media (max-width:400px){
+  .pill{padding:0 9px} .mode button{padding:0 8px;font-size:11.5px} .top-r{gap:6px}
+}
+@media (max-width:370px){
+  #feedTxt{display:none} .pill{width:32px;padding:0;justify-content:center}
+  .brand b{font-size:15px} .brand span{font-size:8.5px;letter-spacing:.1em}
+  .mode button{padding:0 7px;font-size:11px}
+}
+@media (max-width:340px){ #feed{display:none} }
+/* Kopfzeile deckt beim Scrollen die volle Breite ab */
+.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{gap:4px} .brand span{line-height:1.2}
+/* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
+@media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spark{display:none} }
 </style>
 </head>
 <body>
@@ -1512,6 +1540,11 @@ async function boot(){
 }
 $('#refreshBtn').onclick=()=>refresh(true);
 boot();
+</script>
+<script>
+// iOS Safari ignoriert user-scalable=no: Pinch-Zoom hier abfangen (Doppeltipp-Zoom sperrt touch-action im CSS)
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('touchmove',e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false});
 </script>
 </body>
 </html>
