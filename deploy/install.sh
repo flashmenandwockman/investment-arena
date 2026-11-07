@@ -14,9 +14,21 @@ say() { printf '\n\033[1;33m▶ %s\033[0m\n' "$*"; }
 
 say "1/5 Docker prüfen"
 if ! command -v docker >/dev/null 2>&1; then
-  curl -fsSL https://get.docker.com | sh
+  # Zuerst die Docker-Pakete der Distribution (funktioniert auch auf ganz neuen Ubuntu-Versionen),
+  # sonst das offizielle Installationsskript von docker.com
+  apt-get update -qq
+  if ! DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-v2; then
+    curl -fsSL https://get.docker.com | sh
+  fi
+  systemctl enable --now docker
 fi
-docker compose version >/dev/null
+docker compose version >/dev/null || { echo "docker compose fehlt"; exit 1; }
+
+# Server-Firewall (ufw), falls aktiv: nur Webports freigeben, sonst nichts ändern
+if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
+  ufw allow 80/tcp >/dev/null; ufw allow 443/tcp >/dev/null; ufw allow 443/udp >/dev/null
+  echo "ufw: Ports 80 und 443 freigegeben"
+fi
 
 say "2/5 Code holen ($BRANCH)"
 command -v git >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq git)
