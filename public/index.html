@@ -448,6 +448,9 @@ details.more{margin-top:18px} details.more summary{cursor:pointer;color:var(--go
 .sel{margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line-gold);font-size:14px}
 .logrow{padding:12px 0;border-top:1px solid var(--line);font-size:13px;line-height:1.5} .logrow small{display:block;color:var(--muted);font-size:11.5px}
 .btn2.danger{color:#ff9a9a;border-color:rgba(255,107,107,.4)}
+/* Offenes Fenster: Seite dahinter bleibt stehen */
+body.sheet-open{overflow:hidden}
+.sheet{overscroll-behavior:contain}
 /* Mobil: kein Zoom, kein seitliches Verschieben, Menü bleibt unten */
 html,body{overflow-x:hidden;max-width:100%}
 @supports (overflow:clip){html,body{overflow-x:clip}}
@@ -1289,8 +1292,21 @@ $('#tipSay').onclick=()=>speakKey(ui.tip||'long',$('#tipBox'));
 let tt; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),3000); }
 
 /* ---------- sheets ---------- */
-function openSheet(id){ $('#scrim').classList.add('on'); $(id).classList.add('on'); }
-function closeSheets(){ $('#scrim').classList.remove('on'); $$('.sheet').forEach(s=>s.classList.remove('on')); if('speechSynthesis' in window) speechSynthesis.cancel(); if(player){ player.pause(); player=null; } $$('.speaking').forEach(b=>b.classList.remove('speaking')); }
+const SHEETS=[];   // geöffnete Fenster, oberstes zuletzt
+function stopAudio(){ if('speechSynthesis' in window) speechSynthesis.cancel(); if(player){ player.pause(); player=null; } $$('.speaking').forEach(b=>b.classList.remove('speaking')); }
+function openSheet(id){
+  const el=$(id), i=SHEETS.indexOf(id);
+  if(i>=0) SHEETS.splice(i,1);
+  const prev=SHEETS[SHEETS.length-1]; if(prev) $(prev).classList.remove('on');   // vorheriges Fenster ausblenden, bleibt im Stapel
+  SHEETS.push(id); el.style.zIndex=31+SHEETS.length; el.scrollTop=0;
+  $('#scrim').classList.add('on'); el.classList.add('on'); document.body.classList.add('sheet-open');
+}
+function closeTop(){
+  const id=SHEETS.pop(); if(id) $(id).classList.remove('on'); stopAudio();
+  const prev=SHEETS[SHEETS.length-1];
+  if(prev) $(prev).classList.add('on'); else { $('#scrim').classList.remove('on'); document.body.classList.remove('sheet-open'); }
+}
+function closeSheets(){ SHEETS.length=0; document.body.classList.remove('sheet-open'); $('#scrim').classList.remove('on'); $$('.sheet').forEach(s=>s.classList.remove('on')); if('speechSynthesis' in window) speechSynthesis.cancel(); if(player){ player.pause(); player=null; } $$('.speaking').forEach(b=>b.classList.remove('speaking')); }
 
 /* ---------- Kurs-Chart ---------- */
 const CH={r:'1mo', pts:[], cur:'EUR', seq:0};
@@ -1471,7 +1487,7 @@ $('#books').addEventListener('click',e=>{ const b=e.target.closest('[data-book]'
 const PER={'1m':'1 Monat','3m':'3 Monate','open':'Ohne Ende','until':'Bis Datum'};
 const left = t => { if(!t) return 'ohne Ende'; const h=Math.max(0,Math.round((t-Date.now())/36e5)); return h>48?`noch ${Math.round(h/24)} Tage`:h>0?`noch ${h} Std.`:'beendet'; };
 const ago = ts => { const m=Math.round((Date.now()-ts)/6e4); return m<1?'gerade eben':m<60?`vor ${m} Min.`:m<1440?`vor ${Math.round(m/60)} Std.`:`vor ${Math.round(m/1440)} Tagen`; };
-const mv = n => n>0?`<small class="up">▲ ${n}</small>`:n<0?`<small class="down">▼ ${-n}</small>`:'<small class="muted">–</small>';
+const mv = n => n>0?`<small class="up">▲ ${n}</small>`:n<0?`<small class="down">▼ ${-n}</small>`:'';
 const inviteUrl = a => `${location.origin}/a/${a.slug}`;
 let AN={mode:'main',start:'fresh',period:'1m',vis:'private'}, AR=null, asTab='rank', AJ=null;
 function renderMine(){
@@ -1514,13 +1530,14 @@ function openShare(a, fresh){
   $('#shNative').hidden=!navigator.share; $('#shQr').src=`/qr/a/${a.slug}.svg`;
   $('#shCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(url); $('#shCopy').textContent='✓ Kopiert'; setTimeout(()=>$('#shCopy').textContent='Kopieren',1800); }catch(e){ toast(url); } };
   $('#shNative').onclick=()=>navigator.share({title:a.name+' · Investment Arena',text,url}).catch(()=>{});
-  $('#shOpen').onclick=()=>{ closeSheets(); setTimeout(()=>openArena(a.slug),60); };
+  $('#shOpen').textContent=fresh?'Zur Arena':'Zurück zur Arena';
+  $('#shOpen').onclick=()=>{ if(!fresh && SHEETS.includes('#arSheet')) closeTop(); else { closeSheets(); setTimeout(()=>openArena(a.slug),60); } };
   openSheet('#arShare');
 }
 async function openArena(slug){
   try{ AR=await api('/api/arenas/by/'+encodeURIComponent(slug)); }catch(e){ return toast(e.message); }
   if(AR.preview) return openJoin(AR);
-  asTab='rank'; renderArenaSheet(); closeSheets(); setTimeout(()=>openSheet('#arSheet'),40);
+  asTab='rank'; renderArenaSheet(); closeSheets(); openSheet('#arSheet');
 }
 function renderArenaSheet(){
   const a=AR, me=a.rows.find(r=>r.id===ME.id);
@@ -1584,7 +1601,7 @@ function openJoin(a){
     <p style="font-size:14px;line-height:1.55;margin:16px 2px 0">${a.mode==='own'?'In dieser Arena bekommen Sie ein eigenes Depot. Ihr Hauptdepot bleibt davon unberührt.':'Sie treten mit Ihrem Hauptdepot an. Gewertet wird Ihre Rendite ab dem Beitritt, Ihr bisheriger Stand zählt nicht.'}</p>
     ${a.top.length?`<div class="summary">${a.top.map((t,i)=>`<div><span>${['🥇','🥈','🥉'][i]} ${esc(t.name)}</span><b class="num ${cls(t.ret)}">${pct(t.ret,1)}</b></div>`).join('')}</div>`:''}`;
   $('#ajStart').hidden=a.mode!=='own'; $$('[data-ajstart]').forEach(b=>b.classList.toggle('on',b.dataset.ajstart==='fresh'));
-  closeSheets(); setTimeout(()=>openSheet('#arJoin'),40);
+  closeSheets(); openSheet('#arJoin');
 }
 $('#arJoin').addEventListener('click',e=>{ const b=e.target.closest('[data-ajstart]'); if(!b) return; AJ.start=b.dataset.ajstart; $$('[data-ajstart]').forEach(x=>x.classList.toggle('on',x===b)); });
 $('#ajGo').onclick=async()=>{ const b=$('#ajGo'); b.disabled=true;
@@ -1721,7 +1738,7 @@ function openCopy(id){
   if(CP.copying){ closeSheets(); document.querySelector('.nav [data-tab="depot"]').click(); return; }
   $('#cpName').textContent=CP.name; $('#cpStats').innerHTML=statBoxes(CP);
   $('#cpAmt').value=Math.min(5000,Math.floor(S.cash)).toLocaleString('de-DE'); updCopy();
-  closeSheets(); setTimeout(()=>openSheet('#copySheet'),50);
+  openSheet('#copySheet');
 }
 $('#cpAmt').addEventListener('input',updCopy);
 $('#copySheet').addEventListener('click',e=>{ const q=e.target.closest('[data-cq]'); if(!q) return; const v=+q.dataset.cq; $('#cpAmt').value=Math.floor(v<1?S.equity*v:v).toLocaleString('de-DE'); updCopy(); });
@@ -1791,7 +1808,7 @@ $('#tcBody').addEventListener('click',e=>{
   $('#teW').value=String(TE.w).replace('.',','); $('#teP0').value=String(TE.p0).replace('.',','); $('#teSince').value=isoDate(TE.since);
   $('#teP1Box').style.visibility=TE.closedAt?'visible':'hidden'; $('#teP1').value=TE.closedAt?String(TE.price).replace('.',','):'';
   $('#teNote').value=TE.note||''; $('#teClose').hidden=!!TE.closedAt; $('#teErr').hidden=true;
-  $('#trcmEdit').classList.add('on');
+  openSheet('#trcmEdit');
 });
 let taTimer=0;
 $('#taQ').addEventListener('input',e=>{ clearTimeout(taTimer); const v=e.target.value.trim(); if(!v){ $('#taRes').hidden=true; return; }
@@ -1808,16 +1825,16 @@ $('#taGo').onclick=async()=>{
   if(ok){ toast('Titel hinzugefügt'); TA.sym=null; $('#taSel').hidden=true; ['#taW','#taP0','#taNote'].forEach(s=>$(s).value=''); }
 };
 $('#tmSave').onclick=async()=>{ if(await trcmAdmin('','PATCH',{name:$('#tmName').value,team:$('#tmTeam').value,strategy:$('#tmStrat').value})) toast('Beschreibung gespeichert'); };
-$('#teBack').onclick=()=>$('#trcmEdit').classList.remove('on');
+$('#teBack').onclick=()=>closeTop();
 $('#teSave').onclick=async()=>{
   const dir=+($('[data-edir].on')||{dataset:{edir:TE.dir}}).dataset.edir;
   const b={dir,w:$('#teW').value,p0:$('#teP0').value,since:$('#teSince').value,note:$('#teNote').value}; if(TE.closedAt) b.p1=$('#teP1').value;
-  if(await trcmAdmin('/holdings/'+TE.id,'PATCH',b,'#teErr')){ $('#trcmEdit').classList.remove('on'); toast('Korrektur gespeichert'); }
+  if(await trcmAdmin('/holdings/'+TE.id,'PATCH',b,'#teErr')){ closeTop(); toast('Korrektur gespeichert'); }
 };
 $('#teClose').onclick=async()=>{ if(!confirm(`${TE.name} zum aktuellen Kurs verkaufen?`)) return;
-  if(await trcmAdmin('/holdings/'+TE.id+'/close','POST',{},'#teErr')){ $('#trcmEdit').classList.remove('on'); toast('Titel verkauft'); } };
+  if(await trcmAdmin('/holdings/'+TE.id+'/close','POST',{},'#teErr')){ closeTop(); toast('Titel verkauft'); } };
 $('#teDel').onclick=async()=>{ if(!confirm(`Eintrag „${TE.name}“ endgültig löschen? Nur für Fehleingaben gedacht.`)) return;
-  if(await trcmAdmin('/holdings/'+TE.id,'DELETE',undefined,'#teErr')){ $('#trcmEdit').classList.remove('on'); toast('Eintrag gelöscht'); } };
+  if(await trcmAdmin('/holdings/'+TE.id,'DELETE',undefined,'#teErr')){ closeTop(); toast('Eintrag gelöscht'); } };
 
 /* ---------- Community-Fonds ---------- */
 function renderFunds(){
@@ -1905,7 +1922,8 @@ document.addEventListener('click',e=>{
   const l=t.closest('[data-lb]'); if(l){ ui.lb=l.dataset.lb; renderArena(); return; }
   const pe=t.closest('[data-person]'); if(pe){ openProfile(+pe.dataset.person); return; }
   const ls=t.closest('[data-lesson]'); if(ls){ coach(ls.dataset.lesson); speakKey(ls.dataset.lesson,$('#coach')); window.scrollTo({top:0,behavior:'smooth'}); return; }
-  if(t.closest('[data-closesheet]') || t===$('#scrim')){ closeSheets(); return; }
+  if(t.closest('[data-closesheet]')){ closeTop(); return; }
+  if(t===$('#scrim')){ closeSheets(); return; }
   const md=t.closest('[data-mode]'); if(md){ setMode(md.dataset.mode,true); return; }
   const pk=t.closest('[data-pick]'); if(pk){ setMode(pk.dataset.pick,false); $('#ob').hidden=true; let js=null; try{ js=sessionStorage.getItem('joinSlug'); sessionStorage.removeItem('joinSlug'); }catch(e){} if(js) setTimeout(()=>openArena(js),400); return; }
   if(t.closest('#acctBtn')){ openAccount(); return; }
