@@ -4,7 +4,9 @@
   "private": true,
   "description": "Investment Arena mit Florian Homm: Trading-Simulator mit Spielgeld, Community-Fonds und Smart-Money-Radar",
   "license": "UNLICENSED",
-  "engines": { "node": ">=22.13" },
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning server/index.js",
     "dev": "MARKET_OFFLINE=1 node --disable-warning=ExperimentalWarning server/index.js",
@@ -12,6 +14,7 @@
     "snapshot": "node --disable-warning=ExperimentalWarning scripts/snapshot.js"
   },
   "dependencies": {
-    "ccxt": "4.4.40"
+    "ccxt": "4.4.40",
+    "qrcode": "1.5.4"
   }
 }

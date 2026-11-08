@@ -16,6 +16,8 @@ Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglie
 | **Großinvestoren** | Depots bekannter Investoren (Buffett, Ackman, Dalio, Druckenmiller u. a.) aus den öffentlichen 13F-Meldungen an die SEC, als kopierbares Depot mit Anteilswert |
 | **Community-Fonds** | Mitglieder gründen eigene Aktienpakete (3–10 Werte, long/short, Gewichte), andere investieren Spielgeld; Anteilswert startet bei 100 |
 | **TRCM Portfolio** | Portfolio des Analystenteams von Florian Homm, mit Verweis auf den Homm Long Short Börsenbrief. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
+| **Private Arenen** | Eigene Gruppen mit Freunden und Kollegen wie bei einer Tipprunde: eröffnen, per Link, WhatsApp oder QR-Code einladen, Rangliste mit Auf- und Abstiegen, Aktivitäts-Feed mit Reaktionen, Gruppen-Liga. Wahlweise mit dem Hauptdepot oder einem eigenen Arena-Depot (neu oder als Kopie des Hauptdepots) |
+| **Scouting & Talents** | Nachricht von Florian Homm, Talent-Score, Stufen bis zum Pitch beim Analystenteam, Vorstellung mit Einwilligung, Scouting-Board für Admins |
 | **Arena** | Ranglisten (Monat, Heute, Woche, Depotwert), Monatspreise (Short-Selling-Kurs, Börsenbrief-Abo, Free-Homes-Abo, Partnerpreise), Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
 | **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
@@ -111,6 +113,27 @@ Danach `FREEHOMES_CLIENT_ID=investment-arena` und `FREEHOMES_CLIENT_SECRET=…` 
 
 Verhalten: Ein Free-Homes-Mitglied bekommt beim ersten Login automatisch ein Arena-Konto. Existiert bereits ein eigenes Arena-Konto mit derselben **bestätigten** E-Mail-Adresse, werden beide verknüpft.
 
+## Private Arenen
+
+Im Bereich **Arena → Meine Arenen** eröffnet jedes Mitglied eigene Arenen (höchstens 10, bis 200 Mitglieder je Arena).
+
+- **Format „Hauptdepot“:** Alle treten mit ihrem normalen Depot an. Gewertet wird die Rendite ab dem Beitritt bzw. ab Rundenbeginn. Setzt jemand sein Hauptdepot zurück, bleibt das bisherige Ergebnis in der Arena-Wertung stehen.
+- **Format „Eigenes Arena-Depot“:** Jedes Mitglied bekommt für diese Arena ein separates Depot, wahlweise neu mit 100.000 € oder als Kopie des Hauptdepots. Über dem Depotwert erscheint ein Umschalter „Hauptdepot | Arena“, alle Orders gehen in das gewählte Depot. Kopieren und Fonds gibt es nur im Hauptdepot.
+- **Zeitraum:** 1 Monat, 3 Monate, ohne Ende oder bis zu einem Datum. Nach Ablauf wird der Endstand festgeschrieben, der Gründer kann eine neue Runde starten.
+- **Einladen:** Link `www.investment-arena.com/a/<name>` mit Vorschau in WhatsApp & Co. (Titel, Mitglieder, Platz 1, Bild `public/img/og-arena.png`), QR-Code unter `/qr/a/<name>.svg`. Wer den Link öffnet, meldet sich an und tritt mit einem Tipp bei.
+- **Rangliste** mit Pfeilen für Auf- und Abstiege seit gestern, Wochenrückblick, Abstand zum nächsten Platz. **Aktivität:** Trades der Mitglieder (abschaltbar) mit Reaktionen 🔥 🚀 😂 🐻.
+- **Gruppen-Liga:** Arenen ab 3 Mitgliedern, gewertet wird die durchschnittliche Rendite der besten fünf. Private Arenen erscheinen ohne Namen.
+
+## Scouting & Talents
+
+Im Bereich **Arena → Talente** steht die Nachricht von Florian Homm (Text in `server/talents.js`, Tonspur `public/audio/scouting.mp3`, Freigabe durch Florian ausstehend).
+
+- **Talent-Score 0–100** aus dem Hauptdepot der letzten 90 Tage: Rendite im Verhältnis zum Risiko 35 %, Verlustbegrenzung 20 %, Beständigkeit 20 %, Disziplin (Stop-Loss, Positionsgrößen) 15 %, Begründungen zu den Trades 10 % (Feld „Ihre Begründung“ im Handelsfenster).
+- **Stufen:** Talent-Wertung freigeschaltet (30 Tage, 20 eigene Trades, Free-Homes-Konto, kein Zurücksetzen im Quartal) → Beobachtet → Shortlist (Top 50 des Quartals mit mindestens 55 Punkten) → Pitch beim Analystenteam.
+- **Vorstellung:** Wer auf der Shortlist steht, beantwortet drei Fragen (Strategie, bester Trade, Ziel), optional mit Video-Link, und stimmt der Weitergabe ausdrücklich zu.
+- **Scouting-Board** für Admins: Vorstellungen mit Kennzahlen, Status (Neu, Gesichtet, Gespräch, Abgeschlossen, Abgesagt) und internen Notizen. Status „Gespräch“ zeigt dem Mitglied die Stufe „Pitch“.
+- **Pitch-Day:** nach Quartalsende, die Shortlist schließt am letzten Tag des Quartals.
+
 ## Copy Trading
 
 Im Bereich **Entdecken** stehen unter „Anleger kopieren“ die Trader der Arena, sortierbar nach Beliebtheit (Kopierer), Rendite im Monat, Rendite der Woche und geringem Risiko.
@@ -185,6 +208,11 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | GET | `/api/discover` | Trader zum Kopieren mit Kennzahlen, Großinvestoren |
 | POST | `/api/copy`, `/api/copy/:id/stop` | Kopieren starten, beenden |
 | POST | `/api/state/reset` | Neustart, nur mit `{"confirm": true}` |
+| GET/POST | `/api/arenas`, `/api/arenas/by/:name`, `/api/arenas/by/:name/join`, `/api/arenas/league` | Private Arenen, Beitreten, Gruppen-Liga |
+| PATCH/POST/DELETE | `/api/arenas/:id`, `/api/arenas/:id/leave\|round\|kick`, `/api/arenas/feed/:id/react` | Verwalten, Reaktionen |
+| GET/POST | `/api/talents`, `/api/talents/apply` | Talent-Programm, Vorstellung |
+| GET/PATCH | `/api/admin/talents`, `/api/admin/talents/:id` | Scouting-Board (nur Admins) |
+| – | `?book=<Arena-ID>` an `/api/state`, `/api/orders`, `/api/positions/…` | Handeln im eigenen Arena-Depot |
 | GET | `/api/audio`, `/healthz` | vorhandene Tonspuren, Statusprüfung |
 
 ## Aufbau
@@ -197,6 +225,8 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   funds.js     Community-Fonds und Anteilswerte
   trcm.js      TRCM Portfolio (Admin-Pflege, Protokoll)
   copy.js      Copy Trading und Kennzahlen (Rendite, Risiko, Kopierer)
+  arenas.js    Private Arenen, Arena-Depots, Feed, Gruppen-Liga
+  talents.js   Scouting & Talents (Score, Stufen, Vorstellungen, Scouting-Board)
   gurus.js     Großinvestoren aus SEC-13F-Meldungen
   market.js    Kurse (Finnhub, Yahoo, ccxt)
   radar.js     Smart-Money-Daten (Finnhub)

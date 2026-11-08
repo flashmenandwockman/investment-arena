@@ -89,7 +89,14 @@ function open(st, o, navOf, opts = {}) {
   if (dir < 0) award(st, 'short', 20, events);
   if (I.g === 'crypto') award(st, 'crypto', 15, events);
   if (cp) { p.copyId = cp.id; p.src = opts.src; events.length = 0; }
-  else { award(st, 'first', 10, events); st.xp += 5; markActive(st, events); }
+  else {
+    // Handelsverhalten für den Talent-Score: Stop-Loss, Positionsgröße, Begründung
+    const t = st.ts = st.ts || {n: 0, sl: 0, big: 0, notes: 0}, E = equity(st, 'now', navOf);
+    t.n++; if (p.sl) t.sl++; if (E && amt / E > .25) t.big++;
+    const note = String(o.note || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+    if (note) { p.note = note; if (note.length >= 10) t.notes++; }
+    award(st, 'first', 10, events); st.xp += 5; markActive(st, events);
+  }
   wallet.cash -= amt; st.pos.push(p);
   st.hist.push({t: `${cp ? `Kopie ${cp.leaderName}: ` : ''}${dir > 0 ? 'Long' : 'Short'} ${I.n} · ${label(p)}`, ts: Date.now(), d: 'eröffnet', stake: amt, pl: null});
   return {position: p, events};

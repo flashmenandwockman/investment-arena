@@ -52,6 +52,7 @@ function logout(req, res) {
 /* ---------- Schutz gegen Passwort-Raten ---------- */
 const attempts = new Map();
 function throttle(key) {
+  if (process.env.THROTTLE_OFF === '1') return;   // nur für automatische Tests
   const now = Date.now(), a = (attempts.get(key) || []).filter(t => now - t < 15 * 60_000);
   if (a.length >= 10) throw Object.assign(new Error('Zu viele Versuche. Bitte in 15 Minuten erneut versuchen.'), {status: 429});
   a.push(now); attempts.set(key, a);

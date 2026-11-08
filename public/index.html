@@ -312,6 +312,95 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 .nfrow{gap:8px;margin-bottom:10px}
 .coach.mini{margin-top:20px}
 .fine{line-height:1.55}
+/* Arena: Bereiche Global, Meine Arenen, Talente */
+.seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin:4px 0 6px}
+.seg3 button{height:42px;border-radius:12px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.seg3 button.on{background:var(--gold-grad);color:#1a0e00}
+.books{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 12px;padding:2px 16px 4px;scrollbar-width:none}
+.books::-webkit-scrollbar{display:none}
+.books button{flex:none;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:600;font-size:13px;background:var(--card)}
+.books button.on{border-color:var(--gold);color:var(--gold-p);background:rgba(198,164,108,.12)}
+.books button i{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.intro{padding:20px;border-radius:20px;background:linear-gradient(160deg,#141f3d,#0c1329);border:1px solid var(--line-gold)}
+.intro h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:0 0 8px}
+.intro p{margin:0;font-size:14px;line-height:1.55;color:var(--muted)}
+.intro .cta{margin-top:18px}
+.acard{display:block;width:100%;text-align:left;padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
+.acard:hover{border-color:var(--line-gold)}
+.acard .h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.acard .h b{font-size:17px;display:block;line-height:1.3}
+.acard .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.acard .r{text-align:right;flex:none} .acard .r b{font-size:20px} .acard .r small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.acard .foot3{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.avs{display:flex} .avs .av{width:28px;height:28px;font-size:10px;border:2px solid var(--card);margin-left:-8px} .avs .av:first-child{margin-left:0}
+.lg{display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--line);width:100%;text-align:left}
+.lg.mine{border-color:var(--gold);background:rgba(198,164,108,.08)}
+.lg .rk{font-weight:700;color:var(--muted);text-align:center} .lg small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.optrow{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);margin-top:10px}
+.optrow.on{border-color:var(--gold);background:rgba(198,164,108,.08)}
+.optrow .dot2{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);flex:none;margin-top:2px;display:grid;place-items:center}
+.optrow.on .dot2{border-color:var(--gold)} .optrow.on .dot2::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.optrow b{display:block;font-size:14.5px} .optrow small{display:block;color:var(--muted);font-size:12.5px;line-height:1.45;margin-top:3px}
+.urlprev{margin-top:8px;font-size:12.5px;color:var(--muted);word-break:break-all} .urlprev b{color:var(--gold-p);font-weight:600}
+.toggle{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.45}
+.toggle small{display:block;color:var(--muted);font-size:12.5px}
+.toggle input{width:46px;height:26px;flex:none;accent-color:var(--gold)}
+details.more{margin-top:18px} details.more summary{cursor:pointer;color:var(--gold-p);font-weight:600;font-size:14px;padding:6px 0}
+.done-ic{width:76px;height:76px;border-radius:50%;margin:8px auto 14px;display:grid;place-items:center;font-size:36px;background:rgba(198,164,108,.12);border:1px solid var(--line-gold)}
+.linkbox{display:flex;align-items:center;gap:10px;padding:0 6px 0 14px;height:54px;border-radius:14px;background:var(--card);border:1.5px solid var(--line-gold);margin-top:18px}
+.linkbox span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--gold-p)}
+.linkbox button{height:42px;padding:0 14px;border-radius:10px;background:var(--gold-grad);color:#1a0e00;font-weight:700;font-size:13px}
+.share{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.share a,.share button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:76px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--text);text-decoration:none}
+.share .ic{font-size:22px}
+.qr{display:block;width:180px;height:180px;margin:18px auto 0;padding:10px;border-radius:16px;background:#fff}
+.ahead{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.recap{margin-top:16px;padding:16px;border-radius:16px;background:linear-gradient(160deg,#121c38,#0a1024);border:1px solid var(--line-gold);font-size:14px;line-height:1.5}
+.recap b{color:var(--gold-p)}
+.banner{margin-top:16px;padding:16px;border-radius:16px;border:1px solid rgba(60,207,145,.4);background:rgba(60,207,145,.08);font-size:14px;line-height:1.5}
+.tabs2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:20px 0 4px;border-bottom:1px solid var(--line)}
+.tabs2 button{height:44px;font-weight:600;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs2 button.on{color:var(--gold-p);border-bottom-color:var(--gold)}
+.arow{display:grid;grid-template-columns:30px 40px 1fr auto;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.arow.me{background:rgba(198,164,108,.07);border-radius:12px;border-bottom-color:transparent;padding:12px 8px;margin:4px -4px}
+.arow .av{width:40px;height:40px;font-size:13px}
+.arow .rk{font-weight:700;color:var(--muted);text-align:center} .arow .nm b{display:block;font-size:14.5px} .arow .nm small{color:var(--muted);font-size:12px}
+.arow .v{text-align:right} .arow .v b{display:block;font-size:15px} .arow .v small{font-size:11.5px;font-weight:700}
+.gap{margin-top:14px;font-size:13px;color:var(--muted);text-align:center;line-height:1.5}
+.fi{display:grid;grid-template-columns:36px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.fi .av{width:36px;height:36px;font-size:12px}
+.fi p{margin:0;font-size:14px;line-height:1.5} .fi small{color:var(--muted);font-size:12px}
+.reacts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.reacts button{height:32px;min-width:44px;padding:0 10px;border-radius:999px;background:var(--card-2);border:1px solid var(--line);font-size:13px;display:inline-flex;align-items:center;gap:5px}
+.reacts button.on{border-color:var(--gold);background:rgba(198,164,108,.12)}
+.kvlist div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px} .kvlist span{color:var(--muted)}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.mrow button{height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,107,107,.4);color:#ff9a9a;font-size:12.5px;font-weight:600}
+/* Talente */
+.msg{padding:22px;border-radius:22px;background:linear-gradient(160deg,#18233f,#0b1126);border:1px solid var(--gold);position:relative;overflow:hidden}
+.msg .top2{display:flex;gap:14px;align-items:center}
+.msg img{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex:none}
+.msg .kick{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--gold-l)}
+.msg h3{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.3;margin:18px 0 12px}
+.msg p{margin:0 0 12px;font-size:14.5px;line-height:1.65;color:#d7dbe6}
+.msg .sig{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--gold-p);margin-top:6px}
+.steps{position:relative;margin-top:6px}
+.stp{display:grid;grid-template-columns:30px 1fr;gap:14px;padding:12px 0;position:relative}
+.stp::before{content:"";position:absolute;left:14px;top:40px;bottom:-12px;width:2px;background:var(--line)}
+.stp:last-child::before{display:none}
+.stp .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--card-2);border:1px solid var(--line);color:var(--muted)}
+.stp.done .n{background:rgba(60,207,145,.14);border-color:rgba(60,207,145,.5);color:var(--up)}
+.stp.cur .n{background:var(--gold-grad);color:#1a0e00;border-color:transparent}
+.stp b{display:block;font-size:15px;margin-top:4px} .stp small{display:block;color:var(--muted);font-size:13px;line-height:1.5;margin-top:4px}
+.chk{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;color:var(--muted)} .chk.ok{color:var(--up)}
+.sbar{margin-top:14px} .sbar .l{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px} .sbar .l span{color:var(--muted)}
+.sbar .t{height:8px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden} .sbar .t i{display:block;height:100%;background:var(--gold-grad)}
+.bigscore{display:flex;align-items:baseline;gap:10px} .bigscore b{font-family:var(--serif);font-size:44px;font-weight:400;line-height:1} .bigscore span{color:var(--muted);font-size:14px}
+.appcard{padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
+.appcard h4{margin:0;font-size:16px} .appcard .q{margin-top:12px;font-size:13.5px;line-height:1.55} .appcard .q span{display:block;color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
+.appcard select{width:100%;height:48px;border-radius:12px;background:var(--card-2);border:1.5px solid var(--line);color:var(--text);padding:0 12px;margin-top:14px}
+.cnt{font-size:12px;color:var(--muted);text-align:right;margin-top:4px}
+
 /* Anleger entdecken / Copy Trading */
 .trader{display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center;padding:16px;border-radius:18px;background:var(--card);border:1px solid var(--line);width:100%;text-align:left}
 .trader:hover{border-color:var(--line-gold)}
@@ -430,8 +519,9 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
     </div>
   </header>
 
+  <div class="books" id="books" hidden></div>
   <section class="hero">
-    <small>Mein Depot · Spielgeld</small>
+    <small id="heroLbl">Mein Depot · Spielgeld</small>
     <div class="val num" id="equity">100.000,00 €</div>
     <div class="chg num" id="equityChg"></div>
     <div class="stats">
@@ -439,7 +529,7 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
       <div class="stat"><small>Investiert</small><b class="num" id="invested">–</b></div>
       <div class="stat"><small>Heute</small><b class="num" id="today">–</b></div>
     </div>
-    <button class="rankline" data-go="arena"><span>🏆 Rang <b class="num" id="myRank">–</b> von <span id="nPlayers">–</span> · Monatswertung</span><span class="muted">Arena ›</span></button>
+    <button class="rankline" data-go="arena"><span>🏆 Rang <b class="num" id="myRank">–</b> von <span id="nPlayers">–</span> · <span id="rankLbl">Monatswertung</span></span><span class="muted">Arena ›</span></button>
   </section>
 
   <div class="coach" id="coach">
@@ -481,6 +571,42 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
 
   <!-- ARENA / COMMUNITY -->
   <main id="tab-arena" hidden>
+    <div class="seg3" id="arenaSeg"><button data-aseg="global" class="on">Global</button><button data-aseg="mine">Meine Arenen</button><button data-aseg="talents">Talente</button></div>
+
+    <section id="arMine" hidden>
+      <div class="sec-h"><h2>Meine Arenen</h2><span class="muted num" style="font-size:12px" id="myArCount"></span></div>
+      <div class="intro" id="arIntro"><h3>Ihre eigene Arena</h3><p>Eröffnen Sie eine private Arena und messen Sie sich mit Freunden, Kollegen und Bekannten. Ein Link genügt zum Einladen.</p><button class="cta" data-arnew>+ Eigene Arena eröffnen</button></div>
+      <div class="list" id="myArenas" style="margin-top:14px"></div>
+      <button class="btn2" data-arnew id="arNewBtn2" style="margin-top:14px" hidden>+ Weitere Arena eröffnen</button>
+      <div class="sec-h"><h2>Gruppen-Liga</h2><span class="muted" style="font-size:12px">ab 3 Mitgliedern</span></div>
+      <p class="sec-sub">Arenen treten gegeneinander an. Gewertet wird die durchschnittliche Rendite der besten fünf Mitglieder. Private Arenen erscheinen ohne Namen.</p>
+      <div class="list" id="league"></div>
+    </section>
+
+    <section id="arTalents" hidden>
+      <div class="msg" id="tlMsg" style="margin-top:14px"></div>
+      <div class="sec-h"><h2>Ihr Weg zum Pitch</h2><span class="muted num" style="font-size:12px" id="tlQuarter"></span></div>
+      <div class="card"><div class="steps" id="tlSteps"></div><div id="tlCta"></div></div>
+      <div class="sec-h"><h2>Ihr Talent-Score</h2></div>
+      <div class="card" id="tlScore"></div>
+      <div class="sec-h"><h2>Top-Talente</h2><span class="muted" style="font-size:12px">dieses Quartal</span></div>
+      <div class="lb" id="tlTop"></div>
+      <div class="sec-h"><h2>Pitch-Day</h2></div>
+      <div class="card" id="tlPitch"></div>
+      <details class="more"><summary>So entsteht der Talent-Score</summary>
+        <div class="kvlist" style="margin-top:8px">
+          <div><span>Rendite im Verhältnis zum Risiko</span><b>35 %</b></div>
+          <div><span>Verlustbegrenzung (größter Rückgang)</span><b>20 %</b></div>
+          <div><span>Beständigkeit (positive Wochen)</span><b>20 %</b></div>
+          <div><span>Disziplin (Stop-Loss, Positionsgrößen)</span><b>15 %</b></div>
+          <div><span>Begründungen zu den Trades</span><b>10 %</b></div>
+        </div>
+        <p class="fine" style="text-align:left">Gewertet wird das Hauptdepot der letzten 90 Tage. Wer in einem Quartal sein Depot zurücksetzt, nimmt erst im nächsten Quartal wieder teil. Das Scouting ist eine Chance auf ein Gespräch, kein Stellenangebot.</p>
+      </details>
+      <button class="btn2" id="tlBoardBtn" style="margin-top:22px" hidden>Scouting-Board öffnen (Admin)</button>
+    </section>
+
+    <section id="arGlobal">
     <div class="sec-h"><h2>Preise des Monats</h2><span class="muted" style="font-size:12px" id="countdown"></span></div>
     <div class="prizes">
       <div class="prize"><div class="ic">🏆</div><b>Monatssieger</b><small>Höchste Rendite im Monat, long oder short</small><div class="win">Short-Selling-Kurs<br><span class="val">Wert 1.100 €</span></div></div>
@@ -504,6 +630,7 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
     <div class="chips" id="lbTabs"></div>
     <div class="lb" id="leaderboard"></div>
     <p class="fine">Tippen Sie auf einen Trader, um sein Profil zu sehen. Mit „Beispiel“ markierte Trader sind Demo-Profile.</p>
+    </section>
   </main>
 
   <!-- FONDS -->
@@ -602,6 +729,8 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
       </div>
     </div>
 
+    <div class="step" id="noteStep"><label>Ihre Begründung <span class="muted" style="text-transform:none;letter-spacing:0">optional · zählt fürs Talent-Programm</span></label>
+      <input class="inp" id="tNote" maxlength="200" placeholder="Warum dieser Trade? Ein Satz genügt."></div>
     <div class="step" id="slStep"><label>4 · Absicherung</label>
       <div class="seg c4">
         <button class="opt" data-sl="0">Kein<small>Stop</small></button>
@@ -662,6 +791,99 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
     </div>
     <div class="coach mini" id="fdTip"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundInvest"></p></div><button class="say" data-saykey="fundInvest" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
     <p class="fine" id="fdFine">Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.</p>
+  </div>
+</section>
+
+<!-- Private Arena eröffnen -->
+<section class="sheet" id="arNew" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><h3>Eigene Arena eröffnen</h3><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="step"><label>Name</label><input class="inp" id="anName" maxlength="40" placeholder="z. B. Büro-Bullen"><div class="urlprev" id="anUrl"></div></div>
+    <div class="step"><label>Depot</label>
+      <button class="optrow on" data-anmode="main"><span class="dot2"></span><span><b>Mit dem Hauptdepot</b><small>Alle treten mit ihrem normalen Depot an. Gewertet wird die Rendite ab dem Beitritt.</small></span></button>
+      <button class="optrow" data-anmode="own"><span class="dot2"></span><span><b>Eigenes Arena-Depot</b><small>Jedes Mitglied bekommt für diese Arena ein separates Depot. Ideal, um eine zweite Strategie zu testen.</small></span></button>
+      <div id="anStartBox" hidden style="margin-top:12px"><div class="seg c2"><button class="opt on" data-anstart="fresh">Neu mit 100.000 €<small>leeres Depot</small></button><button class="opt" data-anstart="copy">Hauptdepot kopieren<small>als Startpunkt</small></button></div></div>
+    </div>
+    <div class="step"><label>Zeitraum</label>
+      <div class="seg c4"><button class="opt on" data-anper="1m">1 Monat</button><button class="opt" data-anper="3m">3 Monate</button><button class="opt" data-anper="open">Ohne Ende</button><button class="opt" data-anper="until">Bis …</button></div>
+      <input class="inp" id="anUntil" type="date" style="margin-top:10px" hidden>
+    </div>
+    <div class="step"><label>Sichtbarkeit</label>
+      <button class="optrow on" data-anvis="private"><span class="dot2"></span><span><b>Privat</b><small>Nur wer den Einladungslink hat, kann beitreten.</small></span></button>
+      <button class="optrow" data-anvis="public"><span class="dot2"></span><span><b>Öffentlich</b><small>Mit Namen in der Gruppen-Liga und im Scouting sichtbar.</small></span></button>
+    </div>
+    <details class="more"><summary>Weitere Regeln (optional)</summary>
+      <label class="toggle"><span>Trades im Aktivitäts-Feed zeigen<small>Aus: Mitglieder sehen nur, dass gehandelt wurde, nicht was.</small></span><input type="checkbox" id="anTrades" checked></label>
+    </details>
+    <div class="alert" id="anErr" hidden></div>
+    <button class="cta" id="anGo">Arena eröffnen</button>
+  </div>
+</section>
+
+<!-- Einladen / Teilen -->
+<section class="sheet" id="arShare" role="dialog" aria-modal="true">
+  <div class="sheet-in" style="text-align:center">
+    <div class="grab"></div>
+    <div class="sheet-h"><span></span><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="done-ic" id="shIc">🎉</div>
+    <h3 style="font-family:var(--serif);font-weight:400;font-size:24px;margin:0" id="shTitle">Ihre Arena steht</h3>
+    <p class="muted" style="margin:8px 0 0;font-size:14px;line-height:1.55" id="shSub">Laden Sie jetzt Freunde und Kollegen ein.</p>
+    <div class="linkbox"><span id="shLink"></span><button id="shCopy">Kopieren</button></div>
+    <div class="share"><a id="shWa" target="_blank" rel="noopener"><span class="ic">💬</span>WhatsApp</a><button id="shNative"><span class="ic">📤</span>Teilen …</button><a id="shMail"><span class="ic">✉️</span>E-Mail</a></div>
+    <img class="qr" id="shQr" alt="QR-Code zur Einladung">
+    <p class="fine">QR-Code zum Scannen, z. B. im Büro.</p>
+    <button class="btn2" id="shOpen" style="margin-top:18px">Zur Arena</button>
+  </div>
+</section>
+
+<!-- Arena beitreten -->
+<section class="sheet" id="arJoin" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Einladung</span><h3 id="ajName"></h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div id="ajBody"></div>
+    <div id="ajStart" hidden><div class="step"><label>Ihr Arena-Depot</label><div class="seg c2"><button class="opt on" data-ajstart="fresh">Neu mit 100.000 €<small>leeres Depot</small></button><button class="opt" data-ajstart="copy">Hauptdepot kopieren<small>als Startpunkt</small></button></div></div></div>
+    <button class="cta" id="ajGo">Arena beitreten</button>
+  </div>
+</section>
+
+<!-- Arena-Detail -->
+<section class="sheet" id="arSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div style="min-width:0"><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600" id="asKick"></span><h3 id="asName"></h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="ahead" id="asHead"></div>
+    <div id="asTop"></div>
+    <div class="tabs2" id="asTabs"><button data-astab="rank" class="on">Rangliste</button><button data-astab="feed">Aktivität</button><button data-astab="info">Info</button></div>
+    <div id="asBody"></div>
+  </div>
+</section>
+
+<!-- Talent: beim Analystenteam vorstellen -->
+<section class="sheet" id="tlApply" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><h3>Beim Analystenteam vorstellen</h3><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <p class="muted" style="font-size:14px;line-height:1.55;margin:12px 2px 0">Drei kurze Antworten genügen. Das Analystenteam von Florian Homm sieht dazu Ihre Kennzahlen aus der Arena.</p>
+    <div class="step"><label>Ihr vollständiger Name</label><input class="inp" id="taName" maxlength="80" autocomplete="name"></div>
+    <div class="step"><label>Ihre Strategie</label><textarea class="inp" id="taStrat" rows="4" maxlength="1200" placeholder="Wie suchen Sie Ihre Trades aus, und wie begrenzen Sie Verluste?"></textarea><div class="cnt" data-cnt="taStrat"></div></div>
+    <div class="step"><label>Ihr bester Trade</label><textarea class="inp" id="taBest" rows="4" maxlength="1200" placeholder="Welcher Trade war Ihr bester, und warum haben Sie ihn so gemacht?"></textarea><div class="cnt" data-cnt="taBest"></div></div>
+    <div class="step"><label>Ihr Ziel</label><textarea class="inp" id="taGoal" rows="3" maxlength="800" placeholder="Was möchten Sie in den nächsten Jahren erreichen?"></textarea><div class="cnt" data-cnt="taGoal"></div></div>
+    <div class="step"><label>Video (optional)</label><input class="inp" id="taVideo" maxlength="300" placeholder="Link zu einem 60-Sekunden-Video, z. B. YouTube (nicht gelistet)"></div>
+    <label class="optin"><input type="checkbox" id="taOk"><span>Ich bin einverstanden, dass meine Antworten, mein Name, meine E-Mail-Adresse und meine Kennzahlen aus der Arena an das Analystenteam von Florian Homm weitergegeben werden und es mich kontaktieren darf.</span></label>
+    <div class="alert" id="taErr2" hidden></div>
+    <button class="cta" id="taSend" disabled>Vorstellung absenden</button>
+  </div>
+</section>
+
+<!-- Scouting-Board (Admin) -->
+<section class="sheet" id="tlBoard" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600" id="tbQ">Scouting-Board</span><h3>Talente</h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="chips" id="tbFilter" style="margin-top:14px"></div>
+    <div class="list" id="tbList"></div>
   </div>
 </section>
 
@@ -809,6 +1031,9 @@ const TIPS = {
   fundIntro:'Hier zeigt die Community, was sie kann. Jeder kann Fondsmanager werden. Die Besten stehen oben, und alle sehen, wer wirklich etwas vom Geschäft versteht.',
   account:'Ihr Spielstand wird auf dem Server gespeichert. Sie können sich auf jedem Gerät anmelden und dort weitermachen.',
   empty:'Noch keine Positionen. Ein guter Trader wartet auf die richtige Gelegenheit. Aber zum Lernen dürfen Sie hier ruhig einfach anfangen.',
+  arenas:'Am meisten lernen Sie im Vergleich mit Leuten, die Sie kennen. Eröffnen Sie eine Arena, schicken Sie den Link in Ihre Gruppe und schauen Sie, wer nach einem Monat vorne liegt.',
+  talents:'Ich suche keine Zocker. Ich suche Leute, die ihr Risiko im Griff haben. Wer das zeigt, kann sich bei meinem Analystenteam vorstellen.',
+  scouting:'Ich suche keine Zocker. Ich suche Talente.',
   arena:'Hier treten Sie gegen die Community an. Wichtig: Gewinnen kann man long wie short. Der Markt muss nicht steigen, damit Sie vorne liegen.',
   profile:'Schauen Sie ruhig, was die Besten halten. Aber kopieren Sie nie blind. Verstehen Sie zuerst, warum jemand eine Position hat.'
 };
@@ -820,8 +1045,9 @@ const BADGES = [['first','🥇 Erster Trade'],['short','📉 Erster Short'],['st
 let Q = {}, fx = 1.12;
 let S = {cash:START, pos:[], hist:[], realized:0, mode:null, badges:{}, xp:0, active:{}, follow:{}, equity:START, eqPrev:START};
 let ME = null, CFG = {freehomes:false}, LB = [], FUNDS = [], AUDIO = new Set(), FD = null, DISC = {traders:[], gurus:[]};
-let ui = {tab:'markt', filter:'all', lb:'mon', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
+let ui = {book:null, aseg:'global', tab:'markt', filter:'all', lb:'mon', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
 async function api(path, opts={}){
+  if(ui.book && /^\/api\/(state(\?|$)|orders|positions\/|funds\/\d+\/invest|copy)/.test(path) && opts.method!=='PATCH' && !/reset/.test(path)) path += (path.includes('?')?'&':'?')+'book='+ui.book;
   const r = await fetch(path, {method:opts.method||(opts.body?'POST':'GET'), credentials:'same-origin', cache:'no-store',
     headers: opts.body!==undefined ? {'Content-Type':'application/json'} : {}, body: opts.body!==undefined ? JSON.stringify(opts.body) : undefined});
   const d = await r.json().catch(()=>({}));
@@ -988,6 +1214,10 @@ function renderHeader(){
   $('#cash').textContent=eur(S.cash,0); $('#invested').textContent=eur(inv,0);
   $('#today').innerHTML=`<span class="${cls(td)}">${pct(td/Math.max(eq-td,1),1)}</span>`;
   const r=ranked('mon'), ix=r.findIndex(x=>x.me); $('#myRank').textContent=ix>=0?ix+1:'–'; $('#nPlayers').textContent=r.length||'–';
+  // Im Arena-Depot: Platz in dieser Arena statt globaler Monatswertung
+  const ba=ui.book&&MYA.arenas.find(a=>a.id===ui.book), rl=$('.rankline');
+  if(ba&&ba.me){ $('#myRank').textContent=ba.me.rank; $('#nPlayers').textContent=ba.members; $('#rankLbl').textContent=ba.name; rl.dataset.arena=ba.slug; delete rl.dataset.go; }
+  else { $('#rankLbl').textContent='Monatswertung'; rl.dataset.go='arena'; delete rl.dataset.arena; }
   if(ME){ $('#acctInit').textContent=initials(ME.name); $('#acctBtn').style.background=ME.color||''; }
   $('#navBadge').hidden=!S.pos.length; $('#navBadge').textContent=S.pos.length;
   document.body.classList.toggle('pro',pro());
@@ -1191,7 +1421,8 @@ $('#go').onclick=async()=>{
   const o=quote(); if(o.amt<100 || o.amt>S.cash+.01) return;
   const btn=$('#go'); btn.disabled=true;
   try{
-    const r=await api('/api/orders',{body:{sym:ui.sym,dir:ui.dir,kind:ui.kind,lev:ui.lev,mny:ui.mny,tenor:ui.tenor,sl:ui.kind==='option'?0:ui.sl,amt:o.amt}});
+    const r=await api('/api/orders',{body:{sym:ui.sym,dir:ui.dir,kind:ui.kind,lev:ui.lev,mny:ui.mny,tenor:ui.tenor,sl:ui.kind==='option'?0:ui.sl,amt:o.amt,note:$('#tNote').value}});
+    $('#tNote').value='';
     setState(r.state); closeSheets(); render(); loadLB().then(renderArena);
     toast(`${ui.dir>0?'Long':'Short'} ${META[ui.sym].n} eröffnet · ${eur(o.amt,0)}`); showEvents(r.events);
     coach(ui.kind==='lev'?'lev':'live');
@@ -1221,6 +1452,217 @@ async function openProfile(id){
 $('#pfVal').onclick=()=>{ const on=$('#pfHold').classList.toggle('on'); $('#pfVal').setAttribute('aria-expanded',on); };
 $('#pfFollow').onclick=async e=>{ const b=e.currentTarget, id=b.dataset.id, on=!S.follow[id];
   try{ setState(await api('/api/state',{method:'PATCH',body:{follow:{[id]:on}}})); b.textContent=on?'✓ Sie folgen '+b.dataset.name:'+ Folgen'; renderArena(); }catch(err){ toast(err.message); } };
+
+/* ---------- Depots: Hauptdepot und eigene Arena-Depots ---------- */
+let MYA = {arenas:[], league:[]};
+const BOOKS = () => MYA.arenas.filter(a=>a.mode==='own'&&a.member);
+async function loadArenas(){ if(!ME) return; try{ MYA=await api('/api/arenas'); }catch(e){} }
+function renderBooks(){
+  const b=BOOKS(), box=$('#books'); box.hidden=!b.length;
+  if(ui.book && !b.some(a=>a.id===ui.book)) ui.book=null;
+  box.innerHTML=b.length?`<button data-book="0" class="${ui.book?'':'on'}"><i style="background:var(--up)"></i>Hauptdepot</button>`+b.map(a=>`<button data-book="${a.id}" class="${ui.book===a.id?'on':''}"><i></i>${esc(a.name)}</button>`).join(''):'';
+  const cur=b.find(a=>a.id===ui.book); $('#heroLbl').textContent=cur?`Arena-Depot · ${cur.name}`:'Mein Depot · Spielgeld';
+  $('#resetBtn').hidden=!!ui.book;
+}
+async function switchBook(id){ ui.book=id||null; renderBooks(); await refresh(false); toast(ui.book?`Sie handeln jetzt im Arena-Depot „${(BOOKS().find(a=>a.id===ui.book)||{}).name}“.`:'Sie handeln jetzt im Hauptdepot.'); }
+$('#books').addEventListener('click',e=>{ const b=e.target.closest('[data-book]'); if(b) switchBook(+b.dataset.book); });
+
+/* ---------- Private Arenen ---------- */
+const PER={'1m':'1 Monat','3m':'3 Monate','open':'Ohne Ende','until':'Bis Datum'};
+const left = t => { if(!t) return 'ohne Ende'; const h=Math.max(0,Math.round((t-Date.now())/36e5)); return h>48?`noch ${Math.round(h/24)} Tage`:h>0?`noch ${h} Std.`:'beendet'; };
+const ago = ts => { const m=Math.round((Date.now()-ts)/6e4); return m<1?'gerade eben':m<60?`vor ${m} Min.`:m<1440?`vor ${Math.round(m/60)} Std.`:`vor ${Math.round(m/1440)} Tagen`; };
+const mv = n => n>0?`<small class="up">▲ ${n}</small>`:n<0?`<small class="down">▼ ${-n}</small>`:'<small class="muted">–</small>';
+const inviteUrl = a => `${location.origin}/a/${a.slug}`;
+let AN={mode:'main',start:'fresh',period:'1m',vis:'private'}, AR=null, asTab='rank', AJ=null;
+function renderMine(){
+  const list=MYA.arenas; $('#myArCount').textContent=list.length?list.length+(list.length===1?' Arena':' Arenen'):'';
+  $('#arIntro').hidden=!!list.length; $('#arNewBtn2').hidden=!list.length;
+  $('#myArenas').innerHTML=list.map(a=>`<button class="acard" data-arena="${esc(a.slug)}"><div class="h"><div style="min-width:0"><b>${esc(a.name)}</b>
+      <div class="tags"><span class="pill2">${a.mode==='own'?'Eigenes Depot':'Hauptdepot'}</span><span class="pill2">${a.ended?'Runde beendet':left(a.endsAt)}</span>${a.visibility==='public'?'<span class="pill2">Öffentlich</span>':''}</div></div>
+      <div class="r num">${a.me?`<b class="${cls(a.me.ret)}">${pct(a.me.ret,1)}</b><small>Platz ${a.me.rank} von ${a.members}</small>`:''}</div></div>
+    <div class="foot3"><span class="avs">${a.top.map(t=>avatar(t)).join('')}</span><span>${a.members} ${a.members===1?'Mitglied':'Mitglieder'} · ${a.me&&a.me.move?(a.me.move>0?'▲ '+a.me.move:'▼ '+(-a.me.move))+' seit gestern':'Ansehen →'}</span></div></button>`).join('');
+  $('#league').innerHTML=MYA.league.length?MYA.league.map(l=>`<${l.slug?'button':'div'} class="lg ${l.mine?'mine':''}" ${l.slug?`data-arena="${esc(l.slug)}"`:''}><span class="rk">${l.rank<4?['🥇','🥈','🥉'][l.rank-1]:l.rank}</span><span><b>${esc(l.name)}</b><small>${l.members} Mitglieder</small></span><b class="num ${cls(l.score)}">${pct(l.score,1)}</b></${l.slug?'button':'div'}>`).join('')
+    :'<div class="empty">Sobald Arenen drei Mitglieder haben, startet hier die Gruppen-Liga.</div>';
+}
+function openNew(){
+  if(!ME) return; AN={mode:'main',start:'fresh',period:'1m',vis:'private'};
+  $('#anName').value=''; $('#anUntil').hidden=true; $('#anErr').hidden=true; $('#anTrades').checked=true; syncNew(); openSheet('#arNew'); $('#anName').focus();
+}
+function syncNew(){
+  $$('[data-anmode]').forEach(b=>b.classList.toggle('on',b.dataset.anmode===AN.mode)); $('#anStartBox').hidden=AN.mode!=='own';
+  $$('[data-anstart]').forEach(b=>b.classList.toggle('on',b.dataset.anstart===AN.start));
+  $$('[data-anper]').forEach(b=>b.classList.toggle('on',b.dataset.anper===AN.period)); $('#anUntil').hidden=AN.period!=='until';
+  $$('[data-anvis]').forEach(b=>b.classList.toggle('on',b.dataset.anvis===AN.vis));
+  const slug=($('#anName').value||'name-ihrer-arena').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'name-ihrer-arena';
+  $('#anUrl').innerHTML=`Einladungslink: <b>${esc(location.host)}/a/${esc(slug)}</b>`;
+}
+$('#arNew').addEventListener('click',e=>{ const t=e.target;
+  const m=t.closest('[data-anmode]'); if(m){ AN.mode=m.dataset.anmode; syncNew(); }
+  const st=t.closest('[data-anstart]'); if(st){ AN.start=st.dataset.anstart; syncNew(); }
+  const pe=t.closest('[data-anper]'); if(pe){ AN.period=pe.dataset.anper; syncNew(); }
+  const v=t.closest('[data-anvis]'); if(v){ AN.vis=v.dataset.anvis; syncNew(); } });
+$('#anName').addEventListener('input',syncNew);
+$('#anGo').onclick=async()=>{ const b=$('#anGo'); b.disabled=true;
+  try{ const a=await api('/api/arenas',{body:{name:$('#anName').value,mode:AN.mode,start:AN.start,period:AN.period,until:$('#anUntil').value,visibility:AN.vis,showTrades:$('#anTrades').checked}});
+    await loadArenas(); renderMine(); renderBooks(); closeSheets(); setTimeout(()=>openShare(a,true),60); }
+  catch(e){ $('#anErr').textContent=e.message; $('#anErr').hidden=false; } finally{ b.disabled=false; } };
+function openShare(a, fresh){
+  const url=inviteUrl(a), text=`Ich habe eine Arena eröffnet: „${a.name}“. Treten Sie mit 100.000 € Spielgeld gegen mich an: ${url}`;
+  $('#shIc').textContent=fresh?'🎉':'📨'; $('#shTitle').textContent=fresh?'Ihre Arena steht':'Freunde einladen'; $('#shSub').textContent=fresh?'Laden Sie jetzt Freunde und Kollegen ein. Wer den Link öffnet, ist mit einem Tipp dabei.':`Teilen Sie den Link zu „${a.name}“.`;
+  $('#shLink').textContent=url.replace(/^https?:\/\//,''); $('#shWa').href='https://wa.me/?text='+encodeURIComponent(text);
+  $('#shMail').href=`mailto:?subject=${encodeURIComponent('Einladung: '+a.name+' · Investment Arena')}&body=${encodeURIComponent(text)}`;
+  $('#shNative').hidden=!navigator.share; $('#shQr').src=`/qr/a/${a.slug}.svg`;
+  $('#shCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(url); $('#shCopy').textContent='✓ Kopiert'; setTimeout(()=>$('#shCopy').textContent='Kopieren',1800); }catch(e){ toast(url); } };
+  $('#shNative').onclick=()=>navigator.share({title:a.name+' · Investment Arena',text,url}).catch(()=>{});
+  $('#shOpen').onclick=()=>{ closeSheets(); setTimeout(()=>openArena(a.slug),60); };
+  openSheet('#arShare');
+}
+async function openArena(slug){
+  try{ AR=await api('/api/arenas/by/'+encodeURIComponent(slug)); }catch(e){ return toast(e.message); }
+  if(AR.preview) return openJoin(AR);
+  asTab='rank'; renderArenaSheet(); closeSheets(); setTimeout(()=>openSheet('#arSheet'),40);
+}
+function renderArenaSheet(){
+  const a=AR, me=a.rows.find(r=>r.id===ME.id);
+  $('#asKick').textContent=`${a.mode==='own'?'Eigenes Depot':'Hauptdepot'} · Runde ${a.round}`; $('#asName').textContent=a.name;
+  $('#asHead').innerHTML=`<span class="pill2">👥 ${a.members}</span><span class="pill2">⏱ ${a.ended?'Runde beendet':left(a.endsAt)}</span>${a.league&&a.league.rank?`<span class="pill2">Liga: Platz ${a.league.rank} von ${a.league.of}</span>`:''}`;
+  let top='';
+  if(a.ended){ const w=a.rows[0]; top+=`<div class="banner">🏆 <b>${esc(w?w.name:'')}</b> gewinnt Runde ${a.round} mit ${w?pct(w.ret,1):''}.${a.owner?' Starten Sie unter „Info“ eine neue Runde.':''}</div>`; }
+  else if(me && me.weekMove!=null){ top+=`<div class="recap">Ihre Woche: <b>Platz ${me.rank}</b> ${me.weekMove>0?`(▲ ${me.weekMove})`:me.weekMove<0?`(▼ ${-me.weekMove})`:''} · <b class="${cls(me.weekRet)}">${pct(me.weekRet,1)}</b> in 7 Tagen.</div>`; }
+  if(a.mode==='own' && !a.ended) top+=`<button class="btn2" style="margin-top:14px" data-gobook="${a.id}">${ui.book===a.id?'✓ Sie handeln in diesem Arena-Depot':'Zum Arena-Depot wechseln und handeln'}</button>`;
+  $('#asTop').innerHTML=top;
+  $$('[data-astab]').forEach(b=>b.classList.toggle('on',b.dataset.astab===asTab));
+  const body=$('#asBody');
+  if(asTab==='rank'){
+    const i=a.rows.findIndex(r=>r.id===ME.id), ahead=i>0?a.rows[i-1]:null;
+    body.innerHTML=a.rows.map(r=>`<button class="arow ${r.id===ME.id?'me':''}" ${r.id===ME.id?'':`data-person="${r.id}"`}><span class="rk">${r.rank<4?['🥇','🥈','🥉'][r.rank-1]:r.rank}</span>${avatar(r)}
+      <span class="nm"><b>${esc(r.id===ME.id?r.name+' (Sie)':r.name)}${r.owner?' <span class="bot">Gründer</span>':''}</b><small>${esc(r.sub)}</small></span>
+      <span class="v num"><b class="${cls(r.ret)}">${pct(r.ret,1)}</b>${mv(r.move)}</span></button>`).join('')
+      + (ahead?`<p class="gap">Ihnen fehlen <b class="num" style="color:var(--gold-p)">${nf((ahead.ret-a.rows[i].ret)*100,2)} Prozentpunkte</b> auf Platz ${ahead.rank}.</p>`:i===0&&a.rows.length>1?'<p class="gap">Sie führen. Halten Sie Ihr Risiko im Griff.</p>':'')
+      + `<button class="cta" style="margin-top:18px" data-ashare>+ Freunde einladen</button>`;
+  } else if(asTab==='feed'){
+    body.innerHTML=a.feed.length?a.feed.map(f=>`<div class="fi">${avatar({name:f.name||'?',color:f.color})}<div><p><b>${esc(f.userId===ME.id?'Sie':f.name||'')}</b> ${esc(f.text)}</p><small>${ago(f.ts)}</small>
+      ${f.kind==='join'||f.kind==='round'?'':`<div class="reacts">${['🔥','🚀','😂','🐻'].map(e=>`<button data-react="${f.id}" data-emoji="${e}" class="${f.mine===e?'on':''}">${e}${f.reactions[e]?` <span class="num">${f.reactions[e]}</span>`:''}</button>`).join('')}</div>`}</div></div>`).join('')
+      :'<div class="empty" style="margin-top:16px">Noch keine Aktivität. Der erste Trade gehört Ihnen.</div>';
+  } else {
+    let h=`<div class="kvlist"><div><span>Depot</span><b>${a.mode==='own'?'Eigenes Arena-Depot':'Hauptdepot'}</b></div><div><span>Zeitraum</span><b>${PER[a.period]||''}</b></div>
+      <div><span>Läuft seit</span><b>${dshort2(a.startsAt)}</b></div><div><span>Ende</span><b>${a.endsAt?dshort2(a.endsAt):'offen'}</b></div>
+      <div><span>Sichtbarkeit</span><b>${a.visibility==='public'?'Öffentlich':'Privat'}</b></div><div><span>Trades im Feed</span><b>${a.showTrades?'sichtbar':'verborgen'}</b></div></div>
+      <div class="linkbox"><span>${esc(inviteUrl(a).replace(/^https?:\/\//,''))}</span><button data-ashare>Teilen</button></div>`;
+    if(a.owner){
+      h+=`<div class="sec-h" style="margin-top:28px"><h2 style="font-size:19px">Verwalten</h2></div>
+        <div class="step" style="margin-top:6px"><label>Name</label><input class="inp" id="asNameIn" maxlength="40" value="${esc(a.name)}"></div>
+        <label class="toggle" style="margin-top:12px"><span>Öffentlich<small>mit Namen in der Gruppen-Liga</small></span><input type="checkbox" id="asPub" ${a.visibility==='public'?'checked':''}></label>
+        <label class="toggle"><span>Trades im Feed zeigen</span><input type="checkbox" id="asTr" ${a.showTrades?'checked':''}></label>
+        <button class="btn2" id="asSave" style="margin-top:8px">Änderungen speichern</button>
+        <button class="btn2" id="asRound" style="margin-top:12px">Neue Runde starten</button>
+        <div class="sec-h" style="margin-top:28px"><h2 style="font-size:19px">Mitglieder</h2></div>
+        ${a.rows.map(r=>`<div class="mrow"><span>${esc(r.name)}${r.owner?' <span class="muted">· Gründer</span>':''}</span>${r.owner?'':`<button data-kick="${r.id}">Entfernen</button>`}</div>`).join('')}
+        <button class="btn2 danger" id="asDel" style="margin-top:22px">Arena löschen</button>`;
+    } else h+=`<button class="btn2 danger" id="asLeave" style="margin-top:22px">Arena verlassen</button>`;
+    body.innerHTML=h;
+  }
+}
+async function reloadArena(){ AR=await api('/api/arenas/by/'+encodeURIComponent(AR.slug)); renderArenaSheet(); }
+$('#arSheet').addEventListener('click',async e=>{ const t=e.target;
+  const tb=t.closest('[data-astab]'); if(tb){ asTab=tb.dataset.astab; renderArenaSheet(); return; }
+  if(t.closest('[data-ashare]')){ openShare(AR,false); return; }
+  const gb=t.closest('[data-gobook]'); if(gb){ closeSheets(); await switchBook(+gb.dataset.gobook); document.querySelector('.nav [data-tab="markt"]').click(); return; }
+  const rc=t.closest('[data-react]'); if(rc){ try{ AR.feed=(await api(`/api/arenas/feed/${rc.dataset.react}/react`,{body:{emoji:rc.dataset.emoji}})).feed; renderArenaSheet(); }catch(err){ toast(err.message); } return; }
+  const k=t.closest('[data-kick]'); if(k){ if(!confirm('Mitglied aus der Arena entfernen?')) return; try{ await api(`/api/arenas/${AR.id}/kick`,{body:{userId:+k.dataset.kick}}); await reloadArena(); }catch(err){ toast(err.message); } return; }
+  try{
+    if(t.id==='asSave'){ await api(`/api/arenas/${AR.id}`,{method:'PATCH',body:{name:$('#asNameIn').value,visibility:$('#asPub').checked?'public':'private',showTrades:$('#asTr').checked}}); await reloadArena(); await loadArenas(); renderMine(); renderBooks(); toast('Gespeichert'); }
+    if(t.id==='asRound'){ if(!confirm('Neue Runde starten? Alle beginnen wieder bei 0 %.'+(AR.mode==='own'?' Die Arena-Depots starten neu mit 100.000 €.':''))) return; await api(`/api/arenas/${AR.id}/round`,{body:{}}); await reloadArena(); await loadArenas(); renderMine(); toast('Neue Runde gestartet'); }
+    if(t.id==='asDel'){ if(!confirm(`„${AR.name}“ endgültig löschen? Rangliste, Feed und Arena-Depots gehen verloren.`)) return; await api(`/api/arenas/${AR.id}`,{method:'DELETE'}); closeSheets(); await loadArenas(); renderMine(); renderBooks(); refresh(false); toast('Arena gelöscht'); }
+    if(t.id==='asLeave'){ if(!confirm('Arena verlassen? Ihr Platz in dieser Rangliste geht verloren.')) return; await api(`/api/arenas/${AR.id}/leave`,{body:{}}); closeSheets(); await loadArenas(); renderMine(); renderBooks(); refresh(false); toast('Arena verlassen'); }
+  }catch(err){ toast(err.message); }
+});
+function openJoin(a){
+  AJ={a,start:'fresh'};
+  $('#ajName').textContent=a.name;
+  $('#ajBody').innerHTML=`<div class="ahead"><span class="pill2">👥 ${a.members} ${a.members===1?'Mitglied':'Mitglieder'}</span><span class="pill2">⏱ ${a.ended?'Runde beendet':left(a.endsAt)}</span><span class="pill2">${a.mode==='own'?'Eigenes Depot':'Hauptdepot'}</span></div>
+    <p style="font-size:14px;line-height:1.55;margin:16px 2px 0">${a.mode==='own'?'In dieser Arena bekommen Sie ein eigenes Depot. Ihr Hauptdepot bleibt davon unberührt.':'Sie treten mit Ihrem Hauptdepot an. Gewertet wird Ihre Rendite ab dem Beitritt, Ihr bisheriger Stand zählt nicht.'}</p>
+    ${a.top.length?`<div class="summary">${a.top.map((t,i)=>`<div><span>${['🥇','🥈','🥉'][i]} ${esc(t.name)}</span><b class="num ${cls(t.ret)}">${pct(t.ret,1)}</b></div>`).join('')}</div>`:''}`;
+  $('#ajStart').hidden=a.mode!=='own'; $$('[data-ajstart]').forEach(b=>b.classList.toggle('on',b.dataset.ajstart==='fresh'));
+  closeSheets(); setTimeout(()=>openSheet('#arJoin'),40);
+}
+$('#arJoin').addEventListener('click',e=>{ const b=e.target.closest('[data-ajstart]'); if(!b) return; AJ.start=b.dataset.ajstart; $$('[data-ajstart]').forEach(x=>x.classList.toggle('on',x===b)); });
+$('#ajGo').onclick=async()=>{ const b=$('#ajGo'); b.disabled=true;
+  try{ AR=await api(`/api/arenas/by/${encodeURIComponent(AJ.a.slug)}/join`,{body:{start:AJ.start}}); try{ sessionStorage.removeItem('joinSlug'); }catch(e){} history.replaceState(null,'','/');
+    await loadArenas(); renderMine(); renderBooks(); closeSheets(); toast(`Willkommen in „${AR.name}“`); asTab='rank'; renderArenaSheet(); setTimeout(()=>openSheet('#arSheet'),60); }
+  catch(e){ toast(e.message); } finally{ b.disabled=false; } };
+
+/* ---------- Scouting & Talents ---------- */
+let TL=null, tbFilter='neu';
+async function loadTalents(){ try{ TL=await api('/api/talents'); TIPS.scouting=TL.message.title+' '+TL.message.text.join(' '); }catch(e){} }
+const STAGES=[['locked','Talent-Wertung freischalten'],['watch','Beobachtet'],['shortlist','Shortlist des Quartals'],['pitch','Pitch beim Analystenteam von Florian Homm']];
+function renderTalents(){
+  if(!TL) return; const m=TL.message, me=TL.me;
+  $('#tlMsg').innerHTML=`<div class="top2"><img src="/img/florian-homm.jpg" alt="Florian Homm"><div style="flex:1;min-width:0"><span class="kick">Scouting & Talents</span><div class="muted" style="font-size:13px;margin-top:3px">Eine Nachricht von Florian Homm</div></div>
+    <button class="say" data-saykey="scouting" aria-label="Nachricht anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
+    <h3>${esc(m.title)}</h3>${m.text.map(t=>`<p>${esc(t)}</p>`).join('')}<div class="sig">${esc(m.sign)}</div>`;
+  $('#tlQuarter').textContent=TL.quarter.replace('-',' · ');
+  if(!me){ $('#tlSteps').innerHTML='<p class="muted">Bitte anmelden.</p>'; return; }
+  const cur=STAGES.findIndex(s=>s[0]===me.stage);
+  $('#tlSteps').innerHTML=STAGES.map(([k,t],i)=>{
+    let d='';
+    if(k==='locked') d=me.checklist.items.map(c=>`<div class="chk ${c.done?'ok':''}"><span>${c.done?'✓':'○'} ${esc(c.label)}</span><span class="num">${esc(c.progress)}</span></div>`).join('');
+    if(k==='watch') d=`<small>${me.rank?`Platz ${me.rank} von ${me.of} in der Talent-Wertung.`:'Ihr Score fließt in die Quartalswertung ein.'}</small>`;
+    if(k==='shortlist') d=`<small>Die besten ${TL.shortlistSize} des Quartals mit mindestens 55 Punkten dürfen sich vorstellen.</small>`;
+    if(k==='pitch') d=`<small>Persönliches Gespräch mit dem Analystenteam, einmal im Quartal.</small>`;
+    return `<div class="stp ${i<cur||(k==='locked'&&me.checklist.eligible)?'done':i===cur?'cur':''}"><span class="n">${i<cur?'✓':i+1}</span><div><b>${esc(t)}</b>${d}</div></div>`; }).join('');
+  const app=me.application;
+  $('#tlCta').innerHTML=app?`<div class="banner" style="margin-top:12px">Ihre Vorstellung ist eingegangen (${dshort2(app.createdAt)}). Status: <b>${({neu:'eingegangen',gesichtet:'gesichtet',gespraech:'zum Gespräch eingeladen',abgeschlossen:'abgeschlossen',abgesagt:'diesmal leider nicht'})[app.status]}</b></div>`
+    :me.stage==='shortlist'?'<button class="cta" id="tlApplyBtn" style="margin-top:14px">Beim Analystenteam vorstellen</button>':'';
+  const sc=me.score, P=[['risk','Rendite im Verhältnis zum Risiko'],['drawdown','Verlustbegrenzung'],['consistency','Beständigkeit'],['discipline','Disziplin'],['reasoning','Begründungen']];
+  $('#tlScore').innerHTML=`<div class="bigscore"><b class="num">${sc.total}</b><span>von 100${me.checklist.eligible?'':' · vorläufig'}</span></div>
+    ${P.map(([k,l])=>`<div class="sbar"><div class="l"><span>${l}</span><b class="num">${sc.parts[k]}</b></div><div class="t"><i style="width:${sc.parts[k]}%"></i></div></div>`).join('')}
+    <p class="fine" style="text-align:left;margin-top:16px">Tipp: Schreiben Sie im Handelsfenster einen Satz zu Ihrem Trade und setzen Sie Stop-Loss. Beides zählt mit.</p>`;
+  $('#tlTop').innerHTML=TL.top.length?TL.top.map((r,i)=>`<button class="lbr" data-person="${r.id}"><span class="rk ${i<3?'top':''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</span>${avatar(r)}<span class="nm"><b>${esc(r.name)}</b><small>${r.shortlist?'Shortlist · ':''}${pct(r.ret,1)} gesamt</small></span><span class="vv num"><b>${r.score}</b><small class="muted">Punkte</small></span></button>`).join('')
+    :`<div class="empty">Die Talent-Wertung startet, sobald die ersten Mitglieder ${TL.req.days} Tage dabei sind und ${TL.req.trades} Trades gemacht haben.</div>`;
+  const pd=new Date(TL.pitchDay);
+  $('#tlPitch').innerHTML=`<div class="me"><div class="av" style="background:var(--gold-grad)">🎤</div><div style="flex:1;min-width:0"><b>Nächster Pitch-Day: Mitte ${pd.toLocaleDateString('de-DE',{month:'long',year:'numeric'})}</b><div class="muted" style="font-size:13px;line-height:1.5;margin-top:4px">Die Shortlist schließt am ${dshort2(TL.quarterEnd)}. Danach stellen sich die Top-Talente und die beste Arena dem Analystenteam vor.</div></div></div>`;
+  $('#tlBoardBtn').hidden=!(ME&&ME.admin);
+}
+$('#arTalents').addEventListener('click',e=>{ if(e.target.closest('#tlApplyBtn')) openApply(); });
+function openApply(){ ['taName','taStrat','taBest','taGoal','taVideo'].forEach(i=>$('#'+i).value=''); $('#taOk').checked=false; $('#taSend').disabled=true; $('#taErr2').hidden=true; updCnt(); openSheet('#tlApply'); }
+function updCnt(){ $$('[data-cnt]').forEach(c=>{ const v=$('#'+c.dataset.cnt).value.trim().length, min=c.dataset.cnt==='taGoal'?20:40; c.textContent=v<min?`noch ${min-v} Zeichen`:`${v} Zeichen`; }); }
+['taStrat','taBest','taGoal'].forEach(i=>$('#'+i).addEventListener('input',updCnt));
+$('#taOk').onchange=e=>{ $('#taSend').disabled=!e.target.checked; };
+$('#taSend').onclick=async()=>{ const b=$('#taSend'); b.disabled=true;
+  try{ TL=await api('/api/talents/apply',{body:{realName:$('#taName').value,strategy:$('#taStrat').value,bestTrade:$('#taBest').value,goal:$('#taGoal').value,video:$('#taVideo').value,consent:$('#taOk').checked}});
+    closeSheets(); renderTalents(); toast('Danke! Ihre Vorstellung ist beim Analystenteam.'); }
+  catch(e){ $('#taErr2').textContent=e.message; $('#taErr2').hidden=false; b.disabled=false; } };
+let TB=null;
+const TBS={neu:'Neu',gesichtet:'Gesichtet',gespraech:'Gespräch',abgeschlossen:'Abgeschlossen',abgesagt:'Abgesagt'};
+async function openBoard(){ try{ TB=await api('/api/admin/talents'); }catch(e){ return toast(e.message); } renderBoard(); openSheet('#tlBoard'); }
+function renderBoard(){
+  $('#tbQ').textContent=`Scouting-Board · ${TB.quarter.replace('-',' · ')} · ${TB.shortlist} auf der Shortlist`;
+  $('#tbFilter').innerHTML=Object.entries(TBS).map(([k,l])=>`<button class="chip ${tbFilter===k?'on':''}" data-tbf="${k}">${l} ${TB.apps.filter(a=>a.status===k).length}</button>`).join('');
+  const list=TB.apps.filter(a=>a.status===tbFilter);
+  $('#tbList').innerHTML=list.length?list.map(a=>`<div class="appcard"><div class="me">${avatar(a)}<div style="flex:1;min-width:0"><h4>${esc(a.realName)}</h4><small class="muted">${esc(a.name)} · ${esc(a.email||'')} · ${dshort2(a.createdAt)}</small></div><div class="num" style="text-align:right"><b style="font-size:22px">${a.score}</b><br><small class="muted">Punkte</small></div></div>
+    <div class="gstats num"><div><small>Rendite</small><b class="${cls(a.ret)}">${pct(a.ret,1)}</b></div><div><small>Max. Rückgang</small><b>${pct(a.dd,1)}</b></div><div><small>Trades</small><b>${a.trades}</b></div><div><small>Disziplin</small><b>${a.parts.discipline}</b></div></div>
+    <div class="q"><span>Strategie</span>${esc(a.answers.strategy)}</div><div class="q"><span>Bester Trade</span>${esc(a.answers.bestTrade)}</div><div class="q"><span>Ziel</span>${esc(a.answers.goal)}</div>
+    ${a.video?`<div class="q"><span>Video</span><a class="link" href="${esc(a.video)}" target="_blank" rel="noopener noreferrer">Video öffnen ↗</a></div>`:''}
+    <select data-tbstatus="${a.id}">${Object.entries(TBS).map(([k,l])=>`<option value="${k}" ${a.status===k?'selected':''}>${l}</option>`).join('')}</select>
+    <textarea class="inp" data-tbnotes="${a.id}" rows="3" style="margin-top:10px" placeholder="Interne Notizen">${esc(a.notes)}</textarea>
+    <button class="btn2" data-tbsave="${a.id}" style="margin-top:10px">Speichern</button>
+    <button class="btn2" data-person="${a.userId}" style="margin-top:10px">Depot ansehen</button></div>`).join('')
+    :'<div class="empty">Keine Vorstellungen in diesem Status.</div>';
+}
+$('#tlBoardBtn').onclick=openBoard;
+$('#tlBoard').addEventListener('click',async e=>{ const f=e.target.closest('[data-tbf]'); if(f){ tbFilter=f.dataset.tbf; renderBoard(); return; }
+  const sv=e.target.closest('[data-tbsave]'); if(sv){ const id=sv.dataset.tbsave;
+    try{ TB=await api('/api/admin/talents/'+id,{method:'PATCH',body:{status:$(`[data-tbstatus="${id}"]`).value,notes:$(`[data-tbnotes="${id}"]`).value}}); renderBoard(); toast('Gespeichert'); }catch(err){ toast(err.message); } } });
+
+/* ---------- Arena-Bereich: Reiter ---------- */
+function setArenaSeg(k){ ui.aseg=k; $$('[data-aseg]').forEach(b=>b.classList.toggle('on',b.dataset.aseg===k));
+  $('#arGlobal').hidden=k!=='global'; $('#arMine').hidden=k!=='mine'; $('#arTalents').hidden=k!=='talents';
+  if(k==='mine'){ loadArenas().then(()=>{ renderMine(); renderBooks(); }); coach('arenas'); }
+  if(k==='talents'){ loadTalents().then(renderTalents); coach('talents'); }
+  if(k==='global') coach('arena'); }
+$('#arenaSeg').addEventListener('click',e=>{ const b=e.target.closest('[data-aseg]'); if(b) setArenaSeg(b.dataset.aseg); });
+document.addEventListener('click',e=>{ const n=e.target.closest('[data-arnew]'); if(n){ openNew(); return; } const a=e.target.closest('[data-arena]'); if(a){ openArena(a.dataset.arena); } });
 
 /* ---------- Anleger entdecken & Copy Trading ---------- */
 const RISKC=['#3ccf91','#3ccf91','#a6d86b','#e0c28a','#f0b14a','#ff8a5c','#ff6b6b'];
@@ -1465,7 +1907,7 @@ document.addEventListener('click',e=>{
   const ls=t.closest('[data-lesson]'); if(ls){ coach(ls.dataset.lesson); speakKey(ls.dataset.lesson,$('#coach')); window.scrollTo({top:0,behavior:'smooth'}); return; }
   if(t.closest('[data-closesheet]') || t===$('#scrim')){ closeSheets(); return; }
   const md=t.closest('[data-mode]'); if(md){ setMode(md.dataset.mode,true); return; }
-  const pk=t.closest('[data-pick]'); if(pk){ setMode(pk.dataset.pick,false); $('#ob').hidden=true; return; }
+  const pk=t.closest('[data-pick]'); if(pk){ setMode(pk.dataset.pick,false); $('#ob').hidden=true; let js=null; try{ js=sessionStorage.getItem('joinSlug'); sessionStorage.removeItem('joinSlug'); }catch(e){} if(js) setTimeout(()=>openArena(js),400); return; }
   if(t.closest('#acctBtn')){ openAccount(); return; }
   const g=t.closest('[data-tab],[data-go]'); if(g){ const tab=g.dataset.tab||g.dataset.go; ui.tab=tab;
     $$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
@@ -1512,7 +1954,7 @@ function setFeed(live,t){
 }
 async function refresh(manual){
   try{
-    const [q, st] = await Promise.all([api('/api/quotes'), ME?api('/api/state'):null]);
+    const [q, st] = await Promise.all([api('/api/quotes'), ME?api('/api/state'):null, ME&&ui.book?loadArenas():null]);
     Object.assign(META, q.instruments||{}); RAW=q.quotes; initQuotes(q.quotes); setFeed(q.live, Math.max(...Object.values(q.quotes).map(x=>x.time||0)));
     if(st){ const before=S.pos.length; setState(st); if(st.positions.length<before){ toast('Eine Position wurde automatisch geschlossen (Stop-Loss, Knock-out oder Verfall).'); coach('knock'); } }
     render();
@@ -1522,19 +1964,27 @@ async function refresh(manual){
 }
 async function enter(){
   $('#ob').hidden=true;
-  await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(),
+  await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(), loadArenas(),
     api('/api/radar').then(d=>{ RD=d.radar||{}; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
     api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{})]);
   render();
   if(!S.mode){ $('#ob').hidden=false; $('#obAuth').hidden=true; $('#obMode').hidden=false; }
   coach(S.pos.length?'live':pro()?'welcomePro':'welcome');
-  history.replaceState(null,'',location.pathname);
+  renderBooks(); renderMine();
+  // Einladungslink /a/<name>: nach der Anmeldung direkt zum Beitreten
+  let js=null; try{ js=sessionStorage.getItem('joinSlug'); }catch(e){}
+  const pm=location.pathname.match(/^\/a\/([\w-]+)/); if(pm) js=pm[1];
+  history.replaceState(null,'',js?'/a/'+js:location.pathname);
+  if(js && S.mode){ try{ sessionStorage.removeItem('joinSlug'); }catch(e){} openArena(js); }
 }
 async function boot(){
   renderLessons();
   try{ CFG=await api('/api/config'); }catch(e){}
   try{ ME=(await api('/api/me')).user; }catch(e){}
-  if(ME) await enter(); else { showAuth(); refresh(false); }
+  const pm=location.pathname.match(/^\/a\/([\w-]+)/);
+  if(pm){ try{ sessionStorage.setItem('joinSlug',pm[1]); }catch(e){} }
+  if(ME) await enter(); else { showAuth(); refresh(false);
+    if(pm) api('/api/arenas/by/'+pm[1]).then(a=>{ $('#authErr').innerHTML=`Sie wurden in die Arena <b>${esc(a.name)}</b> eingeladen (${a.members} ${a.members===1?'Mitglied':'Mitglieder'}). Melden Sie sich an oder registrieren Sie sich, um beizutreten.`; $('#authErr').hidden=false; $('#authErr').style.cssText='background:rgba(198,164,108,.1);border-color:var(--line-gold);color:var(--gold-p)'; }).catch(()=>{}); }
   setInterval(()=>refresh(false),30000);
   setInterval(()=>{ if(ui.tab==='arena') loadLB().then(renderArena); if(ui.tab==='fonds'){ loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); loadDiscover().then(renderDiscover); } },60000);
 }

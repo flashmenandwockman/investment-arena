@@ -8,6 +8,7 @@ const path = require('path');
 process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'arena-test-'));
 process.env.MARKET_OFFLINE = '1';
 process.env.PORT = '0';
+process.env.THROTTLE_OFF = '1';
 const {start} = require('../server/index');
 
 let base, server;
@@ -221,4 +222,95 @@ test('Großinvestoren aus 13F-Meldungen sind kopierbar', async () => {
   const inv = await c(`/api/funds/${g.id}/invest`, {amt: 5000});
   assert.strictEqual(inv.status, 200);
   assert.strictEqual(inv.data.state.positions[0].fundKind, 'guru');
+});
+
+test('Private Arenen: eröffnen, beitreten, Rangliste, Feed', async () => {
+  const anna = client(), ben = client(), gast = client();
+  await anna('/api/auth/register', {name: 'Anna', email: 'anna@x.de', password: 'geheim1234'});
+  await ben('/api/auth/register', {name: 'Ben', email: 'ben@x.de', password: 'geheim1234'});
+  assert.strictEqual((await anna('/api/arenas', {name: 'ab'})).status, 400, 'Name zu kurz');
+
+  // Format „Hauptdepot“
+  const a = (await anna('/api/arenas', {name: 'Büro-Bullen', period: '1m'})).data;
+  assert.strictEqual(a.slug, 'buero-bullen');
+  assert.strictEqual(a.members, 1);
+  assert.ok(a.owner && a.rows[0].ret === 0);
+  const pv = await gast('/api/arenas/by/buero-bullen');
+  assert.ok(pv.data.preview && pv.data.rows === undefined, 'Vorschau ohne Mitgliedschaft');
+  const j = await ben('/api/arenas/by/buero-bullen/join', {});
+  assert.strictEqual(j.data.members, 2);
+  await ben('/api/orders', {sym: 'AAPL', dir: 1, amt: 5000});
+  const f = (await anna('/api/arenas/by/buero-bullen')).data.feed;
+  assert.ok(f.some(x => /Long Apple/.test(x.text)), 'Trade erscheint im Feed');
+  const r = await anna(`/api/arenas/feed/${f[0].id}/react`, {emoji: '🔥'});
+  assert.strictEqual(r.data.feed[0].reactions['🔥'], 1);
+  assert.strictEqual((await gast(`/api/arenas/feed/${f[0].id}/react`, {emoji: '🔥'})).status, 401);
+
+  // Zurücksetzen löscht das Arena-Ergebnis nicht
+  const before = (await ben('/api/arenas/by/buero-bullen')).data.rows.find(x => x.name === 'Ben').ret;
+  await ben('/api/state/reset', {confirm: true});
+  const after = (await ben('/api/arenas/by/buero-bullen')).data.rows.find(x => x.name === 'Ben').ret;
+  assert.ok(Math.abs(after - before) < 1e-6);
+
+  // Format „Eigenes Arena-Depot“: Kopie des Hauptdepots, getrennte Orders
+  await anna('/api/orders', {sym: 'MSFT', dir: 1, amt: 10000});
+  const o = (await anna('/api/arenas', {name: 'Strategie Zwei', mode: 'own', start: 'copy'})).data;
+  let bk = (await anna(`/api/state?book=${o.id}`)).data;
+  assert.strictEqual(bk.book, o.id);
+  assert.ok(bk.positions.some(p => p.sym === 'MSFT'), 'Hauptdepot hineinkopiert');
+  await anna(`/api/orders?book=${o.id}`, {sym: 'TSLA', dir: -1, amt: 3000});
+  bk = (await anna(`/api/state?book=${o.id}`)).data;
+  assert.ok(bk.positions.some(p => p.sym === 'TSLA'));
+  assert.ok(!(await anna('/api/state')).data.positions.some(p => p.sym === 'TSLA'), 'Hauptdepot bleibt unberührt');
+  assert.strictEqual((await anna(`/api/copy?book=${o.id}`, {leaderId: 1, amt: 1000})).status, 400, 'Kopieren nur im Hauptdepot');
+  await ben('/api/arenas/by/strategie-zwei/join', {start: 'fresh'});
+  assert.strictEqual((await ben(`/api/state?book=${o.id}`)).data.cash, 100000);
+
+  const mine = (await anna('/api/arenas')).data.arenas;
+  assert.strictEqual(mine.length, 2);
+  assert.strictEqual((await ben(`/api/arenas/${a.id}`, {name: 'Gekapert'}, 'PATCH')).status, 403, 'nur der Gründer');
+  assert.strictEqual((await ben(`/api/arenas/${a.id}/leave`, {})).status, 200);
+});
+
+test('Talent-Programm: Nachricht, Checkliste, Bewerbung nur mit Shortlist', async () => {
+  const c = client();
+  await c('/api/auth/register', {name: 'Talent', email: 'talent@x.de', password: 'geheim1234'});
+  const t = (await c('/api/talents')).data;
+  assert.ok(t.message.title && t.message.text.length >= 2);
+  assert.strictEqual(t.me.stage, 'locked');
+  assert.strictEqual(t.me.checklist.items.length, 4);
+  assert.strictEqual(t.me.checklist.eligible, false);
+  const ap = await c('/api/talents/apply', {realName: 'Max Muster', strategy: 'x'.repeat(50), bestTrade: 'y'.repeat(50), goal: 'z'.repeat(30), consent: true});
+  assert.strictEqual(ap.status, 403);
+  assert.strictEqual((await c('/api/admin/talents')).status, 403, 'Scouting-Board nur für Admins');
+});
+
+test('Talent-Programm: Shortlist, Vorstellung, Scouting-Board', async () => {
+  const db = require('../server/db'), store = require('../server/store');
+  const t = client(), admin = client();
+  const u = (await t('/api/auth/register', {name: 'Profi', email: 'profi@x.de', password: 'geheim1234'})).data.user;
+  await admin('/api/auth/register', {name: 'Scout', email: 'scout@x.de', password: 'geheim1234'});
+  db.prepare("UPDATE users SET role = 'admin' WHERE email = 'scout@x.de'").run();
+  // 40 Tage stetiger Verlauf, 25 Trades mit Stop-Loss und Begründung, Free-Homes-Konto
+  db.prepare("UPDATE users SET provider = 'freehomes', provider_sub = 'fh-profi' WHERE id = ?").run(u.id);
+  const ins = db.prepare('INSERT INTO equity_hist (user_id, day, eq) VALUES (?, ?, ?)');
+  for (let i = 40; i >= 1; i--) ins.run(u.id, new Date(Date.now() - i * 864e5).toISOString().slice(0, 10), 100000 * (1 + (40 - i) * .001 + (i % 3 ? 0 : -.0005)));
+  const st = store.load(u.id); st.ts = {n: 25, sl: 25, big: 0, notes: 25}; st.cash = 104000; store.save(u.id, st);
+  require('../server/talents').invalidate();
+  const v = (await t('/api/talents')).data;
+  assert.strictEqual(v.me.checklist.eligible, true);
+  assert.strictEqual(v.me.stage, 'shortlist', `Score ${v.me.score.total}`);
+  const bad = await t('/api/talents/apply', {realName: 'Paula Profi', strategy: 'zu kurz', bestTrade: 'y'.repeat(50), goal: 'z'.repeat(30), consent: true});
+  assert.strictEqual(bad.status, 400);
+  const noConsent = await t('/api/talents/apply', {realName: 'Paula Profi', strategy: 'x'.repeat(50), bestTrade: 'y'.repeat(50), goal: 'z'.repeat(30)});
+  assert.match(noConsent.data.error, /zustimmen/);
+  const ok = await t('/api/talents/apply', {realName: 'Paula Profi', strategy: 'x'.repeat(50), bestTrade: 'y'.repeat(50), goal: 'z'.repeat(30), video: 'https://youtu.be/abc', consent: true});
+  assert.strictEqual(ok.status, 200);
+  assert.strictEqual(ok.data.me.application.status, 'neu');
+  const b = (await admin('/api/admin/talents')).data;
+  assert.strictEqual(b.apps.length, 1);
+  assert.strictEqual(b.apps[0].realName, 'Paula Profi');
+  const up = await admin(`/api/admin/talents/${b.apps[0].id}`, {status: 'gespraech', notes: 'Starker Risikomanager'}, 'PATCH');
+  assert.strictEqual(up.data.apps[0].status, 'gespraech');
+  assert.strictEqual((await t('/api/talents')).data.me.stage, 'pitch');
 });

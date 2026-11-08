@@ -14,6 +14,8 @@ const bots = require('./bots');
 const trcm = require('./trcm');
 const copy = require('./copy');
 const gurus = require('./gurus');
+const arenas = require('./arenas');
+const talents = require('./talents');
 const pkg = require('../package.json');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -38,6 +40,10 @@ function requireUser(req) {
   return u;
 }
 const publicUser = u => u && {id: u.id, name: u.name, provider: u.provider, color: u.color, email: u.email || null, admin: trcm.isAdmin(u), member: trcm.isMember(u)};
+// Depot einer Anfrage: Hauptdepot oder eigenes Arena-Depot (?book=<Arena-ID>)
+function bookOf(u, url) { const b = Number(url.searchParams.get('book')) || 0; return b ? arenas.loadBook(u.id, b) : null; }
+const onlyMain = bk => { if (bk) throw Object.assign(new Error('Das geht nur im Hauptdepot. Bitte oben auf „Hauptdepot“ wechseln.'), {status: 400}); };
+const posText = (p, verb) => `${verb} ${p.dir > 0 ? 'Long' : 'Short'} ${(market.INSTRUMENTS[p.sym] || {}).n || p.sym} · ${game.label(p)}`;
 
 // Schutz vor zu vielen Such- und Kursanfragen je Adresse (Finnhub-Limit)
 const hits = new Map();
@@ -48,8 +54,8 @@ function limit(req, max = 40, bucket = '') {
 }
 
 /* ---------- Ansichten ---------- */
-function stateView(userId) {
-  const st = store.load(userId), q = market.get();
+function stateView(userId, bk) {
+  const st = bk ? bk.st : store.load(userId), q = market.get();
   const positions = st.pos.map(p => {
     const v = game.value(p, 'now', funds.navOf), I = market.INSTRUMENTS[p.sym] || {};
     return {...p, value: v, pl: v - p.stake, label: game.label(p), name: p.kind === 'fund' ? p.fundName : I.n,
@@ -58,7 +64,7 @@ function stateView(userId) {
   });
   const eq = game.equity(st, 'now', funds.navOf), prev = game.equity(st, 'prev', funds.navOf);
   return {cash: st.cash, positions, hist: st.hist.slice(-40), realized: st.realized, badges: st.badges, xp: st.xp, active: st.active,
-    follow: st.follow, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash, copies: copy.view(st)};
+    follow: st.follow, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash, copies: copy.view(st), book: bk ? bk.arena.id : null};
 }
 function leaderboard(meId) {
   const ps = copy.periodStarts();
@@ -116,7 +122,7 @@ async function api(req, res, url) {
     if (p.startsWith('/api/profile/')) { const pr = profile(Number(p.split('/').pop())); return pr ? send(res, 200, pr) : send(res, 404, {error: 'Nicht gefunden'}); }
     // TRCM-Portfolio: Wertentwicklung öffentlich, Titel nur für Free-Homes-Mitglieder, Pflege nur für Admins
     if (p === '/api/trcm' && m === 'GET') return send(res, 200, trcm.view(auth.currentUser(req)));
-    if (p.startsWith('/api/admin/')) {
+    if (p.startsWith('/api/admin/trcm')) {
       const u = requireUser(req), b = m === 'GET' || m === 'DELETE' ? {} : await body(req), id = Number(p.split('/')[5]);
       if (p === '/api/admin/trcm' && m === 'PATCH') trcm.updateMeta(u, b);
       else if (p === '/api/admin/trcm/holdings' && m === 'POST') { limit(req); await trcm.addHolding(u, b); heldCache.t = 0; }
@@ -128,6 +134,9 @@ async function api(req, res, url) {
       return send(res, 200, trcm.view(u));
     }
     if (p === '/api/funds' && m === 'GET') return send(res, 200, {funds: funds.list()});
+    if (p === '/api/arenas/league') { const u = auth.currentUser(req); return send(res, 200, {league: arenas.leagueView(u && u.id)}); }
+    if (/^\/api\/arenas\/by\/[\w-]+$/.test(p) && m === 'GET') return send(res, 200, arenas.detail(p.split('/').pop(), auth.currentUser(req)));
+    if (p === '/api/talents' && m === 'GET') return send(res, 200, talents.view(auth.currentUser(req)));
     if (p === '/api/discover') { const u = auth.currentUser(req); return send(res, 200, {traders: copy.discover(u && u.id), gurus: funds.list('guru'), min: copy.MIN}); }
     if (p === '/api/funds' && m === 'POST') {
       const u = requireUser(req), id = funds.create(u.id, await body(req));
@@ -136,6 +145,7 @@ async function api(req, res, url) {
     }
     if (/^\/api\/funds\/\d+$/.test(p)) { const d = funds.detail(Number(p.split('/').pop())); return d ? send(res, 200, d) : send(res, 404, {error: 'Nicht gefunden'}); }
     if (/^\/api\/funds\/\d+\/invest$/.test(p) && m === 'POST') {
+      onlyMain(Number(url.searchParams.get('book')));
       const u = requireUser(req), fid = Number(p.split('/')[3]), f = funds.detail(fid);
       if (!f) throw Object.assign(new Error('Fonds nicht gefunden'), {status: 404});
       const amt = Math.floor(Number((await body(req)).amt) || 0), st = store.load(u.id);
@@ -153,32 +163,56 @@ async function api(req, res, url) {
     }
     // Ab hier nur mit Anmeldung
     const u = requireUser(req);
-    if (p === '/api/state' && m === 'GET') return send(res, 200, stateView(u.id));
+    if (p === '/api/state' && m === 'GET') { const bk = bookOf(u, url); return send(res, 200, stateView(u.id, bk)); }
     if (p === '/api/state' && m === 'PATCH') {
       const b = await body(req), st = store.load(u.id);
-      if (['easy', 'pro'].includes(b.mode)) st.mode = b.mode;
+      if (['easy', 'pro'].includes(b.mode)) { st.mode = b.mode; for (const a of arenas.mine(u)) if (a.mode === 'own') { try { const bk = arenas.loadBook(u.id, a.id); bk.st.mode = b.mode; bk.save(); } catch (e) {} } }
       if (b.follow && typeof b.follow === 'object') for (const [k, v] of Object.entries(b.follow).slice(0, 50)) { if (v) st.follow[k] = true; else delete st.follow[k]; }
       store.save(u.id, st); return send(res, 200, stateView(u.id));
     }
     if (p === '/api/state/reset' && m === 'POST') {
       // Nur mit ausdrücklicher Bestätigung: Positionen, Kopien, Verlauf, Abzeichen und Platz in der Rangliste gehen verloren
       if ((await body(req)).confirm !== true) throw new Error('Bitte das Zurücksetzen ausdrücklich bestätigen');
-      const st = store.load(u.id), fresh = game.fresh(); fresh.mode = st.mode; store.save(u.id, fresh);
+      const st = store.load(u.id), fresh = game.fresh(); fresh.mode = st.mode; fresh.resetAt = Date.now();
+      arenas.onReset(u.id, game.equity(st, 'now', funds.navOf));   // Ergebnis bleibt in Arenen mit Hauptdepot stehen
+      store.save(u.id, fresh);
       db.prepare('DELETE FROM equity_hist WHERE user_id = ?').run(u.id);
       return send(res, 200, stateView(u.id));
     }
     if (p === '/api/orders' && m === 'POST') {
-      const st = store.load(u.id), eqBefore = game.equity(st, 'now', funds.navOf), r = game.open(st, await body(req), funds.navOf); store.save(u.id, st); heldCache.t = 0;
-      copy.onOpen(u.id, r.position, eqBefore);
-      return send(res, 200, {state: stateView(u.id), events: r.events});
+      const bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id), eqBefore = game.equity(st, 'now', funds.navOf), r = game.open(st, await body(req), funds.navOf);
+      if (bk) bk.save(); else { store.save(u.id, st); copy.onOpen(u.id, r.position, eqBefore); }
+      heldCache.t = 0;
+      arenas.onTrade(u.id, bk && bk.arena.id, {kind: 'open', text: posText(r.position, 'eröffnet')});
+      return send(res, 200, {state: stateView(u.id, bk), events: r.events});
     }
     if (/^\/api\/positions\/[\w-]+\/close$/.test(p) && m === 'POST') {
-      const pid = p.split('/')[3], st = store.load(u.id), own = !(st.pos.find(x => x.id === pid) || {}).copyId;
-      const r = game.close(st, pid, null, funds.navOf); store.save(u.id, st);
-      if (own) copy.onClose(u.id, pid);
-      return send(res, 200, {state: stateView(u.id), pl: r.pl, events: r.events});
+      const pid = p.split('/')[3], bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id), pos = st.pos.find(x => x.id === pid), own = !(pos || {}).copyId;
+      const r = game.close(st, pid, null, funds.navOf);
+      if (bk) bk.save(); else { store.save(u.id, st); if (own) copy.onClose(u.id, pid); }
+      if (own && pos && pos.kind !== 'fund') arenas.onTrade(u.id, bk && bk.arena.id, {kind: 'close', text: `${posText(pos, 'schließt')} · ${r.pl >= 0 ? '+' : '−'}${Math.abs(r.pl / pos.stake * 100).toFixed(1).replace('.', ',')} %`, pl: r.pl / pos.stake});
+      return send(res, 200, {state: stateView(u.id, bk), pl: r.pl, events: r.events});
     }
-    if (p === '/api/copy' && m === 'POST') { const b = await body(req); copy.start(u.id, b.leaderId, b.amt); heldCache.t = 0; return send(res, 200, {state: stateView(u.id)}); }
+    // Private Arenen
+    if (p === '/api/arenas' && m === 'GET') return send(res, 200, {arenas: arenas.mine(u), league: arenas.leagueView(u.id)});
+    if (p === '/api/arenas' && m === 'POST') { const a = arenas.create(u, await body(req)); return send(res, 200, arenas.detail(a.slug, u)); }
+    if (/^\/api\/arenas\/by\/[\w-]+\/join$/.test(p) && m === 'POST') { const a = arenas.join(u, p.split('/')[4], await body(req)); return send(res, 200, arenas.detail(a.slug, u)); }
+    if (/^\/api\/arenas\/\d+(\/\w+)?$/.test(p) && m !== 'GET') {
+      const id = Number(p.split('/')[3]), act = p.split('/')[4], b = m === 'DELETE' ? {} : await body(req);
+      if (act === 'leave') arenas.leave(u, id);
+      else if (act === 'round') arenas.newRound(u, id);
+      else if (act === 'kick') arenas.kick(u, id, b.userId);
+      else if (!act && m === 'PATCH') arenas.update(u, id, b);
+      else if (!act && m === 'DELETE') arenas.remove(u, id);
+      else return send(res, 404, {error: 'Unbekannte Route'});
+      return send(res, 200, {ok: true});
+    }
+    if (/^\/api\/arenas\/feed\/\d+\/react$/.test(p) && m === 'POST') return send(res, 200, {feed: arenas.react(u, Number(p.split('/')[4]), (await body(req)).emoji)});
+    // Scouting & Talents
+    if (p === '/api/talents/apply' && m === 'POST') { talents.apply(u, await body(req)); return send(res, 200, talents.view(u)); }
+    if (p === '/api/admin/talents' && m === 'GET') return send(res, 200, talents.board(u, url.searchParams.get('q')));
+    if (/^\/api\/admin\/talents\/\d+$/.test(p) && m === 'PATCH') { talents.updateApp(u, Number(p.split('/').pop()), await body(req)); return send(res, 200, talents.board(u)); }
+    if (p === '/api/copy' && m === 'POST') { onlyMain(Number(url.searchParams.get('book'))); const b = await body(req); copy.start(u.id, b.leaderId, b.amt); heldCache.t = 0; return send(res, 200, {state: stateView(u.id)}); }
     if (/^\/api\/copy\/[\w-]+\/stop$/.test(p) && m === 'POST') {
       const pl = copy.stop(u.id, p.split('/')[3]); return send(res, 200, {state: stateView(u.id), pl});
     }
@@ -186,7 +220,22 @@ async function api(req, res, url) {
   } catch (e) { return fail(res, e); }
 }
 
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+function serveArenaLink(res, slug) {
+  const pv = arenas.preview(slug);
+  let html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
+  if (pv) html = html.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${esc(pv.title)}">`)
+    .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${esc(pv.description)}">`)
+    .replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${config.baseUrl}/img/og-arena.png">`)
+    .replace(/<title>[^<]*<\/title>/, `<title>${esc(pv.title)}</title>`);
+  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache'});
+  res.end(html);
+}
 function serveStatic(req, res, url) {
+  const al = url.pathname.match(/^\/a\/([\w-]{1,60})\/?$/); if (al) return serveArenaLink(res, al[1]);
+  const qr = url.pathname.match(/^\/qr\/a\/([\w-]{1,60})\.svg$/);
+  if (qr) return require('qrcode').toString(`${config.baseUrl}/a/${qr[1]}`, {type: 'svg', margin: 1, color: {dark: '#05070f', light: '#ffffff'}})
+    .then(svg => { res.writeHead(200, {'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400'}); res.end(svg); });
   let file = path.normalize(path.join(PUBLIC, decodeURIComponent(url.pathname)));
   if (!file.startsWith(PUBLIC)) { res.writeHead(403); return res.end(); }
   if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(PUBLIC, 'index.html');
@@ -214,7 +263,13 @@ function checkAllBooks() {
     for (const e of ev) if (!e.copy) closed.push([u.userId, e.id, e.why]);
   }
   // Erst danach die Kopierer nachziehen, damit kein veralteter Spielstand gespeichert wird
-  for (const [leader, id, why] of closed) copy.onClose(leader, id, why);
+  for (const [leader, id, why] of closed) { copy.onClose(leader, id, why); arenas.onTrade(leader, null, {kind: 'auto', text: `${why}: eine Position wurde automatisch geschlossen`}); }
+  // Eigene Arena-Depots: Stop-Loss, Knock-out und Verfall ebenso
+  for (const b of arenas.allBooks()) {
+    const ev = game.check(b.st, funds.navOf); if (!ev.length) continue;
+    try { const bk = arenas.loadBook(b.userId, b.arenaId); bk.st.pos = b.st.pos; bk.st.cash = b.st.cash; bk.st.hist = b.st.hist; bk.st.realized = b.st.realized; bk.save(); } catch (e) {}
+    for (const e of ev) arenas.onTrade(b.userId, b.arenaId, {kind: 'auto', text: `${e.why}: eine Position wurde automatisch geschlossen`});
+  }
 }
 async function tick() { await market.refresh(); checkAllBooks(); }
 
@@ -226,6 +281,7 @@ function held() {
   const set = new Set();
   for (const u of store.all()) for (const p of u.st.pos) if (p.sym) set.add(p.sym);
   for (const r of qFundHoldings.all()) for (const h of JSON.parse(r.holdings)) set.add(h.sym);
+  for (const b of arenas.allBooks()) for (const p of b.st.pos) if (p.sym) set.add(p.sym);
   heldCache = {t: Date.now(), set};
   return set;
 }
@@ -244,7 +300,8 @@ async function start() {
     market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);
     gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {});
     setInterval(() => gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {}), 12 * 3600_000);
-    copy.snapshot(); setInterval(() => copy.snapshot(), 10 * 60_000);
+    copy.snapshot(); arenas.snapshot();
+    setInterval(() => { copy.snapshot(); arenas.snapshot(); talents.invalidate(); }, 10 * 60_000);
   }
   if (require.main !== module) await gurus.sync();   // Tests: Großinvestoren aus den mitgelieferten Meldungen
   return new Promise(r => server.listen(config.port, () => { console.log(`Investment Arena läuft auf ${config.baseUrl} (Port ${server.address().port})`); r(server); }));
