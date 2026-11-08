@@ -4,6 +4,8 @@ Trading-Simulator mit Spielgeld für **www.investment-arena.com**. Jedes Mitglie
 
 > Simulation zu Lernzwecken. Kein echtes Geld, keine Orders an Börsen, keine Anlageberatung.
 
+Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.md)
+
 ## Funktionen
 
 | Bereich | Inhalt |
