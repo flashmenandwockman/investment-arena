@@ -226,7 +226,11 @@ function serveArenaLink(res, slug) {
   let html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
   if (pv) html = html.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${esc(pv.title)}">`)
     .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${esc(pv.description)}">`)
-    .replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${config.baseUrl}/img/og-arena.png">`)
+    .replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${config.baseUrl}/img/og-arena.jpg">
+<meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Einladung in die Investment Arena mit Florian Homm"><meta property="og:type" content="website">
+<meta property="og:url" content="${config.baseUrl}/a/${esc(slug)}"><meta property="og:site_name" content="Investment Arena">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${config.baseUrl}/img/og-arena.jpg">`)
     .replace(/<title>[^<]*<\/title>/, `<title>${esc(pv.title)}</title>`);
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache'});
   res.end(html);

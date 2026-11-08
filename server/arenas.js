@@ -301,7 +301,7 @@ function preview(slug) {
   const a = q.bySlug.get(String(slug || '')); if (!a) return null;
   const s = summary(a, null), lead = s.top[0];
   return {title: `${a.name} · Investment Arena`,
-    description: `${s.members} ${s.members === 1 ? 'Mitglied' : 'Mitglieder'}${lead ? ` · Platz 1: ${lead.name} ${lead.ret >= 0 ? '+' : '−'}${Math.abs(lead.ret * 100).toFixed(1).replace('.', ',')} %` : ''}. Treten Sie mit 100.000 € Spielgeld gegen Freunde und Kollegen an.`};
+    description: `${s.members} ${s.members === 1 ? 'Mitglied' : 'Mitglieder'}${lead ? ` · Platz 1: ${lead.name} ${Math.abs(lead.ret) < .0005 ? '±' : lead.ret > 0 ? '+' : '−'}${Math.abs(lead.ret * 100).toFixed(1).replace('.', ',')} %` : ''}. Treten Sie mit 100.000 € Spielgeld gegen Freunde und Kollegen an.`};
 }
 
 module.exports = {create, join, leave, update, kick, remove, newRound, onReset, onTrade, detail, mine, react, leagueView, snapshot, preview, loadBook, allBooks, EMOJIS};

@@ -120,7 +120,7 @@ Im Bereich **Arena → Meine Arenen** eröffnet jedes Mitglied eigene Arenen (h�
 - **Format „Hauptdepot“:** Alle treten mit ihrem normalen Depot an. Gewertet wird die Rendite ab dem Beitritt bzw. ab Rundenbeginn. Setzt jemand sein Hauptdepot zurück, bleibt das bisherige Ergebnis in der Arena-Wertung stehen.
 - **Format „Eigenes Arena-Depot“:** Jedes Mitglied bekommt für diese Arena ein separates Depot, wahlweise neu mit 100.000 € oder als Kopie des Hauptdepots. Über dem Depotwert erscheint ein Umschalter „Hauptdepot | Arena“, alle Orders gehen in das gewählte Depot. Kopieren und Fonds gibt es nur im Hauptdepot.
 - **Zeitraum:** 1 Monat, 3 Monate, ohne Ende oder bis zu einem Datum. Nach Ablauf wird der Endstand festgeschrieben, der Gründer kann eine neue Runde starten.
-- **Einladen:** Link `www.investment-arena.com/a/<name>` mit Vorschau in WhatsApp & Co. (Titel, Mitglieder, Platz 1, Bild `public/img/og-arena.png`), QR-Code unter `/qr/a/<name>.svg`. Wer den Link öffnet, meldet sich an und tritt mit einem Tipp bei.
+- **Einladen:** Link `www.investment-arena.com/a/<name>` mit Vorschau in WhatsApp & Co. (Titel, Mitglieder, Platz 1, Bild `public/img/og-arena.jpg`, 1200 × 630), QR-Code unter `/qr/a/<name>.svg`. Wer den Link öffnet, meldet sich an und tritt mit einem Tipp bei.
 - **Rangliste** mit Pfeilen für Auf- und Abstiege seit gestern, Wochenrückblick, Abstand zum nächsten Platz. **Aktivität:** Trades der Mitglieder (abschaltbar) mit Reaktionen 🔥 🚀 😂 🐻.
 - **Gruppen-Liga:** Arenen ab 3 Mitgliedern, gewertet wird die durchschnittliche Rendite der besten fünf. Private Arenen erscheinen ohne Namen.
 
