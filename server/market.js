@@ -257,5 +257,5 @@ async function chart(sym, r) {
 }
 
 const fx = () => (quotes['EURUSD=X'] && quotes['EURUSD=X'].price) || 1.12;
-module.exports = {INSTRUMENTS, US, refresh, search, add, loadDirectory, directorySize: () => directory.length, touch, visible, chart, cleanName, get: () => quotes, fx, status: () => ({live, updatedAt}),
+module.exports = {dirName: sym => (dirBySym.get(sym) || {}).n || null, INSTRUMENTS, US, refresh, search, add, loadDirectory, directorySize: () => directory.length, touch, visible, chart, cleanName, get: () => quotes, fx, status: () => ({live, updatedAt}),
   setHeldProvider: fn => { heldProvider = fn; }, setPrivateProvider: fn => { privateProvider = fn; }};

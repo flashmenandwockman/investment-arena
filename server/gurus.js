@@ -45,6 +45,13 @@ async function sec(url, json = true) {
   return json ? r.json() : r.text();
 }
 
+// Die beiden letzten 13F-HR-Meldungen (verschiedene Stichtage) für den Vergleich mit dem Vorquartal
+async function lastTwo(cik) {
+  const d = await sec(`https://data.sec.gov/submissions/CIK${cik.padStart(10, '0')}.json`), r = d.filings.recent, out = [];
+  for (let i = 0; i < r.form.length && out.length < 2; i++) if (r.form[i] === '13F-HR' && !out.some(f => f.reportDate === r.reportDate[i]))
+    out.push({accession: r.accessionNumber[i], reportDate: r.reportDate[i], filingDate: r.filingDate[i]});
+  return out;
+}
 // Neueste 13F-HR-Meldung eines Verwalters (nur Meldungen der letzten 9 Monate)
 async function latestFiling(cik) {
   const d = await sec(`https://data.sec.gov/submissions/CIK${cik.padStart(10, '0')}.json`), r = d.filings.recent;
@@ -63,8 +70,8 @@ async function infoTable(cik, accession) {
   for (const m of xml.matchAll(/<(?:\w+:)?infoTable>([\s\S]*?)<\/(?:\w+:)?infoTable>/g)) {
     const tag = t => { const x = m[1].match(new RegExp(`<(?:\\w+:)?${t}>([^<]*)<`)); return x ? x[1].trim() : ''; };
     if (tag('putCall')) continue;                                   // Optionen auslassen, nur Aktien
-    const cusip = tag('cusip').toUpperCase(), value = Number(tag('value')) || 0;
-    const x = rows.get(cusip) || {cusip, name: tag('nameOfIssuer'), value: 0}; x.value += value; rows.set(cusip, x);
+    const cusip = tag('cusip').toUpperCase(), value = Number(tag('value')) || 0, shares = tag('sshPrnamtType') === 'SH' ? Number(tag('sshPrnamt')) || 0 : 0;
+    const x = rows.get(cusip) || {cusip, name: tag('nameOfIssuer'), value: 0, shares: 0}; x.value += value; x.shares += shares; rows.set(cusip, x);
   }
   return [...rows.values()].sort((a, b) => b.value - a.value);
 }
@@ -150,4 +157,4 @@ function symbols() {
   return s;
 }
 
-module.exports = {sync, snapshot, symbols, GURUS, FALLBACK};
+module.exports = {sync, snapshot, symbols, GURUS, FALLBACK, lastTwo, infoTable, tickers};

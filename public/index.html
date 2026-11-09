@@ -315,6 +315,32 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 .nfrow{gap:8px;margin-bottom:10px}
 .coach.mini{margin-top:20px}
 .fine{line-height:1.55}
+/* Typografie: ausgewogene Überschriften, Silbentrennung im Fließtext, lange Wörter brechen sauber */
+h1,h2,h3,h4,.risktxt,.msg h3,.rc b,.trcm h3{text-wrap:balance}
+p,small,.hint,.coach p,.msg p,.risksub,.sec-sub,.fine,.tip{text-wrap:pretty;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.num,b.num,.num b{hyphens:none;-webkit-hyphens:none}
+.sm-row{padding:14px 0} .sm-row .l{align-items:baseline} .sm-row .l b{text-align:right}
+.smart h4{margin-bottom:14px} .smart .src{margin-top:10px} .hold{padding:10px 0}
+
+/* Smart Money */
+.smhead p{margin:10px 2px 0;font-size:14px;line-height:1.55;color:var(--muted)}
+.flows{margin-top:6px}
+.flow{display:grid;grid-template-columns:minmax(96px,34%) 1fr 64px;gap:10px;align-items:center;padding:9px 0;font-size:14px}
+.flow .track{position:relative;height:10px} .flow .track::before{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--line)}
+.flow .track i{position:absolute;top:0;height:10px;border-radius:6px}
+.flow b{text-align:right}
+.mv{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.mono{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-size:15px;color:var(--gold-p);border:1px solid var(--line-gold);background:radial-gradient(circle,#18233f,#0b1126)}
+.mv b{display:block;font-size:15px} .mv small{display:block;color:var(--muted);font-size:13px;line-height:1.45;margin-top:2px}
+.mv .r{text-align:right} .mv .r small{margin-top:6px;font-size:12px}
+.act{display:inline-block;padding:3px 9px;border-radius:8px;font-size:12px;font-weight:700}
+.act.buy{background:rgba(60,207,145,.14);color:var(--up)} .act.sell{background:rgba(255,107,107,.14);color:var(--down)}
+.sm-row .hint{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:8px}
+.sm-row .src{font-size:11px;color:var(--muted);letter-spacing:.02em}
+.hold{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:13.5px;border-top:1px dashed var(--line)}
+.hold:first-of-type{border-top:0}
+.rc.gold{border-color:var(--gold);background:linear-gradient(160deg,#1c2848,#0c1329)}
+
 /* Detail-Chart (Kerzen) */
 .bigpx{font-size:44px;font-weight:300;letter-spacing:-.02em;line-height:1.1;margin-top:14px} .bigpx small{font-size:24px;color:var(--muted);font-weight:400}
 .cwrap{position:relative;margin:18px 0 8px;height:min(300px,36dvh);min-height:200px;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -589,7 +615,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 
   <!-- MÄRKTE -->
   <main id="tab-markt">
-    <div class="sec-h"><h2>Smart-Money-Radar</h2><span class="muted" style="font-size:12px" id="radarAsof"></span></div>
+    <div class="sec-h"><h2>Smart-Money-Radar</h2><button class="link" id="smOpen" style="font-size:12.5px;text-decoration:none">Alle Meldungen ›</button></div>
     <div class="radar" id="radar"></div>
     <div class="sec-h"><h2>Märkte</h2><span class="muted" style="font-size:12px" id="asof"></span></div>
     <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
@@ -838,6 +864,20 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
     </div>
     <div class="coach mini" id="fdTip"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundInvest"></p></div><button class="say" data-saykey="fundInvest" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
     <p class="fine" id="fdFine">Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.</p>
+  </div>
+</section>
+
+<!-- Smart Money: Meldungen der Großinvestoren -->
+<section class="sheet" id="smSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><h3 style="font-size:28px">Smart Money</h3><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="smhead"><p id="smIntro"></p></div>
+    <div class="sec-h" style="margin-top:26px"><h2 style="font-size:19px">Nettozuflüsse</h2><span class="muted num" style="font-size:12px" id="smUnit"></span></div>
+    <div class="flows num" id="smFlows"></div>
+    <div class="chips" id="smChips" style="margin-top:20px"><button class="chip on" data-smf="all">Alle</button><button class="chip" data-smf="buy">Käufe</button><button class="chip" data-smf="sell">Verkäufe</button></div>
+    <div id="smList"></div>
+    <p class="fine" style="text-align:left;margin-top:18px">Quelle: Pflichtmeldungen (Formular 13F) an die US-Börsenaufsicht SEC, Vergleich mit dem Vorquartal. Erfasst sind US-Aktienpositionen ohne Optionen und Leerverkäufe. Nettozufluss = Veränderung der Stückzahl × Kurs zum Stichtag. Keine Verbindung zu den genannten Personen, keine Anlageberatung.</p>
   </div>
 </section>
 
@@ -1123,11 +1163,12 @@ function showEvents(ev){ (ev||[]).forEach(e=>{ if(e.type==='badge'){ const b=BAD
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
 const nf = (v,d) => Math.abs(v).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
-const eur = (v,d=2) => (v<0?'−':'') + nf(v,d) + ' €';
-const fmt = (v,cur) => { const d = v>=1?2:v>=.1?4:5; return nf(v,d) + (cur==='USD'?' $':' €'); };
+const NB='\u00a0';   // geschütztes Leerzeichen: Zahl und Einheit bleiben zusammen
+const eur = (v,d=2) => (v<0?'−':'') + nf(v,d) + NB+'€';
+const fmt = (v,cur) => { const d = v>=1?2:v>=.1?4:5; return nf(v,d) + NB + (cur==='USD'?'$':'€'); };
 const z = (v,d) => Math.abs(v) < .5*10**-d ? 0 : v;
-const pct = (v,d=2) => { v=z(v*100,d)/100; return (v>0?'+':v<0?'−':'±') + nf(v*100,d) + ' %'; };
-const sgn = v => { v=z(v,2); return (v>0?'+':v<0?'−':'±') + nf(v,2) + ' €'; };
+const pct = (v,d=2) => { v=z(v*100,d)/100; return (v>0?'+':v<0?'−':'±') + nf(v*100,d) + NB+'%'; };
+const sgn = v => { v=z(v,2); return (v>0?'+':v<0?'−':'±') + nf(v,2) + NB+'€'; };
 const toEur = (v,cur) => cur==='USD' ? v/fx : v;
 const cls = v => v>0.00005?'up':v<-0.00005?'down':'muted';
 const pro = () => S.mode==='pro';
@@ -1185,7 +1226,7 @@ const esc = t => String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>
 
 /* ---------- Smart-Money-Radar ---------- */
 let RD = {};
-const usd = v => v>=1e9 ? nf(v/1e9,1)+' Mrd. $' : v>=1e6 ? nf(v/1e6,0)+' Mio. $' : nf(v/1e3,0)+' Tsd. $';
+const usd = v => v>=1e9 ? nf(v/1e9,1)+NB+'Mrd.'+NB+'$' : v>=1e6 ? nf(v/1e6,0)+NB+'Mio.'+NB+'$' : nf(v/1e3,0)+NB+'Tsd.'+NB+'$';
 const dshort = d => { const x=new Date(d+'T12:00:00'); return x.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); };
 const daysTo = d => Math.round((new Date(d+'T12:00:00')-new Date())/864e5);
 function volRatio(s){ const v=(Q[s]&&Q[s].volm)||[]; if(v.length<10) return null; const last=v.at(-1), base=v.slice(0,-1).slice(-20); const avg=base.reduce((a,b)=>a+b,0)/base.length; return avg? last/avg : null; }
@@ -1213,17 +1254,28 @@ function radarCards(){
   if(vols[0] && volRatio(vols[0])>=1.4){ const s=vols[0]; cards.push({c:'',k:'Ungewöhnliches Volumen',s,t:`${META[s].n}: ${nf(volRatio(s),1)}-mal so viel Handel wie üblich`,d:'Verglichen mit dem Schnitt der letzten 20 Handelstage',tip:'volume'}); }
   const fav=syms.filter(s=>recInfo(RD[s].rec)&&recInfo(RD[s].rec).n>=15).sort((a,b)=>recInfo(RD[b].rec).share-recInfo(RD[a].rec).share);
   if(fav[0]){ const s=fav[0], r=recInfo(RD[s].rec); cards.push({c:'',k:'Liebling der Analysten',s,t:`${META[s].n}: ${r.buy} von ${r.n} Analysten sagen Kaufen`,d:'Florian fragt: Wer soll da eigentlich noch kaufen?',tip:'analyst'}); }
+  if(SM && SM.flows && SM.flows.length){ const top=SM.flows[0], low=SM.flows.at(-1), mv=SM.moves[0];
+    cards.unshift({c:'gold',k:`Großinvestoren · ${SM.report?quarter(SM.report):'13F'}`,s:'__smart',t:`Die Großen kaufen ${top.sector}${low&&low.net<0?`, verkaufen ${low.sector}`:''}`,d:mv?`Größte Bewegung: ${mv.person}, ${mvText(mv)}`:'SEC-Pflichtmeldungen',tip:'insider'}); }
   $('#radar').innerHTML = cards.map(c=>`<button class="rc ${c.c}" data-radar="${c.s}" data-tip="${c.tip}"><span class="kick">${c.k}</span><b>${c.t}</b><small>${c.d}</small><span class="go">Ansehen und handeln →</span></button>`).join('') || '<div class="empty" style="width:100%">Radar-Daten werden geladen …</div>';
 }
 function smartPanel(s){
-  const r=RD[s]; if(!r){ loadRadar(s); return ''; }
-  const rows=[], ri=recInfo(r.rec), vr=volRatio(s), full=pro();
+  if(!RD[s]) loadRadar(s); const r=RD[s]||{};
+  const rows=[], ri=recInfo(r.rec), vr=volRatio(s), full=pro(), g=SMS[s];
+  if(!g) loadSmartSym(s);
+  if(g && !g.loading){
+    const h=g.holders, q=h[0]?quarter(h[0].report):'';
+    rows.push(`<div class="sm-row"><div class="l"><span>Großinvestoren</span><b>${h.length?`${h.length} von ${g.of} halten`:'keiner der '+g.of+' hält'}</b></div>
+      ${h.slice(0,5).map(x=>`<div class="hold"><span>${esc(x.person)} <span class="muted">· ${nf(x.weight*100,x.weight<.01?1:0)} % des Depots</span></span><b class="${['neu','auf'].includes(x.action)?'up':x.action==='ab'?'down':'muted'}">${x.action==='neu'?'neu gekauft':x.action==='auf'?'+'+nf(x.chg*100,0)+' %':x.action==='ab'?'−'+nf(-x.chg*100,0)+' %':'gehalten'}</b></div>`).join('')}
+      ${g.sold.length?`<div class="hint">Komplett verkauft: ${g.sold.map(x=>esc(x.person)).join(', ')}</div>`:''}
+      <div class="src">SEC 13F${q?' · Stichtag '+q:''} · Veränderung zum Vorquartal</div></div>`);
+  }
   if(ri) rows.push(`<div class="sm-row"><div class="l"><span>Analysten (${ri.n})</span><b>${Math.round(ri.share*100)} % Kaufen</b></div>
     <div class="stack"><i style="width:${ri.buy/ri.n*100}%;background:var(--up)"></i><i style="width:${ri.hold/ri.n*100}%;background:var(--gold)"></i><i style="width:${ri.sell/ri.n*100}%;background:var(--down)"></i></div>
-    <div class="legend"><span>Kaufen ${ri.buy}</span><span>Halten ${ri.hold}</span><span>Verkaufen ${ri.sell}</span></div></div>`);
+    <div class="legend"><span>Kaufen ${ri.buy}</span><span>Halten ${ri.hold}</span><span>Verkaufen ${ri.sell}</span></div>
+    ${ri.share>=.85?'<div class="hint">Fast alle sind sich einig. Florian: Wenn alle schon kaufen, wer soll dann noch kaufen?</div>':ri.share<.4?'<div class="hint">Die Mehrheit ist skeptisch. Genau hier entstehen manchmal die besten Gelegenheiten, aber nur mit gutem Grund.</div>':''}</div>`);
   if(r.ins) { const i=r.ins;
     rows.push(`<div class="sm-row"><div class="l"><span>Insider (120 Tage)</span><b class="${i.buys?'up':i.sells?'down':''}">${i.buys} Käufe · ${i.sells} Verkäufe</b></div>
-      <div class="legend"><span>Gekauft ${i.buyVal?usd(i.buyVal):'0 $'}</span><span>Verkauft ${i.sellVal?usd(i.sellVal):'0 $'}</span>${full&&i.mspr!=null?`<span>Insider-Stimmung ${i.mspr<0?'−':''}${nf(i.mspr,0)} (−100 bis +100)</span>`:''}</div>
+      <div class="legend"><span>Gekauft ${i.buyVal?usd(i.buyVal):'0 $'}</span><span>Verkauft ${i.sellVal?usd(i.sellVal):'0 $'}</span></div><div class="hint">${i.buys?'Käufe mit eigenem Geld an der Börse gelten als eines der stärksten Signale.':'Verkäufe sind oft Gehalt, Steuern oder geplante Programme und allein kein Warnsignal. Käufe wären aussagekräftiger.'}</div><div class="legend">${full&&i.mspr!=null?`<span>Insider-Stimmung ${i.mspr<0?'−':''}${nf(i.mspr,0)} (−100 bis +100)</span>`:''}</div>
       ${full?i.top.map(t=>`<div class="tx"><span>${t.n}</span><b class="${t.c==='P'?'up':'down'}">${t.c==='P'?'Kauf':'Verkauf'}</b><small class="muted">${dshort(t.d)} · ${nf(t.sh,0)} Aktien à ${nf(t.p,2)} $</small><small class="muted">${usd(t.sh*t.p)}</small></div>`).join(''):''}</div>`); }
   if(r.next||r.last){ const x=surprise(r.last);
     rows.push(`<div class="sm-row"><div class="l"><span>Nächste Quartalszahlen</span><b>${r.next?dshort(r.next.date)+(r.next.hour==='amc'?' · nach Börsenschluss':r.next.hour==='bmo'?' · vor Börsenstart':''):'noch offen'}</b></div>
@@ -1232,7 +1284,7 @@ function smartPanel(s){
   if(full && r.news && r.news.length) rows.push(`<div class="sm-row news"><div class="l"><span>Schlagzeilen (englisch)</span></div>${r.news.map(n=>`<a href="${n.url}" target="_blank" rel="noopener">${n.h}<small>${n.src} · ${new Date(n.t*1000).toLocaleDateString('de-DE')}</small></a>`).join('')}</div>`);
   if(!rows.length) return '';
   const tip = r.ins&&(r.ins.buys||r.ins.sellVal>2e8)?'insider':r.next&&daysTo(r.next.date)<=14?'earnings':vr&&vr>=1.6?'volume':'analyst';
-  return `<div class="smart"><h4>Smart Money <small>Quelle: Finnhub${r.ins?' · SEC':''}</small></h4>${rows.join('')}<button class="explain" data-explain="${tip}">Florian ordnet ein</button></div>`;
+  return `<div class="smart"><h4>Smart Money <small>SEC-Meldungen · Finnhub</small></h4>${rows.join('')}<button class="explain" data-explain="${tip}">Florian ordnet ein</button></div>`;
 }
 
 /* ---------- Suche nach jeder US-Aktie ---------- */
@@ -1373,6 +1425,40 @@ function closeTop(){
   if(prev) $(prev).classList.add('on'); else { $('#scrim').classList.remove('on'); document.body.classList.remove('sheet-open'); }
 }
 function closeSheets(){ SHEETS.length=0; document.body.classList.remove('sheet-open'); $('#scrim').classList.remove('on'); $$('.sheet').forEach(s=>s.classList.remove('on')); if('speechSynthesis' in window) speechSynthesis.cancel(); if(player){ player.pause(); player=null; } $$('.speaking').forEach(b=>b.classList.remove('speaking')); }
+
+/* ---------- Smart Money (SEC 13F) ---------- */
+let SM=null, smF='all'; const SMS={};
+const big = v => { const a=Math.abs(v); return (v<0?'−':v>0?'+':'')+(a>=1e9?nf(a/1e9,1)+NB+'Mrd.'+NB+'$':nf(a/1e6,0)+NB+'Mio.'+NB+'$'); };
+const initials2 = n => n.split(/\s+/).filter(w=>/^[A-ZÄÖÜ]/.test(w)).slice(0,2).map(w=>w[0]).join('');
+const mvText = m => m.action==='neu'?`Neu gekauft: ${m.name}`:m.action==='raus'?`${m.name} komplett verkauft`:`${m.name} um ${nf(Math.abs(m.chg)*100,0)} % ${m.action==='auf'?'aufgestockt':'reduziert'}`;
+async function loadSmart(){ try{ SM=await api('/api/smart'); }catch(e){} }
+async function openSmart(){
+  if(!SM) await loadSmart(); if(!SM) return toast('Smart-Money-Daten nicht erreichbar');
+  const q=SM.report?quarter(SM.report):'';
+  $('#smIntro').textContent=`Was ${SM.investors} große Investoren zuletzt gemeldet haben${q?` (Stichtag ${q})`:''}. Pflichtmeldungen erscheinen bis zu 45 Tage nach Quartalsende.`;
+  const mx=Math.max(1,...SM.flows.map(f=>Math.abs(f.net))), unit=mx>=2e9?'Mrd. $':'Mio. $', div=unit==='Mrd. $'?1e9:1e6;
+  $('#smUnit').textContent=`${unit} · letztes Quartal`;
+  $('#smFlows').innerHTML=SM.flows.length?SM.flows.map(f=>`<div class="flow"><span>${esc(f.sector)}</span><span class="track"><i style="${f.net>=0?`left:50%;width:${Math.abs(f.net)/mx*50}%;background:var(--up)`:`right:50%;width:${Math.abs(f.net)/mx*50}%;background:var(--down)`}"></i></span><b class="${cls(f.net)}">${f.net>=0?'+':'−'}${nf(Math.abs(f.net)/div,1)}</b></div>`).join('')
+    :'<p class="muted" style="font-size:13.5px">Die Branchen werden noch zugeordnet.</p>';
+  smF='all'; renderSmartList(); openSheet('#smSheet');
+}
+function renderSmartList(){
+  $$('[data-smf]').forEach(b=>b.classList.toggle('on',b.dataset.smf===smF));
+  const list=SM.moves.filter(m=>smF==='all'||(smF==='buy'?['neu','auf'].includes(m.action):['ab','raus'].includes(m.action))).slice(0,50);
+  $('#smList').innerHTML=list.length?list.map(m=>{ const buy=['neu','auf'].includes(m.action);
+    return `<button class="mv" data-smsym="${esc(m.sym)}"><span class="mono">${esc(initials2(m.person))}</span><span style="min-width:0"><b>${esc(m.person)}</b><small>${esc(mvText(m))}</small></span>
+      <span class="r"><span class="act ${buy?'buy':'sell'}">${buy?'Kauf':'Verkauf'}</span><small class="num">${big(m.flow)}</small></span></button>`; }).join('')
+    :'<div class="empty" style="margin-top:12px">Keine Meldungen in dieser Auswahl.</div>';
+}
+$('#smOpen').onclick=openSmart;
+$('#smSheet').addEventListener('click',async e=>{ const f=e.target.closest('[data-smf]'); if(f){ smF=f.dataset.smf; renderSmartList(); return; }
+  const m=e.target.closest('[data-smsym]'); if(!m) return; const sym=m.dataset.smsym;
+  if(!META[sym]){ try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym); }catch(err){ return toast(err.message); } }
+  openChart(sym); });
+function loadSmartSym(s){
+  if(SMS[s]) return; SMS[s]={loading:true};
+  api('/api/smart/'+encodeURIComponent(s)).then(d=>{ SMS[s]=d; if(ui.sym===s && SHEETS.includes('#sheet')) $('#smart').innerHTML=smartPanel(s); }).catch(()=>{ delete SMS[s]; });
+}
 
 /* ---------- Watchlist ---------- */
 const watched = s => (S.watch||[]).includes(s);
@@ -2116,6 +2202,7 @@ document.addEventListener('click',e=>{
   const fd=t.closest('[data-fund]'); if(fd){ openFund(+fd.dataset.fund); return; }
   const fq=t.closest('[data-fq]'); if(fq){ const v=+fq.dataset.fq; $('#fdAmt').value=Math.floor(v<1?S.equity*v/100*100/100:v).toLocaleString('de-DE'); updFundAmt(); return; }
   const sk=t.closest('[data-saykey]'); if(sk){ speakKey(sk.dataset.saykey, sk.closest('.coach')); return; }
+  const rcs=t.closest('[data-radar="__smart"]'); if(rcs){ openSmart(); return; }
   const rc=t.closest('[data-radar]'); if(rc){ openTrade(rc.dataset.radar); ui.tip=rc.dataset.tip; $('#tip').textContent=TIPS[rc.dataset.tip]; coach(rc.dataset.tip); return; }
   const ex=t.closest('[data-explain]'); if(ex){ ui.tip=ex.dataset.explain; $('#tip').textContent=TIPS[ui.tip]; speakKey(ui.tip,$('#tipBox')); $('#tipBox').scrollIntoView({behavior:'smooth',block:'center'}); return; }
   const ad=t.closest('[data-add]'); if(ad){ addInstrument(ad.dataset.add); return; }
@@ -2184,7 +2271,7 @@ async function refresh(manual){
 }
 async function enter(){
   $('#ob').hidden=true;
-  await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(), loadArenas(),
+  await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(), loadArenas(), loadSmart(),
     api('/api/radar').then(d=>{ RD=d.radar||{}; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
     api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{})]);
   render();

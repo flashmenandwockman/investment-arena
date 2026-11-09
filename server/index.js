@@ -16,6 +16,7 @@ const copy = require('./copy');
 const gurus = require('./gurus');
 const arenas = require('./arenas');
 const talents = require('./talents');
+const smart = require('./smart');
 const pkg = require('../package.json');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -131,6 +132,8 @@ async function api(req, res, url) {
     if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, {sym: p.split('/').pop().toUpperCase(), radar: await radar.one(p.split('/').pop().toUpperCase())}); }
     if (p === '/api/chart') { limit(req); return send(res, 200, await market.chart(url.searchParams.get('sym') || '', url.searchParams.get('r'))); }
     if (/^\/api\/sentiment\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, sentiment(decodeURIComponent(p.slice('/api/sentiment/'.length))));
+    if (p === '/api/smart') return send(res, 200, smart.overview());
+    if (/^\/api\/smart\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, smart.forSymbol(decodeURIComponent(p.slice('/api/smart/'.length))));
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status()});
     if (p === '/api/audio') {
       const dir = path.join(PUBLIC, 'audio');
@@ -330,12 +333,12 @@ async function start() {
     setInterval(() => radar.refresh().catch(() => {}), 30 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
     market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);
-    gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {});
-    setInterval(() => gurus.sync().then(() => { heldCache.t = 0; }).catch(() => {}), 12 * 3600_000);
+    gurus.sync().then(() => { heldCache.t = 0; return smart.sync(); }).catch(() => {});
+    setInterval(() => gurus.sync().then(() => { heldCache.t = 0; return smart.sync(); }).catch(() => {}), 12 * 3600_000);
     copy.snapshot(); arenas.snapshot();
     setInterval(() => { copy.snapshot(); arenas.snapshot(); talents.invalidate(); }, 10 * 60_000);
   }
-  if (require.main !== module) await gurus.sync();   // Tests: Großinvestoren aus den mitgelieferten Meldungen
+  if (require.main !== module) { await gurus.sync(); await smart.sync(); }   // Tests: Großinvestoren aus den mitgelieferten Meldungen
   return new Promise(r => server.listen(config.port, () => { console.log(`Investment Arena läuft auf ${config.baseUrl} (Port ${server.address().port})`); r(server); }));
 }
 
