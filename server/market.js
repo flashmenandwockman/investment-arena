@@ -82,7 +82,7 @@ function watchedExtras(withPrivate) {
 
 async function refresh() {
   if (config.offline) return quotes;
-  const next = {...quotes};
+  const next = {...quotes}, before = new Set(Object.keys(quotes));
   let ok = 0;
   await Promise.all([
     ...YAHOO.map(async s => { try { next[s] = await yahoo(s); ok++; } catch (e) {} }),
@@ -106,7 +106,11 @@ async function refresh() {
   await Promise.all(batch.filter(s => Date.now() - (histAt.get(s) || 0) > 3600_000).slice(0, 10).map(async s => {
     try { const y = await yahoo(s); next[s] = {...y, ...(next[s] && next[s].src ? {price: next[s].price, prev: next[s].prev, time: next[s].time, src: 'finnhub'} : {})}; histAt.set(s, Date.now()); } catch (e) {}
   }));
-  if (ok) { quotes = next; live = true; updatedAt = Date.now(); }
+  if (ok) {
+    // Titel, die während dieses Durchlaufs hinzugekommen sind (Suche, Watchlist, Smart Money), nicht verwerfen
+    for (const k of Object.keys(quotes)) if (!before.has(k)) next[k] = quotes[k];
+    quotes = next; live = true; updatedAt = Date.now();
+  }
   return quotes;
 }
 
@@ -206,6 +210,7 @@ async function add(sym, {silent} = {}) {
   quotes = {...quotes, [sym]: data};
   qAddInstr.run(sym, name, type, Date.now());
   INSTRUMENTS[sym] = meta(sym, name, type);
+  if (!silent) touch(sym);   // erst jetzt existiert der Titel: als angesehen markieren, damit er Kurse bekommt und in der Liste erscheint
   return {sym, meta: INSTRUMENTS[sym], quote: quotes[sym]};
 }
 function touch(sym) { if (INSTRUMENTS[sym] && INSTRUMENTS[sym].x) viewed.set(sym, Date.now()); }

@@ -67,7 +67,8 @@ function open(st, o, navOf, opts = {}) {
   const sym = o.sym, I = market.INSTRUMENTS[sym], P = px(sym);
   const amt = Math.floor(Number(o.amt) || 0), dir = Number(o.dir) === -1 ? -1 : 1;
   const mode = st.mode === 'pro' || cp ? 'pro' : 'easy', wallet = cp || st;
-  if (!I || P == null) throw new Error('Unbekannter Wert');
+  if (!I) throw new Error('Unbekannter Wert');
+  if (P == null) throw new Error('Für diesen Wert liegt gerade kein Kurs vor. Bitte in ein paar Sekunden erneut versuchen.');
   if (amt < (cp ? 10 : 100)) throw new Error('Mindesteinsatz 100 €');
   if (amt > wallet.cash + 0.01) throw new Error('Nicht genug verfügbares Spielgeld');
   const kind = ['stock', 'lev', 'option'].includes(o.kind) ? o.kind : 'stock';
@@ -115,7 +116,8 @@ const reached = (o, P) => o.dir > 0 ? P <= o.limit : P >= o.limit;
 function placeLimit(st, o, navOf) {
   const sym = o.sym, I = market.INSTRUMENTS[sym], P = px(sym), amt = Math.floor(Number(o.amt) || 0), dir = Number(o.dir) === -1 ? -1 : 1;
   const limit = Number(o.limit), kind = o.kind === 'option' ? null : o.kind === 'lev' ? 'lev' : 'stock';
-  if (!I || P == null) throw new Error('Unbekannter Wert');
+  if (!I) throw new Error('Unbekannter Wert');
+  if (P == null) throw new Error('Für diesen Wert liegt gerade kein Kurs vor. Bitte in ein paar Sekunden erneut versuchen.');
   if (!kind) throw new Error('Limit-Orders gibt es für Aktien und Hebel, nicht für Optionen');
   if (!(limit > 0) || Math.abs(limit / P - 1) > .5) throw new Error('Das Limit muss innerhalb von 50 % um den aktuellen Kurs liegen');
   if (amt < 100) throw new Error('Mindesteinsatz 100 €');

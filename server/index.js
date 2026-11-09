@@ -212,7 +212,10 @@ async function api(req, res, url) {
       return send(res, 200, stateView(u.id));
     }
     if (p === '/api/orders' && m === 'POST') {
-      const bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id), eqBefore = game.equity(st, 'now', funds.navOf), b = await body(req);
+      const b = await body(req);
+      // Kurs fehlt (z. B. Titel gerade erst hinzugekommen)? Sofort nachholen statt abzubrechen
+      if (b.sym && market.INSTRUMENTS[b.sym] && !market.get()[b.sym]) { try { await market.add(b.sym, {silent: true}); } catch (e) {} }
+      const bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id), eqBefore = game.equity(st, 'now', funds.navOf);
       const r = b.limit ? game.placeLimit(st, b, funds.navOf) : game.open(st, b, funds.navOf);
       if (bk) bk.save(); else store.save(u.id, st);
       heldCache.t = 0;
