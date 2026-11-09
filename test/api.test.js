@@ -314,3 +314,31 @@ test('Talent-Programm: Shortlist, Vorstellung, Scouting-Board', async () => {
   assert.strictEqual(up.data.apps[0].status, 'gespraech');
   assert.strictEqual((await t('/api/talents')).data.me.stage, 'pitch');
 });
+
+test('Kursziel, freier Stop, Watchlist, Stimmung, Kerzen', async () => {
+  const c = client();
+  await c('/api/auth/register', {name: 'Ziel', email: 'ziel@x.de', password: 'geheim1234'});
+  const o = await c('/api/orders', {sym: 'AAPL', dir: 1, kind: 'lev', lev: 3, amt: 3000, sl: 0.03, tp: 0.09});
+  const p = o.data.state.positions[0];
+  assert.strictEqual(p.sl, 0.03); assert.strictEqual(p.tp, 0.09);
+  const bad = await c('/api/orders', {sym: 'MSFT', dir: 1, amt: 1000, sl: 0.9});
+  assert.strictEqual(bad.data.state.positions.find(x => x.sym === 'MSFT').sl, undefined, 'Stop über 50 % wird ignoriert');
+  // Ziel erreicht: Kurs künstlich über das Ziel heben und Prüfung auslösen
+  const market = require('../server/market'), game = require('../server/game'), store = require('../server/store'), funds = require('../server/funds');
+  const q = market.get().AAPL, old = q.price; q.price = p.entry * 1.1;
+  const u = (await c('/api/me')).data.user, st = store.load(u.id), ev = game.check(st, funds.navOf); q.price = old;
+  assert.ok(ev.some(e => e.why === 'Ziel erreicht'));
+
+  let w = await c('/api/state', {watch: {NVDA: true, 'BTC/EUR': true, NOPE: true}}, 'PATCH');
+  assert.deepStrictEqual(w.data.watch, ['NVDA', 'BTC/EUR']);
+  w = await c('/api/state', {watch: {NVDA: false}}, 'PATCH');
+  assert.deepStrictEqual(w.data.watch, ['BTC/EUR']);
+  w = await c('/api/state', {lesson: 'short'}, 'PATCH');
+  assert.ok(w.data.lessons.short > 0);
+
+  const s = (await client()('/api/sentiment/MSFT')).data;
+  assert.ok(s.traders >= 1 && Math.abs(s.long + s.short - 1) < 1e-9);
+  const ch = (await c('/api/chart?sym=AAPL&r=3mo')).data;
+  assert.ok(ch.points.length > 10 && ch.points[0].length === 5, 'Kerzen mit Eröffnung, Hoch, Tief');
+  assert.ok(ch.points.every(k => k[3] >= Math.max(k[1], k[2]) && k[4] <= Math.min(k[1], k[2])));
+});

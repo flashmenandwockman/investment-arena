@@ -64,7 +64,7 @@ function stateView(userId, bk) {
   });
   const eq = game.equity(st, 'now', funds.navOf), prev = game.equity(st, 'prev', funds.navOf);
   return {cash: st.cash, positions, hist: st.hist.slice(-40), realized: st.realized, badges: st.badges, xp: st.xp, active: st.active,
-    follow: st.follow, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash, copies: copy.view(st), book: bk ? bk.arena.id : null};
+    follow: st.follow, watch: (bk ? store.load(userId) : st).watch || [], lessons: (bk ? store.load(userId) : st).lessons || {}, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash, copies: copy.view(st), book: bk ? bk.arena.id : null};
 }
 function leaderboard(meId) {
   const ps = copy.periodStarts();
@@ -76,6 +76,23 @@ function leaderboard(meId) {
   });
 }
 const qUser = db.prepare('SELECT * FROM users WHERE id = ?');
+// Stimmung der 100 besten Trader (nach Depotwert) zu einem Titel: Anteil long und short, gewichtet nach Positionswert
+let sentCache = {t: 0, map: new Map()};
+function sentiment(sym) {
+  if (Date.now() - sentCache.t > 120_000) {
+    const map = new Map();
+    const top = store.all().map(u => ({u, eq: game.equity(u.st, 'now', funds.navOf)})).sort((a, b) => b.eq - a.eq).slice(0, 100);
+    for (const {u} of top) for (const p of u.st.pos) {
+      if (!p.sym || p.copyId) continue;
+      const v = game.value(p, 'now', funds.navOf) * (p.lev || 1), x = map.get(p.sym) || {long: 0, short: 0, traders: new Set()};
+      if (p.dir > 0) x.long += v; else x.short += v; x.traders.add(u.userId); map.set(p.sym, x);
+    }
+    sentCache = {t: Date.now(), map};
+  }
+  const x = sentCache.map.get(sym);
+  if (!x || x.long + x.short <= 0) return {sym, traders: 0};
+  return {sym, traders: x.traders.size, long: x.long / (x.long + x.short), short: x.short / (x.long + x.short)};
+}
 function profile(id) {
   const u = qUser.get(id); if (!u) return null;
   const st = store.load(id), eq = game.equity(st, 'now', funds.navOf);
@@ -113,6 +130,7 @@ async function api(req, res, url) {
     if (/^\/api\/instrument\/[A-Za-z]{1,5}(\.[A-Za-z])?$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
     if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, {sym: p.split('/').pop().toUpperCase(), radar: await radar.one(p.split('/').pop().toUpperCase())}); }
     if (p === '/api/chart') { limit(req); return send(res, 200, await market.chart(url.searchParams.get('sym') || '', url.searchParams.get('r'))); }
+    if (/^\/api\/sentiment\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, sentiment(decodeURIComponent(p.slice('/api/sentiment/'.length))));
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status()});
     if (p === '/api/audio') {
       const dir = path.join(PUBLIC, 'audio');
@@ -168,6 +186,16 @@ async function api(req, res, url) {
       const b = await body(req), st = store.load(u.id);
       if (['easy', 'pro'].includes(b.mode)) { st.mode = b.mode; for (const a of arenas.mine(u)) if (a.mode === 'own') { try { const bk = arenas.loadBook(u.id, a.id); bk.st.mode = b.mode; bk.save(); } catch (e) {} } }
       if (b.follow && typeof b.follow === 'object') for (const [k, v] of Object.entries(b.follow).slice(0, 50)) { if (v) st.follow[k] = true; else delete st.follow[k]; }
+      // Watchlist: bis zu 60 Titel, nur bekannte Werte
+      if (b.watch && typeof b.watch === 'object') {
+        st.watch = Array.isArray(st.watch) ? st.watch : [];
+        for (const [k, v] of Object.entries(b.watch).slice(0, 20)) {
+          if (v && market.INSTRUMENTS[k] && !st.watch.includes(k)) { if (st.watch.length >= 60) throw new Error('Höchstens 60 Titel auf der Watchlist'); st.watch.push(k); }
+          if (!v) st.watch = st.watch.filter(x => x !== k);
+        }
+        heldCache.t = 0;
+      }
+      if (typeof b.lesson === 'string' && /^\w{2,20}$/.test(b.lesson)) { st.lessons = st.lessons || {}; st.lessons[b.lesson] = Date.now(); }
       store.save(u.id, st); return send(res, 200, stateView(u.id));
     }
     if (p === '/api/state/reset' && m === 'POST') {
@@ -283,7 +311,7 @@ let heldCache = {t: 0, set: new Set()};
 function held() {
   if (Date.now() - heldCache.t < 30_000) return heldCache.set;
   const set = new Set();
-  for (const u of store.all()) for (const p of u.st.pos) if (p.sym) set.add(p.sym);
+  for (const u of store.all()) { for (const p of u.st.pos) if (p.sym) set.add(p.sym); for (const s of u.st.watch || []) set.add(s); }
   for (const r of qFundHoldings.all()) for (const h of JSON.parse(r.holdings)) set.add(h.sym);
   for (const b of arenas.allBooks()) for (const p of b.st.pos) if (p.sym) set.add(p.sym);
   heldCache = {t: Date.now(), set};

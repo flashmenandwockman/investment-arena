@@ -32,7 +32,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 [hidden]{display:none!important}
 
 /* Header */
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 0 8px;position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 72%,transparent)}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 0 8px;position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 72%,transparent)}
 .brand{display:flex;flex-direction:column;line-height:1.1}
 .brand b{font-family:var(--serif);font-weight:700;font-size:19px}
 .brand span{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-l)}
@@ -81,7 +81,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .logo{width:42px;height:42px;border-radius:12px;background:var(--card-2);display:grid;place-items:center;font-weight:700;font-size:11.5px;color:var(--gold-p);border:1px solid var(--line)}
 .row .n{min-width:0} .row .n b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .row .n small{color:var(--muted);font-size:12px}
 .row .p{text-align:right} .row .p b{display:block;font-size:14.5px} .row .p small{font-size:12px;font-weight:600}
-.spark{width:70px;height:30px}
+.spark{width:70px;height:30px;display:block} .spk{display:block;padding:6px 0}
 /* Smart-Money-Radar */
 .radar{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 6px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .radar::-webkit-scrollbar{display:none}
@@ -143,7 +143,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .lb{display:flex;flex-direction:column;gap:6px}
 .lbr{display:grid;grid-template-columns:28px 44px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:16px;background:var(--card);border:1px solid var(--line);width:100%;text-align:left}
 .lbr.mine{border-color:var(--gold);background:rgba(198,164,108,.08)}
-.lbr .rk{font-weight:700;color:var(--muted);text-align:center} .lbr .rk.top{color:var(--gold-p)}
+.lbr .rk{font-weight:700;color:var(--muted);text-align:center;display:grid;place-items:center}
+.medal{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:800;color:#1a0e00;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 6px -2px rgba(0,0,0,.6)}
+.medal.m1{background:linear-gradient(135deg,#fbe7b0,#e0c28a 45%,#b8924f)} .medal.m2{background:linear-gradient(135deg,#f1f3f7,#c3c8d2 50%,#8d94a3)} .medal.m3{background:linear-gradient(135deg,#f3c39a,#cd8a55 50%,#94582e)}
+.medal.sm{width:20px;height:20px;font-size:10.5px;vertical-align:-4px;margin-right:4px}
 .lbr .nm b{display:block;font-size:14.5px} .lbr .nm small{color:var(--muted);font-size:12px}
 .lbr .vv{text-align:right} .lbr .vv b{display:block;font-size:14px} .lbr .vv small{font-size:12px;font-weight:600}
 .streak{display:flex;gap:6px;margin-top:10px}
@@ -312,6 +315,46 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 .nfrow{gap:8px;margin-bottom:10px}
 .coach.mini{margin-top:20px}
 .fine{line-height:1.55}
+/* Detail-Chart (Kerzen) */
+.bigpx{font-size:44px;font-weight:300;letter-spacing:-.02em;line-height:1.1;margin-top:14px} .bigpx small{font-size:24px;color:var(--muted);font-weight:400}
+.cwrap{position:relative;margin:18px 0 8px;height:min(300px,36dvh);min-height:200px;touch-action:none;user-select:none;-webkit-user-select:none}
+.cwrap svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.cwrap .cx{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.55);pointer-events:none}
+.cwrap .cy{position:absolute;left:0;right:46px;height:1px;background:rgba(255,255,255,.35);pointer-events:none}
+.cwrap .cdot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;border:2px solid var(--bg);pointer-events:none}
+.ctip{position:absolute;top:-4px;transform:translate(-50%,-100%);padding:8px 12px;border-radius:12px;background:var(--card-2);border:1px solid var(--line-gold);font-size:12.5px;white-space:nowrap;pointer-events:none;box-shadow:0 12px 26px -12px #000;line-height:1.5}
+.ctip small{display:block;color:var(--muted);font-size:11.5px}
+.ranges.r6{grid-template-columns:repeat(6,1fr) 44px;gap:4px}
+.ranges .modeb{width:44px;height:36px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold-p)}
+.ranges .modeb svg{width:20px;height:20px}
+.sent{margin-top:18px} .sent .l{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:8px} .sent .l span{color:var(--muted)}
+.sent .bar{display:flex;gap:4px;height:8px} .sent .bar i{display:block;border-radius:6px;height:100%}
+.tradebtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px;position:sticky;bottom:0;padding:12px 0 4px;background:linear-gradient(transparent,var(--bg-2) 30%)}
+.tradebtns .cta{margin:0;height:58px}
+.starb{font-size:20px;color:var(--gold-p)} .starb.on{background:rgba(198,164,108,.18)}
+.hdbtns{display:flex;gap:8px;flex:none}
+.wstar{color:var(--gold);font-size:12px;margin-right:4px}
+.chartlink{color:var(--gold-p);font-weight:600}
+/* Stop & Ziel */
+.riskbox{position:relative;height:230px;border-radius:16px;background:var(--card);border:1px solid var(--line);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.riskbox svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.rzone{position:absolute;right:0;width:46%;pointer-events:none}
+.rzone.r-up{background:rgba(60,207,145,.14);border-top:2px solid var(--up)} .rzone.r-dn{background:rgba(255,107,107,.13);border-bottom:2px solid var(--down)}
+.rzone.r-up.dn{border-top:0;border-bottom:2px solid var(--up)} .rzone.r-dn.dn{border-bottom:0;border-top:2px solid var(--down)}
+.rentry{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.55);pointer-events:none}
+.rentry span{position:absolute;right:10px;top:-20px;font-size:12px;color:var(--muted)}
+.rpill{position:absolute;right:10px;height:38px;padding:0 16px;border-radius:999px;font-weight:700;font-size:13.5px;transform:translateY(-50%);touch-action:none;cursor:grab;white-space:nowrap;box-shadow:0 8px 18px -8px #000}
+.rpill.r-up{background:#5fd6a0;color:#03241a} .rpill.r-dn{background:#ff8a7a;color:#2a0606}
+.rpill.ghost{background:transparent;border:1.5px dashed;box-shadow:none} .rpill.r-up.ghost{color:var(--up);border-color:var(--up)} .rpill.r-dn.ghost{color:var(--down);border-color:var(--down)}
+.rchips{display:grid;grid-template-columns:44px 1fr;gap:10px 10px;align-items:center;margin-top:14px;font-size:12.5px;color:var(--muted);font-weight:600}
+.rchips .seg .opt{min-height:40px;font-size:13px}
+.risktxt{font-family:var(--serif);font-size:20px;line-height:1.4;margin:18px 2px 6px}
+.risksub{margin:0 2px;font-size:13.5px;line-height:1.55;color:var(--muted)}
+/* Lernen */
+.lprog{padding:18px;border-radius:18px;background:linear-gradient(160deg,#141f3d,#0c1329);border:1px solid var(--line-gold);margin-bottom:14px}
+.lprog b{font-size:15px} .lprog small{display:block;color:var(--muted);font-size:12.5px;margin-top:8px}
+.row.lesson.done .logo{background:rgba(60,207,145,.14);color:var(--up);border-color:rgba(60,207,145,.4)}
+
 /* Arena: Bereiche Global, Meine Arenen, Talente */
 .seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin:4px 0 6px}
 .seg3 button{height:42px;border-radius:12px;font-size:13.5px;font-weight:600;color:var(--muted)}
@@ -464,7 +507,7 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
 .sheet{max-height:92dvh}
 .nav{transform:translateZ(0);-webkit-transform:translateZ(0)}
 /* Kopfzeile auf schmalen Handys */
-.top{min-width:0} .brand{min-width:0;flex:0 1 auto} .top-r{flex:none}
+header.top{min-width:0} .brand{min-width:0;flex:0 1 auto} .top-r{flex:none}
 @media (max-width:400px){
   .pill{padding:0 9px} .mode button{padding:0 8px;font-size:11.5px} .top-r{gap:6px}
 }
@@ -475,10 +518,10 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
 }
 @media (max-width:340px){ #feed{display:none} }
 /* Kopfzeile deckt beim Scrollen die volle Breite ab */
-.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .brand{gap:4px} .brand span{line-height:1.2}
 /* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
-@media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spark{display:none} }
+@media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spk{display:none} }
 </style>
 </head>
 <body>
@@ -660,6 +703,7 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
   <!-- LERNEN -->
   <main id="tab-lernen" hidden>
     <div class="sec-h"><h2>Florians Lektionen</h2></div>
+    <div class="lprog" id="lProg" hidden></div>
     <div class="list" id="lessons"></div>
   </main>
 
@@ -682,14 +726,15 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
   <div class="sheet-in">
     <div class="grab"></div>
     <div class="sheet-h">
-      <div><h3 id="tName"></h3><div class="num" id="tPrice" style="font-size:14px"></div></div>
-      <button class="x" data-closesheet aria-label="Schließen">×</button>
+      <div style="min-width:0"><h3 id="tName"></h3><div class="num" id="tPrice" style="font-size:14px"></div></div>
+      <div class="hdbtns"><button class="x starb" id="tStar" aria-label="Auf die Watchlist">☆</button><button class="x" data-closesheet aria-label="Schließen">×</button></div>
     </div>
     <div class="chartbox" id="tChartBox"><svg id="tChart" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
       <span class="hi num" id="tHi"></span><span class="lo num" id="tLo"></span>
       <i class="cx" id="tCx" hidden></i><i class="cd" id="tCd" hidden></i><div class="ct num" id="tTip" hidden></div></div>
     <div class="ranges" id="tRanges"><button data-rg="1d">24h</button><button data-rg="5d">Woche</button><button data-rg="1mo" class="on">Monat</button><button data-rg="1y">Jahr</button><button data-rg="5y">Max</button></div>
     <div class="rchg num" id="tRchg"></div>
+    <div class="sent" id="tSent" hidden></div>
     <div id="smart"></div>
 
     <div class="step"><label>1 · Ihre Erwartung</label>
@@ -734,13 +779,12 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
 
     <div class="step" id="noteStep"><label>Ihre Begründung <span class="muted" style="text-transform:none;letter-spacing:0">optional · zählt fürs Talent-Programm</span></label>
       <input class="inp" id="tNote" maxlength="200" placeholder="Warum dieser Trade? Ein Satz genügt."></div>
-    <div class="step" id="slStep"><label>4 · Absicherung</label>
-      <div class="seg c4">
-        <button class="opt" data-sl="0">Kein<small>Stop</small></button>
-        <button class="opt" data-sl="0.05">−5 %<small>Stop-Loss</small></button>
-        <button class="opt" data-sl="0.1">−10 %<small>Stop-Loss</small></button>
-        <button class="opt" data-sl="0.2">−20 %<small>Stop-Loss</small></button>
-      </div>
+    <div class="step" id="slStep"><label>4 · Stop & Ziel <span class="muted" style="text-transform:none;letter-spacing:0">mit dem Finger ziehen</span></label>
+      <div class="riskbox" id="rBox"><svg id="rSvg"></svg><div class="rzone r-up" id="rZt"></div><div class="rzone r-dn" id="rZs"></div><div class="rentry" id="rEntry"><span class="num" id="rEntryTxt"></span></div>
+        <button class="rpill r-up num" id="rT" type="button"></button><button class="rpill r-dn num" id="rS" type="button"></button></div>
+      <div class="rchips"><span>Stop</span><div class="seg c4"><button class="opt" data-sl="0">Kein</button><button class="opt" data-sl="0.05">5 %</button><button class="opt" data-sl="0.1">10 %</button><button class="opt" data-sl="0.2">20 %</button></div>
+        <span>Ziel</span><div class="seg c4"><button class="opt" data-tp="0">Kein</button><button class="opt" data-tp="0.1">10 %</button><button class="opt" data-tp="0.2">20 %</button><button class="opt" data-tp="0.5">50 %</button></div></div>
+      <p class="risktxt" id="rTxt"></p><p class="risksub" id="rSub"></p>
     </div>
 
     <div class="summary num" id="summary"></div>
@@ -794,6 +838,22 @@ input,select,textarea,.search input,.nfrow select,.nfrow input{font-size:16px}
     </div>
     <div class="coach mini" id="fdTip"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundInvest"></p></div><button class="say" data-saykey="fundInvest" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
     <p class="fine" id="fdFine">Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.</p>
+  </div>
+</section>
+
+<!-- Detail-Chart -->
+<section class="sheet" id="chartSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div style="min-width:0"><h3 id="cName"></h3><div class="muted" id="cSub" style="font-size:13px;margin-top:2px"></div></div>
+      <div class="hdbtns"><button class="x starb" id="cStar" aria-label="Auf die Watchlist">☆</button><button class="x" data-closesheet aria-label="Schließen">×</button></div></div>
+    <div class="bigpx num" id="cPx"></div><div class="num" id="cChg" style="font-size:14.5px;margin-top:4px"></div>
+    <div class="cwrap" id="cWrap"><svg id="cSvg"></svg><i class="cx" id="cCx" hidden></i><i class="cy" id="cCy" hidden></i><i class="cdot" id="cDot" hidden></i><div class="ctip num" id="cTip" hidden></div></div>
+    <div class="ranges r6" id="cRanges"><button data-crg="1d">1T</button><button data-crg="5d">1W</button><button data-crg="1mo">1M</button><button data-crg="3mo" class="on">3M</button><button data-crg="1y">1J</button><button data-crg="5y">5J</button>
+      <button class="modeb" id="cMode" aria-label="Kerzen oder Linie"></button></div>
+    <div class="rchg num" id="cRchg"></div>
+    <div class="sent" id="cSent"></div>
+    <div class="tradebtns"><button class="cta short" data-ctrade="-1">Short</button><button class="cta long" data-ctrade="1">Long</button></div>
   </div>
 </section>
 
@@ -1003,7 +1063,7 @@ const META = {
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'}
 };
-const FILTERS = [['all','Alle'],['crypto','Krypto'],['de','Deutschland'],['us','USA'],['idx','Indizes & Gold']];
+const FILTERS = [['all','Alle'],['watch','★ Watchlist'],['crypto','Krypto'],['de','Deutschland'],['us','USA'],['idx','Indizes & Gold']];
 const START = 100000, FEE_LEV = 0.0002, FEE_SHORT = 0.0001;
 
 const TIPS = {
@@ -1048,7 +1108,7 @@ const BADGES = [['first','🥇 Erster Trade'],['short','📉 Erster Short'],['st
 let Q = {}, fx = 1.12;
 let S = {cash:START, pos:[], hist:[], realized:0, mode:null, badges:{}, xp:0, active:{}, follow:{}, equity:START, eqPrev:START};
 let ME = null, CFG = {freehomes:false}, LB = [], FUNDS = [], AUDIO = new Set(), FD = null, DISC = {traders:[], gurus:[]};
-let ui = {book:null, aseg:'global', tab:'markt', filter:'all', lb:'mon', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
+let ui = {tp:0, rR:null, book:null, aseg:'global', tab:'markt', filter:'all', lb:'mon', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
 async function api(path, opts={}){
   if(ui.book && /^\/api\/(state(\?|$)|orders|positions\/|funds\/\d+\/invest|copy)/.test(path) && opts.method!=='PATCH' && !/reset/.test(path)) path += (path.includes('?')?'&':'?')+'book='+ui.book;
   const r = await fetch(path, {method:opts.method||(opts.body?'POST':'GET'), credentials:'same-origin', cache:'no-store',
@@ -1057,7 +1117,7 @@ async function api(path, opts={}){
   if(!r.ok) throw Object.assign(new Error(d.error||'Verbindungsfehler'),{status:r.status});
   return d;
 }
-function setState(v){ S = {copies:v.copies||[], cash:v.cash, pos:v.positions, hist:v.hist, realized:v.realized, mode:v.mode, badges:v.badges||{}, xp:v.xp||0, active:v.active||{}, follow:v.follow||{}, equity:v.equity, eqPrev:v.eqPrev}; }
+function setState(v){ S = {watch:v.watch||[], lessons:v.lessons||{}, copies:v.copies||[], cash:v.cash, pos:v.positions, hist:v.hist, realized:v.realized, mode:v.mode, badges:v.badges||{}, xp:v.xp||0, active:v.active||{}, follow:v.follow||{}, equity:v.equity, eqPrev:v.eqPrev}; }
 function showEvents(ev){ (ev||[]).forEach(e=>{ if(e.type==='badge'){ const b=BADGES.find(b=>b[0]===e.key); if(b) setTimeout(()=>toast('Abzeichen: '+b[1]+'  ·  +'+e.xp+' XP'),900); } }); }
 
 /* ---------- helpers ---------- */
@@ -1119,6 +1179,7 @@ function spark(arr,w,h,color){
 }
 const chg = s => Q[s].price/Q[s].prevPx-1;
 const initials = n => String(n||'?').replace('Dr. ','').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+const medal = (rank,sm) => rank>=1&&rank<=3?`<span class="medal m${rank}${sm?' sm':''}">${rank}</span>`:rank;
 const avatar = (r,id) => `<div class="av"${id?` id="${id}"`:''} style="background:${r.color||'var(--gold)'}">${initials(r.name)}</div>`;
 const esc = t => String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -1177,7 +1238,7 @@ function smartPanel(s){
 /* ---------- Suche nach jeder US-Aktie ---------- */
 let RAW = {}, RECENT = [];
 try{ RECENT = JSON.parse(localStorage.getItem('iaRecent')||'[]'); }catch(e){}
-const mine = s => RECENT.includes(s) || S.pos.some(p=>p.sym===s);
+const mine = s => RECENT.includes(s) || S.pos.some(p=>p.sym===s) || (S.watch||[]).includes(s);
 function remember(s){ RECENT=[s,...RECENT.filter(x=>x!==s)].slice(0,12); try{ localStorage.setItem('iaRecent',JSON.stringify(RECENT)); }catch(e){} }
 let sTimer, sSeq=0; const SC=new Map();   // Zwischenspeicher: gleiche Suche sofort anzeigen
 $('#q').addEventListener('input',e=>{ clearTimeout(sTimer); const v=e.target.value.trim(); if(!v){ $('#sres').hidden=true; return; } sTimer=setTimeout(()=>doSearch(v),SC.has(v.toLowerCase())?0:140); });
@@ -1205,9 +1266,11 @@ function loadRadar(s){
 
 function renderMarket(){
   $('#filters').innerHTML = FILTERS.map(([k,l])=>`<button class="chip ${ui.filter===k?'on':''}" data-f="${k}">${l}</button>`).join('');
-  $('#market').innerHTML = Object.keys(META).filter(s=>Q[s] && (!META[s].x || mine(s)) && (ui.filter==='all'||META[s].g===ui.filter)).map(s=>{
+  const W=S.watch||[], list=Object.keys(META).filter(s=>Q[s] && (!META[s].x || mine(s)) && (ui.filter==='all'||(ui.filter==='watch'?W.includes(s):META[s].g===ui.filter)));
+  if(ui.filter==='watch' && !list.length){ $('#market').innerHTML='<div class="empty">Noch nichts auf Ihrer Watchlist.<br>Öffnen Sie einen Titel und tippen Sie oben auf ☆.</div>'; return; }
+  $('#market').innerHTML = list.map(s=>{
     const q=Q[s], m=META[s], c=chg(s);
-    return `<button class="row" data-sym="${s}"><span class="logo">${m.s}</span><span class="n"><b>${m.n}</b><small>${m.t}${pro()?` · Vol. ${Math.round(q.vol*100)} %`:''}</small>${badges(s)}</span>${spark(q.hist.slice(-40),70,30,c>=0?'#3ccf91':'#ff6b6b')}<span class="p num"><b>${fmt(q.price,q.cur)}</b><small class="${cls(c)}">${pct(c)}</small></span></button>`;
+    return `<button class="row" data-sym="${s}"><span class="logo">${m.s}</span><span class="n"><b>${W.includes(s)?'<span class="wstar">★</span>':''}${m.n}</b><small>${m.t}${pro()?` · Vol. ${Math.round(q.vol*100)} %`:''}</small>${badges(s)}</span><span class="spk" data-chart="${s}">${spark(q.hist.slice(-40),70,30,c>=0?'#3ccf91':'#ff6b6b')}</span><span class="p num" data-chart="${s}"><b>${fmt(q.price,q.cur)}</b><small class="${cls(c)}">${pct(c)}</small></span></button>`;
   }).join('');
 }
 function renderHeader(){
@@ -1237,7 +1300,7 @@ function renderPositions(){
     const extra = fund ? `Anteilswert ${nf(p.price||p.entry,2)} · Einstieg ${nf(p.entry,2)}` : p.kind==='option' ? `Verfall in ${Math.ceil(T)} Tagen${pro()&&T>0&&q.price?` · Δ ${delta(q.price,p.strike,T/365,q.vol,p.opt).toFixed(2)}`:''}` : p.kind==='lev' ? `Knock-out bei ${fmt(p.ko,q.cur)}${pro()?` · Gebühren ${eur(p.fees||0)}`:''}` : (p.dir<0?'Leerverkauf':'Direktanlage');
     const right = fund ? `<div><small>Anteile</small><b>${nf(p.units,2)}</b></div>` : `<div><small>${p.kind==='option'?'Basiswert':'Einstieg → jetzt'}</small><b>${p.kind==='option'?fmt(q.price,q.cur):`${fmt(p.entry,q.cur)} → ${fmt(q.price,q.cur)}`}</b></div>`;
     return `<div class="pos ${warn?'warn':''}">
-      <div class="pos-h"><div>${fund?`<span class="tag kind">${p.fundKind==='guru'?'GROSSINVESTOR':'FONDS'}</span>`:`<span class="tag ${p.dir>0?'long':'short'}">${p.dir>0?'LONG':'SHORT'}</span><span class="tag kind">${esc(p.label)}</span>`}<div style="margin-top:10px;font-weight:600;font-size:15px">${esc(p.name)}</div><small class="muted">${extra}${p.sl?` · Stop −${p.sl*100} %`:''}</small></div>
+      <div class="pos-h"><div>${fund?`<span class="tag kind">${p.fundKind==='guru'?'GROSSINVESTOR':'FONDS'}</span>`:`<span class="tag ${p.dir>0?'long':'short'}">${p.dir>0?'LONG':'SHORT'}</span><span class="tag kind">${esc(p.label)}</span>`}<div style="margin-top:10px;font-weight:600;font-size:15px">${esc(p.name)}</div><small class="muted">${extra}${p.sl?` · Stop −${nf(p.sl*100,p.sl*100%1?1:0)} %`:''}${p.tp?` · Ziel +${nf(p.tp*100,p.tp*100%1?1:0)} %`:''}</small></div>
       <div style="text-align:right" class="num"><b class="${cls(pl/p.stake)}" style="font-size:16px;white-space:nowrap">${sgn(pl)}</b><br><small class="${cls(pl/p.stake)}">${pct(pl/p.stake,1)}</small></div></div>
       <div class="kv num"><div><small>Einsatz</small><b>${eur(p.stake,0)}</b></div><div><small>Wert</small><b>${eur(v,0)}</b></div>${right}</div>
       ${warn?`<div class="alert" style="margin:0 0 10px">Nachschussalarm: nur noch ${Math.round(v/p.stake*100)} % vom Einsatz übrig.</div>`:''}
@@ -1255,12 +1318,15 @@ function renderArena(){
   $('#lbTabs').innerHTML=[['mon','Monat'],['day','Heute'],['week','Woche'],['all','Depotwert']].map(([k,l])=>`<button class="chip ${ui.lb===k?'on':''}" data-lb="${k}">${l}</button>`).join('');
   const k = LBKEY[ui.lb]||'eq';
   $('#leaderboard').innerHTML = ranked(ui.lb).map((r,i)=>`<button class="lbr ${r.me?'mine':''}" ${r.me?'data-go="depot"':`data-person="${r.id}"`}>
-    <span class="rk ${i<3?'top':''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</span>${avatar(r)}
+    <span class="rk">${medal(i+1)}</span>${avatar(r)}
     <span class="nm"><b>${esc(r.me?r.name+' (Sie)':r.name)}${r.bot?'<span class="bot">Beispiel</span>':''}${S.follow[r.id]?' <span class="muted" style="font-size:11px">· folge ich</span>':''}</b><small>${esc(r.sub)}</small></span>
     <span class="vv num">${k==='eq'?`<b>${eur(r.eq,0)}</b><small class="${cls(r.tot)}">${pct(r.tot,1)}</small>`:`<b class="${cls(r[k])}">${pct(r[k],2)}</b><small class="muted">${eur(r.eq,0)}</small>`}</span></button>`).join('');
 }
-function renderLessons(){ $('#lessons').innerHTML = LESSONS.map(([k,l],i)=>`<button class="row lesson" style="grid-template-columns:42px 1fr auto" data-lesson="${k}"><span class="logo">${i+1}</span><span class="n"><b>${l}</b><small>Florian erklärt · ca. 30 Sek.</small></span><span class="say" style="width:40px;height:40px"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg></span></button>`).join(''); }
-function render(){ renderHeader(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); renderDiscover(); }
+function renderLessons(){
+  const done=S.lessons||{}, n=LESSONS.filter(([k])=>done[k]).length;
+  $('#lProg').hidden=!ME; $('#lProg').innerHTML=`<b>${n===LESSONS.length?'Alle Lektionen gehört. Stark!':`${n} von ${LESSONS.length} Lektionen gehört`}</b><div class="lvl"><i style="width:${n/LESSONS.length*100}%"></i></div><small>Tippen Sie auf eine Lektion, Florian erklärt sie in etwa 30 Sekunden.</small>`;
+  $('#lessons').innerHTML = LESSONS.map(([k,l],i)=>`<button class="row lesson ${done[k]?'done':''}" style="grid-template-columns:42px 1fr auto" data-lesson="${k}"><span class="logo">${done[k]?'✓':i+1}</span><span class="n"><b>${l}</b><small>Florian erklärt · ca. 30 Sek.</small></span><span class="say" style="width:40px;height:40px"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg></span></button>`).join(''); }
+function render(){ renderLessons(); renderHeader(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); renderDiscover(); }
 
 /* ---------- coach / voice ---------- */
 let curCoach='welcome';
@@ -1308,6 +1374,135 @@ function closeTop(){
 }
 function closeSheets(){ SHEETS.length=0; document.body.classList.remove('sheet-open'); $('#scrim').classList.remove('on'); $$('.sheet').forEach(s=>s.classList.remove('on')); if('speechSynthesis' in window) speechSynthesis.cancel(); if(player){ player.pause(); player=null; } $$('.speaking').forEach(b=>b.classList.remove('speaking')); }
 
+/* ---------- Watchlist ---------- */
+const watched = s => (S.watch||[]).includes(s);
+function syncStars(){ [['#tStar',ui.sym],['#cStar',CC.sym]].forEach(([id,sym])=>{ const b=$(id), on=watched(sym); b.textContent=on?'★':'☆'; b.classList.toggle('on',on); b.setAttribute('aria-label',on?'Von der Watchlist entfernen':'Auf die Watchlist'); }); }
+async function toggleWatch(sym){
+  if(!ME||!sym) return; const on=!watched(sym);
+  try{ const st=await api('/api/state',{method:'PATCH',body:{watch:{[sym]:on}}}); S.watch=st.watch; syncStars(); renderMarket(); toast(on?`${META[sym].n} steht auf Ihrer Watchlist.`:`${META[sym].n} von der Watchlist entfernt.`); }catch(e){ toast(e.message); }
+}
+$('#tStar').onclick=()=>toggleWatch(ui.sym); $('#cStar').onclick=()=>toggleWatch(CC.sym);
+function markLesson(k){ if(!ME||(S.lessons||{})[k]) return; api('/api/state',{method:'PATCH',body:{lesson:k}}).then(st=>{ S.lessons=st.lessons; renderLessons(); }).catch(()=>{}); }
+
+/* ---------- Stimmung der Top 100 ---------- */
+async function loadSentiment(sym, box){
+  const el=$(box); el.hidden=true;
+  try{ const d=await api('/api/sentiment/'+encodeURIComponent(sym)); if(box==='#tSent'&&ui.sym!==sym) return;
+    el.innerHTML=d.traders?`<div class="l"><span>Die Top 100 der Arena · ${d.traders} ${d.traders===1?'Trader':'Trader'}</span><b class="num">${Math.round(d.long*100)} % long · ${Math.round(d.short*100)} % short</b></div><div class="bar"><i style="width:${d.long*100}%;background:var(--up)"></i><i style="width:${d.short*100}%;background:var(--down)"></i></div>`
+      :'<div class="l"><span>Die Top 100 der Arena</span><span>noch keine Positionen</span></div>';
+    el.hidden=false; }catch(e){}
+}
+
+/* ---------- Stop & Ziel zum Ziehen ---------- */
+function riskGeom(){
+  const box=$('#rBox'), H=box.clientHeight||230, W=box.clientWidth||340, pad=24, mid=H/2;
+  if(!ui.rR) ui.rR=Math.min(.8,Math.max(.12,Math.max(ui.sl||0,ui.tp||0,.1)*1.35));
+  return {H,W,mid,half:mid-pad,R:ui.rR};
+}
+// Kursabstand (in % vom Einstieg, Vorzeichen: + über dem Einstieg) → senkrechte Position
+const rY = (g,d) => g.mid - d/g.R*g.half;
+function drawRisk(){
+  const q=Q[ui.sym]; if(!q) return; const g=riskGeom(), dir=ui.dir, lev=ui.kind==='lev'?ui.lev:1, P=q.price;
+  // Kursverlauf links
+  const h=q.hist.slice(-30), xs=g.W*.54;
+  const pts=h.map((v,i)=>`${(i/(h.length-1)*xs).toFixed(1)},${Math.max(4,Math.min(g.H-4,rY(g,v/P-1))).toFixed(1)}`).join(' ');
+  $('#rSvg').setAttribute('viewBox',`0 0 ${g.W} ${g.H}`);
+  $('#rSvg').innerHTML=`<polyline fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" points="${pts}"/><circle cx="${xs}" cy="${g.mid}" r="4.5" fill="#fff"/>`;
+  $('#rEntry').style.top=g.mid+'px'; $('#rEntryTxt').textContent='Einstieg '+fmt(P,q.cur);
+  const set=(pill,zone,val,kind,ghostD)=>{
+    const side=(kind==='tp'?1:-1)*dir, d=val?side*val:side*ghostD, y=rY(g,d);
+    pill.style.top=Math.max(20,Math.min(g.H-20,y))+'px'; pill.classList.toggle('ghost',!val);
+    pill.textContent=val?`${kind==='tp'?'Ziel':'Stop'} ${fmt(P*(1+d),q.cur)}`:(kind==='tp'?'+ Ziel setzen':'+ Stop setzen');
+    zone.hidden=!val; zone.classList.toggle('dn',y>g.mid);
+    if(val){ zone.style.top=Math.min(y,g.mid)+'px'; zone.style.height=Math.abs(y-g.mid)+'px'; }
+  };
+  set($('#rT'),$('#rZt'),ui.tp,'tp',Math.min(.2,g.R*.7)); set($('#rS'),$('#rZs'),ui.sl,'sl',Math.min(.1,g.R*.5));
+  // Klartext zum Risiko
+  const amt=ui.amt, E=equity(), lossAt=sl=>Math.min(amt, amt*lev*sl), loss=ui.sl?lossAt(ui.sl):null, gain=ui.tp?amt*lev*ui.tp:null;
+  const pctCap=v=>nf(v/E*100,v/E<.1?2:1);
+  $('#rTxt').innerHTML = loss!=null ? `Greift der Stop, verlieren Sie <span class="down">${eur(loss,0)}</span>, also ${pctCap(loss)} % Ihres Kapitals.`
+    : ui.kind==='stock'&&dir<0 ? 'Ohne Stop ist Ihr Verlust bei einem Leerverkauf <span class="down">nicht begrenzt</span>.' : `Ohne Stop riskieren Sie bis zu <span class="down">${eur(amt,0)}</span>, Ihren ganzen Einsatz.`;
+  const ratio = loss&&gain ? gain/loss : null, words=['','das Einfache','das Doppelte','das Dreifache','das Vierfache','das Fünffache'];
+  $('#rSub').textContent = gain!=null ? `Erreichen Sie das Ziel, gewinnen Sie ${eur(gain,0)}.${ratio?(ratio>=1?` Das ist ${ratio<=5.05&&Math.abs(ratio-Math.round(ratio))<.05?words[Math.round(ratio)]:'das '+nf(ratio,ratio>=10||Math.abs(ratio-Math.round(ratio))<.05?0:1)+'-Fache'} Ihres Risikos.`:` Das ist weniger als Ihr Risiko. Profis suchen mindestens das Doppelte.`):''}`
+    : 'Ohne Ziel bleibt die Position offen, bis Sie sie selbst schließen.';
+}
+(function(){ // Ziehen mit Finger oder Maus
+  let drag=null;
+  const start=(kind)=>e=>{ e.preventDefault(); drag=kind; e.target.setPointerCapture&&e.target.setPointerCapture(e.pointerId); if(!(kind==='tp'?ui.tp:ui.sl)){ const g=riskGeom(); if(kind==='tp') ui.tp=Math.round(Math.min(.2,g.R*.7)*1000)/1000; else ui.sl=Math.round(Math.min(.1,g.R*.5)*1000)/1000; updateTrade('stop'); } };
+  $('#rT').addEventListener('pointerdown',start('tp')); $('#rS').addEventListener('pointerdown',start('sl'));
+  window.addEventListener('pointermove',e=>{ if(!drag) return; const g=riskGeom(), r=$('#rBox').getBoundingClientRect(), y=e.clientY-r.top;
+    const d=(g.mid-y)/g.half*g.R, side=(drag==='tp'?1:-1)*ui.dir, v=Math.round(Math.max(.005,Math.min(drag==='tp'?g.R:Math.min(.5,g.R),d*side))*1000)/1000;
+    if(drag==='tp') ui.tp=v; else ui.sl=v; updateTrade('stop'); });
+  const end=()=>{ if(drag){ drag=null; ui.rR=null; updateTrade('stop'); } };
+  window.addEventListener('pointerup',end); window.addEventListener('pointercancel',end);
+})();
+
+/* ---------- Detail-Chart mit Kerzen ---------- */
+const CC={sym:null, r:'3mo', mode:'candle', pts:[], cur:'EUR', seq:0};
+const ICON_C='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3v4M7 17v4M17 3v6M17 19v2"/><rect x="5" y="7" width="4" height="10" rx="1"/><rect x="15" y="9" width="4" height="10" rx="1"/></svg>';
+const ICON_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 17l5-6 4 3 4-6 5 4"/></svg>';
+const CLABEL={'1d':'heute','5d':'in einer Woche','1mo':'in einem Monat','3mo':'in 3 Monaten','1y':'in einem Jahr','5y':'in 5 Jahren'};
+function openChart(sym, r){
+  const q=Q[sym], m=META[sym]; if(!q||!m) return;
+  CC.sym=sym; CC.r=r&&r!=='1mo'?r:CC.r; CC.cur=q.cur;
+  $('#cName').textContent=m.n; $('#cSub').textContent=`${m.t}${m.s&&m.s!==m.n?' · '+m.s:''} · ${q.cur==='USD'?'US-Dollar':'Euro'}`;
+  const d=q.price.toFixed(2).split('.'), c=chg(sym), diff=q.price-q.prevPx;
+  $('#cPx').innerHTML=`${Number(d[0]).toLocaleString('de-DE')}<small>,${d[1]} ${q.cur==='USD'?'$':'€'}</small>`;
+  $('#cChg').innerHTML=`<span class="${cls(c)}">${diff>=0?'+':'−'}${fmt(Math.abs(diff),q.cur)} (${pct(c)})</span> <span class="muted">heute</span>`;
+  $('#cMode').innerHTML=CC.mode==='candle'?ICON_L:ICON_C;
+  syncStars(); loadSentiment(sym,'#cSent'); openSheet('#chartSheet');
+  CC.pts=q.hist.map((v,i,a)=>{ const o=i?a[i-1]:v; return [Date.now()-(a.length-1-i)*DAY,v,o,Math.max(o,v),Math.min(o,v)]; }); drawCC(); loadCC();
+}
+async function loadCC(){
+  $$('[data-crg]').forEach(b=>b.classList.toggle('on',b.dataset.crg===CC.r));
+  const seq=++CC.seq, sym=CC.sym;
+  try{ const d=await api(`/api/chart?sym=${encodeURIComponent(sym)}&r=${CC.r}`); if(seq!==CC.seq||sym!==CC.sym) return;
+    if(d.points.length>1){ CC.pts=d.points; CC.cur=d.cur||CC.cur; CC.daily=!!d.daily; } drawCC(); }catch(e){}
+}
+// Zu viele Kerzen für die Breite? Zusammenfassen (Eröffnung der ersten, Schluss der letzten, Hoch/Tief über alle)
+function bucket(pts,max){ if(pts.length<=max) return pts; const k=Math.ceil(pts.length/max), out=[];
+  for(let i=0;i<pts.length;i+=k){ const g=pts.slice(i,i+k); out.push([g[0][0],g.at(-1)[1],g[0][2],Math.max(...g.map(x=>x[3])),Math.min(...g.map(x=>x[4]))]); } return out; }
+function drawCC(){
+  const wrap=$('#cWrap'), W=wrap.clientWidth||340, H=wrap.clientHeight||300, padR=48, padT=10, padB=10, cw=W-padR;
+  const pts=CC.mode==='candle'?bucket(CC.pts,Math.max(20,Math.floor(cw/7))):CC.pts; CC.view=pts; if(pts.length<2) return;
+  const hi=Math.max(...pts.map(p=>CC.mode==='candle'?p[3]:p[1])), lo=Math.min(...pts.map(p=>CC.mode==='candle'?p[4]:p[1])), rg=(hi-lo)||hi*.01;
+  const y=v=>padT+(hi-v)/rg*(H-padT-padB), step=cw/pts.length, x=i=>step*i+step/2; CC.geo={y,x,step,W,H,cw};
+  let g='';
+  for(let i=0;i<=4;i++){ const v=hi-rg*i/4, yy=y(v); g+=`<line x1="0" x2="${cw}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.07)"/><text x="${W-2}" y="${yy+4}" text-anchor="end" font-size="11" fill="#8f98ad">${nf(v,v>=1000?0:v>=10?2:4)}</text>`; }
+  if(CC.mode==='candle'){
+    const bw=Math.max(1.5,Math.min(10,step*.62));
+    pts.forEach((p,i)=>{ const up=p[1]>=p[2], col=up?'#3ccf91':'#ff6b6b', top=y(Math.max(p[1],p[2])), bot=y(Math.min(p[1],p[2]));
+      g+=`<line x1="${x(i)}" x2="${x(i)}" y1="${y(p[3])}" y2="${y(p[4])}" stroke="${col}" stroke-width="1.2"/><rect x="${x(i)-bw/2}" y="${top}" width="${bw}" height="${Math.max(1.2,bot-top)}" rx="1.5" fill="${up?'transparent':col}" stroke="${col}" stroke-width="1.3"/>`; });
+  } else {
+    const col=pts.at(-1)[1]>=pts[0][1]?'#3ccf91':'#ff6b6b', line=pts.map((p,i)=>`${x(i).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ');
+    g+=`<defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".22"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><polygon fill="url(#cg)" points="${x(0)},${H} ${line} ${x(pts.length-1)},${H}"/><polyline fill="none" stroke="${col}" stroke-width="2" points="${line}"/>`;
+  }
+  $('#cSvg').setAttribute('viewBox',`0 0 ${W} ${H}`); $('#cSvg').innerHTML=g;
+  const first=CC.pts[0], last=CC.pts.at(-1), base=CC.r==='1d'?(Q[CC.sym]||{}).prevPx||first[2]:first[2]||first[1], ch=last[1]/base-1;
+  $('#cRchg').innerHTML=CC.daily?'<span class="muted">Tageskurse der letzten Wochen</span>':`<span class="${cls(ch)}">${pct(ch,2)}</span> <span class="muted">${CLABEL[CC.r]} · Hoch ${fmt(hi,CC.cur)} · Tief ${fmt(lo,CC.cur)}</span>`;
+  hideCC();
+}
+const ccDate = ts => { const d=new Date(ts); return ['1d','5d','1mo'].includes(CC.r)&&!CC.daily ? d.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : CC.r==='5y' ? 'Woche ab '+d.toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'}) : d.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); };
+function showCC(cx){
+  const G=CC.geo, pts=CC.view; if(!G||!pts) return; const r=$('#cWrap').getBoundingClientRect(), xx=Math.min(Math.max(cx-r.left,0),G.cw-1);
+  const i=Math.min(pts.length-1,Math.max(0,Math.floor(xx/G.step))), p=pts[i], X=G.x(i), Y=G.y(p[1]);
+  $('#cCx').style.left=X+'px'; $('#cCy').style.top=Y+'px'; $('#cDot').style.left=X+'px'; $('#cDot').style.top=Y+'px';
+  ['#cCx','#cCy','#cDot','#cTip'].forEach(s=>$(s).hidden=false);
+  const t=$('#cTip'); t.innerHTML=CC.mode==='candle'?`<small>${ccDate(p[0])}</small><b>Schluss ${fmt(p[1],CC.cur)}</b><small>Eröffnung ${fmt(p[2],CC.cur)} · Hoch ${fmt(p[3],CC.cur)} · Tief ${fmt(p[4],CC.cur)}</small>`:`<small>${ccDate(p[0])}</small><b>${fmt(p[1],CC.cur)}</b>`;
+  const w=t.offsetWidth/2; t.style.left=Math.min(Math.max(X,w),r.width-w)+'px';
+}
+function hideCC(){ ['#cCx','#cCy','#cDot','#cTip'].forEach(s=>$(s).hidden=true); }
+$('#cWrap').addEventListener('pointerdown',e=>showCC(e.clientX));
+$('#cWrap').addEventListener('pointermove',e=>showCC(e.clientX));
+$('#cWrap').addEventListener('pointerleave',e=>{ if(e.pointerType==='mouse') hideCC(); });
+$('#cWrap').addEventListener('pointerup',e=>{ if(e.pointerType!=='mouse') setTimeout(hideCC,1800); });
+$('#cRanges').addEventListener('click',e=>{ const b=e.target.closest('[data-crg]'); if(b){ CC.r=b.dataset.crg; loadCC(); }
+  if(e.target.closest('#cMode')){ CC.mode=CC.mode==='candle'?'line':'candle'; $('#cMode').innerHTML=CC.mode==='candle'?ICON_L:ICON_C; drawCC(); } });
+window.addEventListener('resize',()=>{ if(SHEETS.includes('#chartSheet')) drawCC(); if(SHEETS.includes('#sheet')&&ui.kind!=='option') drawRisk(); });
+$('#chartSheet').addEventListener('click',e=>{ const b=e.target.closest('[data-ctrade]'); if(!b) return; const dir=+b.dataset.ctrade;
+  if(SHEETS.includes('#sheet') && ui.sym===CC.sym){ ui.dir=dir; closeTop(); updateTrade(defaultTip()); return; }
+  ui.dir=dir; openTrade(CC.sym); ui.dir=dir; updateTrade(defaultTip()); });
+
 /* ---------- Kurs-Chart ---------- */
 const CH={r:'1mo', pts:[], cur:'EUR', seq:0};
 const RLABEL={'1d':'in 24 Stunden','5d':'in einer Woche','1mo':'in einem Monat','1y':'in einem Jahr','5y':'in 5 Jahren'};
@@ -1326,7 +1521,7 @@ function drawChart(){
   const base=CH.r==='1d'&&CH.prev?CH.prev:ser[0], ch=ser.at(-1)/base-1, col=ch>=0?'#3ccf91':'#ff6b6b'; CH.col=col;
   $('#tChart').innerHTML=`<defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".25"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><polygon fill="url(#g)" points="0,150 ${line} 320,150"/><polyline fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke" points="${line}"/>`;
   $('#tHi').textContent=fmt(mx,CH.cur); $('#tLo').textContent=fmt(mn,CH.cur);
-  $('#tRchg').innerHTML=CH.daily?'<span class="muted">Tageskurse der letzten Wochen</span>':`<span class="${cls(ch)}">${pct(ch,2)}</span> <span class="muted">${RLABEL[CH.r]} · ${fmt(ser[0],CH.cur)} → ${fmt(ser.at(-1),CH.cur)}</span>`;
+  $('#tRchg').innerHTML=(CH.daily?'<span class="muted">Tageskurse der letzten Wochen</span>':`<span class="${cls(ch)}">${pct(ch,2)}</span> <span class="muted">${RLABEL[CH.r]}</span>`)+` · <button class="chartlink" data-chart="${ui.sym}">Kerzen-Chart ›</button>`;
   hideTip();
 }
 const tipDate = ts => { const d=new Date(ts); return ['1d','5d','1mo'].includes(CH.r)&&!CH.daily ? d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'})+' · '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}); };
@@ -1352,7 +1547,7 @@ function openTrade(sym){
   ui.sym=sym; const q=Q[sym], m=META[sym], c=chg(sym);
   if(!pro() && ui.kind==='option') ui.kind='stock';
   if(!pro() && ui.lev>5) ui.lev=5;
-  $('#tName').textContent=m.n; CH.head=null;
+  $('#tName').textContent=m.n; CH.head=null; syncStars(); loadSentiment(sym,'#tSent'); ui.rR=null;
   $('#tPrice').innerHTML=`${fmt(q.price,q.cur)} <span class="${cls(c)}">${pct(c)}</span>${pro()?` <span class="muted">· Vol. ${Math.round(q.vol*100)} % p. a.</span>`:''}`;
   // Erst die vorhandenen Tageskurse zeigen, dann den gewählten Zeitraum nachladen
   CH.pts=q.hist.slice(-30).map((v,i,a)=>[Date.now()-(a.length-1-i)*DAY,v]); CH.cur=q.cur; CH.daily=true; drawChart();
@@ -1388,6 +1583,7 @@ function updateTrade(tip){
   $$('[data-mny]').forEach(b=>b.classList.toggle('on',+b.dataset.mny===ui.mny));
   $$('[data-tenor]').forEach(b=>b.classList.toggle('on',+b.dataset.tenor===ui.tenor));
   $$('[data-sl]').forEach(b=>b.classList.toggle('on',+b.dataset.sl===ui.sl));
+  $$('[data-tp]').forEach(b=>b.classList.toggle('on',+b.dataset.tp===ui.tp));
   $('#stockName').textContent = isC?'Spot':(m.t==='Aktie'?'Aktie':'Direkt');
   $('#stockSub').textContent = ui.dir>0?'kaufen':'leerverkaufen'; $('#optSub').textContent = ui.dir>0?'Call':'Put';
   $('#levStep').hidden=ui.kind!=='lev'; $('#levVal').textContent=ui.lev+'×';
@@ -1405,6 +1601,8 @@ function updateTrade(tip){
     rows.push(['Positionsgröße am Markt',eur(o.exposure)]);
     if(o.ko) rows.push(['Knock-out-Schwelle',`${fmt(o.ko,o.cur)} (${pct(o.ko/q.price-1,1)})`]);
     if(pro() && ui.kind==='lev') rows.push(['Finanzierung pro Tag',eur(o.exposure*FEE_LEV)]);
+    if(ui.sl) rows.push(['Stop-Kurs',`<span class="down">${fmt(q.price*(1-ui.dir*ui.sl),q.cur)}</span>`]);
+    if(ui.tp) rows.push(['Zielkurs',`<span class="up">${fmt(q.price*(1+ui.dir*ui.tp),q.cur)}</span>`]);
   }
   rows.push(['Wenn der Kurs 10 % steigt',`<span class="${cls(o.up)}">${sgn(o.up)}</span>`]);
   rows.push(['Wenn der Kurs 10 % fällt',`<span class="${cls(o.dn)}">${sgn(o.dn)}</span>`]);
@@ -1414,10 +1612,12 @@ function updateTrade(tip){
   if(share>.25) al.push('Mehr als ein Viertel Ihres Depots auf eine Idee. Ein Fehlschlag kostet Sie hier sehr viel.');
   if(ui.kind==='lev' && ui.lev>=5) al.push(`Bei Hebel ${ui.lev}× reicht eine Bewegung von ${Math.round(100/ui.lev)} % gegen Sie, und der Einsatz ist weg.`);
   if(ui.kind==='stock' && ui.dir<0 && !ui.sl) al.push('Leerverkauf ohne Stop-Loss: Steigt der Kurs, wächst Ihr Verlust ohne Obergrenze.');
+  if(ui.kind==='lev' && ui.sl && ui.sl>=1/ui.lev) al.push(`Ihr Stop liegt hinter der Knock-out-Schwelle (${Math.round(100/ui.lev)} %). Der Knock-out greift vorher.`);
   if(isC && ui.kind==='lev') al.push('Krypto mit Hebel: Kurssprünge von 10 % an einem Tag sind keine Seltenheit.');
   $('#alert').hidden=!al.length; $('#alert').innerHTML=al.join('<br>');
   const go=$('#go'); go.className='cta '+(ui.dir>0?'long':'short'); go.disabled=ui.amt<100;
   go.textContent = ui.kind==='option' ? `${o.opt==='call'?'Call':'Put'} kaufen · ${eur(o.amt,0)}` : `${ui.dir>0?'Long':'Short'} eröffnen · ${eur(o.amt,0)}`;
+  if(ui.kind!=='option') drawRisk();
   if(tip) ui.tip=tip; $('#tip').textContent=TIPS[ui.tip||'long'];
 }
 $('#sheet').addEventListener('click',e=>{
@@ -1427,7 +1627,8 @@ $('#sheet').addEventListener('click',e=>{
   else if(d.lev){ ui.lev=+d.lev; updateTrade('lev'); }
   else if(d.mny){ ui.mny=+d.mny; updateTrade(ui.mny?'otm':defaultTip()); }
   else if(d.tenor){ ui.tenor=+d.tenor; updateTrade(); }
-  else if(d.sl!=null){ ui.sl=+d.sl; updateTrade('stop'); }
+  else if(d.sl!=null){ ui.sl=+d.sl; ui.rR=null; updateTrade('stop'); }
+  else if(d.tp!=null){ ui.tp=+d.tp; ui.rR=null; updateTrade('stop'); }
   else if(d.q){ const v=+d.q; ui.amt=v<1?Math.floor(equity()*v/100)*100:v; updateTrade('size'); }
 });
 $('#amtRange').oninput=e=>{ ui.amt=+e.target.value; updateTrade('size'); };
@@ -1437,7 +1638,7 @@ $('#go').onclick=async()=>{
   const o=quote(); if(o.amt<100 || o.amt>S.cash+.01) return;
   const btn=$('#go'); btn.disabled=true;
   try{
-    const r=await api('/api/orders',{body:{sym:ui.sym,dir:ui.dir,kind:ui.kind,lev:ui.lev,mny:ui.mny,tenor:ui.tenor,sl:ui.kind==='option'?0:ui.sl,amt:o.amt,note:$('#tNote').value}});
+    const r=await api('/api/orders',{body:{sym:ui.sym,dir:ui.dir,kind:ui.kind,lev:ui.lev,mny:ui.mny,tenor:ui.tenor,sl:ui.kind==='option'?0:ui.sl,tp:ui.kind==='option'?0:ui.tp,amt:o.amt,note:$('#tNote').value}});
     $('#tNote').value='';
     setState(r.state); closeSheets(); render(); loadLB().then(renderArena);
     toast(`${ui.dir>0?'Long':'Short'} ${META[ui.sym].n} eröffnet · ${eur(o.amt,0)}`); showEvents(r.events);
@@ -1497,7 +1698,7 @@ function renderMine(){
       <div class="tags"><span class="pill2">${a.mode==='own'?'Eigenes Depot':'Hauptdepot'}</span><span class="pill2">${a.ended?'Runde beendet':left(a.endsAt)}</span>${a.visibility==='public'?'<span class="pill2">Öffentlich</span>':''}</div></div>
       <div class="r num">${a.me?`<b class="${cls(a.me.ret)}">${pct(a.me.ret,1)}</b><small>Platz ${a.me.rank} von ${a.members}</small>`:''}</div></div>
     <div class="foot3"><span class="avs">${a.top.map(t=>avatar(t)).join('')}</span><span>${a.members} ${a.members===1?'Mitglied':'Mitglieder'} · ${a.me&&a.me.move?(a.me.move>0?'▲ '+a.me.move:'▼ '+(-a.me.move))+' seit gestern':'Ansehen →'}</span></div></button>`).join('');
-  $('#league').innerHTML=MYA.league.length?MYA.league.map(l=>`<${l.slug?'button':'div'} class="lg ${l.mine?'mine':''}" ${l.slug?`data-arena="${esc(l.slug)}"`:''}><span class="rk">${l.rank<4?['🥇','🥈','🥉'][l.rank-1]:l.rank}</span><span><b>${esc(l.name)}</b><small>${l.members} Mitglieder</small></span><b class="num ${cls(l.score)}">${pct(l.score,1)}</b></${l.slug?'button':'div'}>`).join('')
+  $('#league').innerHTML=MYA.league.length?MYA.league.map(l=>`<${l.slug?'button':'div'} class="lg ${l.mine?'mine':''}" ${l.slug?`data-arena="${esc(l.slug)}"`:''}><span class="rk">${medal(l.rank)}</span><span><b>${esc(l.name)}</b><small>${l.members} Mitglieder</small></span><b class="num ${cls(l.score)}">${pct(l.score,1)}</b></${l.slug?'button':'div'}>`).join('')
     :'<div class="empty">Sobald Arenen drei Mitglieder haben, startet hier die Gruppen-Liga.</div>';
 }
 function openNew(){
@@ -1552,7 +1753,7 @@ function renderArenaSheet(){
   const body=$('#asBody');
   if(asTab==='rank'){
     const i=a.rows.findIndex(r=>r.id===ME.id), ahead=i>0?a.rows[i-1]:null;
-    body.innerHTML=a.rows.map(r=>`<button class="arow ${r.id===ME.id?'me':''}" ${r.id===ME.id?'':`data-person="${r.id}"`}><span class="rk">${r.rank<4?['🥇','🥈','🥉'][r.rank-1]:r.rank}</span>${avatar(r)}
+    body.innerHTML=a.rows.map(r=>`<button class="arow ${r.id===ME.id?'me':''}" ${r.id===ME.id?'':`data-person="${r.id}"`}><span class="rk">${medal(r.rank)}</span>${avatar(r)}
       <span class="nm"><b>${esc(r.id===ME.id?r.name+' (Sie)':r.name)}${r.owner?' <span class="bot">Gründer</span>':''}</b><small>${esc(r.sub)}</small></span>
       <span class="v num"><b class="${cls(r.ret)}">${pct(r.ret,1)}</b>${mv(r.move)}</span></button>`).join('')
       + (ahead?`<p class="gap">Ihnen fehlen <b class="num" style="color:var(--gold-p)">${nf((ahead.ret-a.rows[i].ret)*100,2)} Prozentpunkte</b> auf Platz ${ahead.rank}.</p>`:i===0&&a.rows.length>1?'<p class="gap">Sie führen. Halten Sie Ihr Risiko im Griff.</p>':'')
@@ -1599,7 +1800,7 @@ function openJoin(a){
   $('#ajName').textContent=a.name;
   $('#ajBody').innerHTML=`<div class="ahead"><span class="pill2">👥 ${a.members} ${a.members===1?'Mitglied':'Mitglieder'}</span><span class="pill2">⏱ ${a.ended?'Runde beendet':left(a.endsAt)}</span><span class="pill2">${a.mode==='own'?'Eigenes Depot':'Hauptdepot'}</span></div>
     <p style="font-size:14px;line-height:1.55;margin:16px 2px 0">${a.mode==='own'?'In dieser Arena bekommen Sie ein eigenes Depot. Ihr Hauptdepot bleibt davon unberührt.':'Sie treten mit Ihrem Hauptdepot an. Gewertet wird Ihre Rendite ab dem Beitritt, Ihr bisheriger Stand zählt nicht.'}</p>
-    ${a.top.length?`<div class="summary">${a.top.map((t,i)=>`<div><span>${['🥇','🥈','🥉'][i]} ${esc(t.name)}</span><b class="num ${cls(t.ret)}">${pct(t.ret,1)}</b></div>`).join('')}</div>`:''}`;
+    ${a.top.length?`<div class="summary">${a.top.map((t,i)=>`<div><span>${medal(i+1,1)} ${esc(t.name)}</span><b class="num ${cls(t.ret)}">${pct(t.ret,1)}</b></div>`).join('')}</div>`:''}`;
   $('#ajStart').hidden=a.mode!=='own'; $$('[data-ajstart]').forEach(b=>b.classList.toggle('on',b.dataset.ajstart==='fresh'));
   closeSheets(); openSheet('#arJoin');
 }
@@ -1635,7 +1836,7 @@ function renderTalents(){
   $('#tlScore').innerHTML=`<div class="bigscore"><b class="num">${sc.total}</b><span>von 100${me.checklist.eligible?'':' · vorläufig'}</span></div>
     ${P.map(([k,l])=>`<div class="sbar"><div class="l"><span>${l}</span><b class="num">${sc.parts[k]}</b></div><div class="t"><i style="width:${sc.parts[k]}%"></i></div></div>`).join('')}
     <p class="fine" style="text-align:left;margin-top:16px">Tipp: Schreiben Sie im Handelsfenster einen Satz zu Ihrem Trade und setzen Sie Stop-Loss. Beides zählt mit.</p>`;
-  $('#tlTop').innerHTML=TL.top.length?TL.top.map((r,i)=>`<button class="lbr" data-person="${r.id}"><span class="rk ${i<3?'top':''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</span>${avatar(r)}<span class="nm"><b>${esc(r.name)}</b><small>${r.shortlist?'Shortlist · ':''}${pct(r.ret,1)} gesamt</small></span><span class="vv num"><b>${r.score}</b><small class="muted">Punkte</small></span></button>`).join('')
+  $('#tlTop').innerHTML=TL.top.length?TL.top.map((r,i)=>`<button class="lbr" data-person="${r.id}"><span class="rk">${medal(i+1)}</span>${avatar(r)}<span class="nm"><b>${esc(r.name)}</b><small>${r.shortlist?'Shortlist · ':''}${pct(r.ret,1)} gesamt</small></span><span class="vv num"><b>${r.score}</b><small class="muted">Punkte</small></span></button>`).join('')
     :`<div class="empty">Die Talent-Wertung startet, sobald die ersten Mitglieder ${TL.req.days} Tage dabei sind und ${TL.req.trades} Trades gemacht haben.</div>`;
   const pd=new Date(TL.pitchDay);
   $('#tlPitch').innerHTML=`<div class="me"><div class="av" style="background:var(--gold-grad)">🎤</div><div style="flex:1;min-width:0"><b>Nächster Pitch-Day: Mitte ${pd.toLocaleDateString('de-DE',{month:'long',year:'numeric'})}</b><div class="muted" style="font-size:13px;line-height:1.5;margin-top:4px">Die Shortlist schließt am ${dshort2(TL.quarterEnd)}. Danach stellen sich die Top-Talente und die beste Arena dem Analystenteam vor.</div></div></div>`;
@@ -1840,7 +2041,7 @@ $('#teDel').onclick=async()=>{ if(!confirm(`Eintrag „${TE.name}“ endgültig 
 function renderFunds(){
   $('#fundCount').textContent = FUNDS.length ? FUNDS.length+' Fonds' : '';
   $('#funds').innerHTML = FUNDS.length ? FUNDS.map((f,i)=>`<button class="fund" data-fund="${f.id}">
-    <div class="fund-h"><div class="fund-t"><small>${i<3?['🥇','🥈','🥉'][i]+' ':''}Manager: ${esc(f.manager)}</small><b>${esc(f.name)}</b></div>
+    <div class="fund-h"><div class="fund-t"><small>${i<3?medal(i+1,1):''}Manager: ${esc(f.manager)}</small><b>${esc(f.name)}</b></div>
     <div class="perf num"><b class="${cls(f.perf)}">${pct(f.perf,1)}</b><small class="${cls(f.day)}">heute ${pct(f.day,1)}</small></div></div>
     <p class="strat">${esc(f.strategy)}</p>
     <div class="chips2">${f.top.map(h=>`<span class="bd ${h.dir<0?'red':''}">${h.dir<0?'▼':'▲'} ${esc((META[h.sym]||{}).n||h.sym)} ${Math.round(h.w)} %</span>`).join('')}</div>
@@ -1908,6 +2109,7 @@ $('#rsGo').onclick=async()=>{ if(!$('#rsOk').checked) return; $('#rsGo').disable
 document.addEventListener('click',e=>{
   const t=e.target;
   const c=t.closest('[data-close]'); if(c){ c.disabled=true; api(`/api/positions/${c.dataset.close}/close`,{body:{}}).then(r=>{ setState(r.state); render(); toast(`Position geschlossen · ${sgn(r.pl)}`); coach(r.pl>=0?'profit':'loss'); showEvents(r.events); loadLB().then(renderArena); loadFunds().then(renderFunds); }).catch(err=>{ toast(err.message); c.disabled=false; }); return; }
+  const chg_=t.closest('[data-chart]'); if(chg_){ openChart(chg_.dataset.chart); return; }
   const cb=t.closest('[data-copy]'); if(cb){ openCopy(+cb.dataset.copy); return; }
   const sc=t.closest('[data-stopcopy]'); if(sc){ if(!confirm('Kopie beenden? Alle kopierten Positionen werden zum aktuellen Kurs geschlossen.')) return; sc.disabled=true;
     api(`/api/copy/${sc.dataset.stopcopy}/stop`,{body:{}}).then(r=>{ setState(r.state); render(); toast(`Kopie beendet · ${sgn(r.pl)}`); loadDiscover().then(renderDiscover); }).catch(err=>{ toast(err.message); sc.disabled=false; }); return; }
@@ -1921,7 +2123,7 @@ document.addEventListener('click',e=>{
   const f=t.closest('[data-f]'); if(f){ ui.filter=f.dataset.f; renderMarket(); return; }
   const l=t.closest('[data-lb]'); if(l){ ui.lb=l.dataset.lb; renderArena(); return; }
   const pe=t.closest('[data-person]'); if(pe){ openProfile(+pe.dataset.person); return; }
-  const ls=t.closest('[data-lesson]'); if(ls){ coach(ls.dataset.lesson); speakKey(ls.dataset.lesson,$('#coach')); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  const ls=t.closest('[data-lesson]'); if(ls){ markLesson(ls.dataset.lesson); coach(ls.dataset.lesson); speakKey(ls.dataset.lesson,$('#coach')); window.scrollTo({top:0,behavior:'smooth'}); return; }
   if(t.closest('[data-closesheet]')){ closeTop(); return; }
   if(t===$('#scrim')){ closeSheets(); return; }
   const md=t.closest('[data-mode]'); if(md){ setMode(md.dataset.mode,true); return; }

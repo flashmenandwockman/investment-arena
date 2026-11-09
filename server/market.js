@@ -219,7 +219,9 @@ function visible() {
 }
 
 /* ---------- Kursverlauf für den Chart: 24h, Woche, Monat, Jahr, 5 Jahre ---------- */
-const RANGES = {'1d': ['1d', '5m', 120_000], '5d': ['5d', '30m', 600_000], '1mo': ['1mo', '60m', 1800_000], '1y': ['1y', '1d', 6 * 3600_000], '5y': ['5y', '1wk', 12 * 3600_000]};
+const RANGES = {'1d': ['1d', '5m', 120_000], '5d': ['5d', '30m', 600_000], '1mo': ['1mo', '60m', 1800_000], '3mo': ['3mo', '1d', 3 * 3600_000], '1y': ['1y', '1d', 6 * 3600_000], '5y': ['5y', '1wk', 12 * 3600_000]};
+// Ersatzverlauf aus Tagesschlusskursen (ohne Live-Daten): Eröffnung = Vortagesschluss
+const fromHist = h => h.map((v, i) => { const o = i ? h[i - 1] : v; return [Date.now() - (h.length - 1 - i) * 864e5, v, o, Math.max(o, v), Math.min(o, v)]; });
 const chartCache = new Map();
 const yahooSym = s => s.includes('/') ? s.replace('/', '-') : CLASS.test(s) ? s.replace('.', '-') : s;
 async function chart(sym, r) {
@@ -231,18 +233,22 @@ async function chart(sym, r) {
   let d;
   if (config.offline) {
     const h = q.hist || [];
-    d = {sym, r, cur: q.cur, points: h.map((v, i) => [Date.now() - (h.length - 1 - i) * 864e5, v]), daily: true};
+    d = {sym, r, cur: q.cur, points: fromHist(h), daily: true};
   } else {
     try {
       const j = (await getJson(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSym(sym))}?range=${range}&interval=${interval}`)).chart.result[0];
-      const ts = j.timestamp || [], c = j.indicators.quote[0].close || [], pts = [];
-      for (let i = 0; i < ts.length; i++) if (c[i] != null) pts.push([ts[i] * 1000, c[i]]);
-      if (q.price && pts.length && r !== '5y') pts.push([Date.now(), q.price]);   // aktueller Kurs als letzter Punkt
+      const ts = j.timestamp || [], Q = j.indicators.quote[0], c = Q.close || [], pts = [];
+      for (let i = 0; i < ts.length; i++) if (c[i] != null) {
+        const o = Q.open && Q.open[i] != null ? Q.open[i] : c[i];
+        pts.push([ts[i] * 1000, c[i], o, Math.max(o, c[i], (Q.high || [])[i] || 0), Math.min(o, c[i], (Q.low || [])[i] || Infinity)]);
+      }
+      // aktueller Kurs fließt in die letzte Kerze ein
+      const last = pts[pts.length - 1];
+      if (q.price && last && r !== '5y' && Date.now() - last[0] < 7 * 864e5) { last[1] = q.price; last[3] = Math.max(last[3], q.price); last[4] = Math.min(last[4], q.price); }
       d = {sym, r, cur: j.meta.currency || q.cur, points: pts, prevClose: r === '1d' ? j.meta.chartPreviousClose : null};
     } catch (e) {
       if (hit) return hit.d;
-      const h = q.hist || [];
-      d = {sym, r, cur: q.cur, points: h.map((v, i) => [Date.now() - (h.length - 1 - i) * 864e5, v]), daily: true};
+      d = {sym, r, cur: q.cur, points: fromHist(q.hist || []), daily: true};
     }
   }
   chartCache.set(key, {t: Date.now(), d});

@@ -9,7 +9,7 @@ const TENORS = [21, 63, 126];
 const BADGES = ['first', 'short', 'stop', 'lev', 'opt', 'crypto', 'profit', 'streak', 'fund', 'manager'];
 
 const today = () => new Date().toISOString().slice(0, 10);
-const fresh = () => ({cash: config.startCash, pos: [], hist: [], realized: 0, mode: null, badges: {}, xp: 0, active: {}, follow: {}, copies: []});
+const fresh = () => ({cash: config.startCash, pos: [], hist: [], realized: 0, mode: null, badges: {}, xp: 0, active: {}, follow: {}, copies: [], watch: [], lessons: {}});
 // Kopierte Anleger haben ein eigenes Guthaben innerhalb des Depots
 const copyOf = (st, p) => p && p.copyId ? (st.copies || []).find(c => c.id === p.copyId) : null;
 
@@ -85,7 +85,10 @@ function open(st, o, navOf, opts = {}) {
   } else {
     p.units = amt / toEur(P, sym);
   }
-  if (kind !== 'option' && [0.05, 0.1, 0.2].includes(Number(o.sl))) { p.sl = Number(o.sl); award(st, 'stop', 20, events); }
+  // Stop-Loss und Kursziel in Prozent vom Einstieg (Stop 0,5–50 %, Ziel 0,5–500 %), gemessen am Kurs des Basiswerts
+  const sl = Math.round(Number(o.sl) * 1e4) / 1e4, tp = Math.round(Number(o.tp) * 1e4) / 1e4;
+  if (kind !== 'option' && sl >= .005 && sl <= .5) { p.sl = sl; award(st, 'stop', 20, events); }
+  if (kind !== 'option' && tp >= .005 && tp <= 5) p.tp = tp;
   if (dir < 0) award(st, 'short', 20, events);
   if (I.g === 'crypto') award(st, 'crypto', 15, events);
   if (cp) { p.copyId = cp.id; p.src = opts.src; events.length = 0; }
@@ -132,6 +135,7 @@ function check(st, navOf) {
     else if (p.kind === 'stock' && p.dir < 0 && v <= 0) why = 'Zwangseindeckung';
     else if (p.kind === 'option' && Date.now() >= p.expiryTs) why = 'Verfall';
     else if (p.sl && p.dir * (P / p.entry - 1) <= -p.sl) why = 'Stop-Loss';
+    else if (p.tp && p.dir * (P / p.entry - 1) >= p.tp) why = 'Ziel erreicht';
     if (why) { close(st, p.id, why, navOf); events.push({type: 'closed', why, sym: p.sym, id: p.id, copy: !!p.copyId}); }
   }
   return events;
