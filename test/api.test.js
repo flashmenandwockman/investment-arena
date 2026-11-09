@@ -342,3 +342,37 @@ test('Kursziel, freier Stop, Watchlist, Stimmung, Kerzen', async () => {
   assert.ok(ch.points.length > 10 && ch.points[0].length === 5, 'Kerzen mit Eröffnung, Hoch, Tief');
   assert.ok(ch.points.every(k => k[3] >= Math.max(k[1], k[2]) && k[4] <= Math.min(k[1], k[2])));
 });
+
+test('Limit-Orders: vormerken, ausführen, löschen, ablaufen', async () => {
+  const c = client();
+  await c('/api/auth/register', {name: 'Limit', email: 'limit@x.de', password: 'geheim1234'});
+  const market = require('../server/market'), game = require('../server/game'), store = require('../server/store'), funds = require('../server/funds');
+  const P = market.get().AAPL.price;
+  assert.strictEqual((await c('/api/orders', {sym: 'AAPL', dir: 1, kind: 'option', amt: 1000, limit: P * .95})).status, 400, 'keine Limits für Optionen');
+  assert.strictEqual((await c('/api/orders', {sym: 'AAPL', dir: 1, amt: 1000, limit: P * .3})).status, 400, 'Limit zu weit weg');
+  const o = await c('/api/orders', {sym: 'AAPL', dir: 1, amt: 5000, limit: P * .95, valid: 7, sl: .1});
+  assert.strictEqual(o.status, 200, JSON.stringify(o.data)); assert.strictEqual(o.data.limit.executed, false);
+  assert.strictEqual(o.data.state.cash, 95000, 'Betrag vorgemerkt');
+  assert.ok(Math.abs(o.data.state.equity - 100000) < 1, 'Depotwert unverändert');
+  assert.strictEqual(o.data.state.orders.length, 1);
+  // Limit schon erreicht → sofort ausgeführt
+  const now = await c('/api/orders', {sym: 'MSFT', dir: 1, amt: 2000, limit: market.get().MSFT.price * 1.02});
+  assert.strictEqual(now.data.limit.executed, true);
+  assert.ok(now.data.state.positions.some(p => p.sym === 'MSFT'));
+  // Kurs fällt unter das Limit → Ausführung bei der nächsten Prüfung
+  const u = (await c('/api/me')).data.user, st = store.load(u.id), q = market.get().AAPL, old = q.price;
+  q.price = P * .94; const ev = game.checkOrders(st, funds.navOf); q.price = old;
+  assert.strictEqual(ev[0].type, 'filled');
+  assert.strictEqual(st.orders.length, 0);
+  const pos = st.pos.find(p => p.sym === 'AAPL'); assert.ok(pos && pos.sl === .1 && pos.stake === 5000);
+  // Löschen gibt den Betrag frei
+  const o2 = await c('/api/orders', {sym: 'NVDA', dir: -1, kind: 'lev', lev: 2, amt: 3000, limit: market.get().NVDA.price * 1.05});
+  const id = o2.data.state.orders.find(x => x.sym === 'NVDA').id, cashBefore = o2.data.state.cash;
+  const del = await c(`/api/orders/${id}`, undefined, 'DELETE');
+  assert.ok(!del.data.state.orders.some(x => x.sym === 'NVDA'));
+  assert.strictEqual(del.data.state.cash, cashBefore + 3000);
+  // Ablauf
+  const st2 = game.fresh(); st2.mode = 'easy'; game.placeLimit(st2, {sym: 'AAPL', dir: 1, amt: 1000, limit: P * .9, valid: 1}, funds.navOf);
+  st2.orders[0].expiresTs = Date.now() - 1; game.checkOrders(st2, funds.navOf);
+  assert.strictEqual(st2.orders.length, 0); assert.strictEqual(st2.cash, 100000);
+});

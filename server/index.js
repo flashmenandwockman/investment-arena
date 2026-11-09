@@ -64,7 +64,8 @@ function stateView(userId, bk) {
       fees: game.feesOf(p)};
   });
   const eq = game.equity(st, 'now', funds.navOf), prev = game.equity(st, 'prev', funds.navOf);
-  return {cash: st.cash, positions, hist: st.hist.slice(-40), realized: st.realized, badges: st.badges, xp: st.xp, active: st.active,
+  const orders = (st.orders || []).map(o => ({...o, name: (market.INSTRUMENTS[o.sym] || {}).n || o.sym, price: q[o.sym] && q[o.sym].price, cur: q[o.sym] && q[o.sym].cur}));
+  return {orders, cash: st.cash, positions, hist: st.hist.slice(-40), realized: st.realized, badges: st.badges, xp: st.xp, active: st.active,
     follow: st.follow, watch: (bk ? store.load(userId) : st).watch || [], lessons: (bk ? store.load(userId) : st).lessons || {}, mode: st.mode, equity: eq, eqPrev: prev, startCash: config.startCash, copies: copy.view(st), book: bk ? bk.arena.id : null};
 }
 function leaderboard(meId) {
@@ -211,11 +212,18 @@ async function api(req, res, url) {
       return send(res, 200, stateView(u.id));
     }
     if (p === '/api/orders' && m === 'POST') {
-      const bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id), eqBefore = game.equity(st, 'now', funds.navOf), r = game.open(st, await body(req), funds.navOf);
-      if (bk) bk.save(); else { store.save(u.id, st); copy.onOpen(u.id, r.position, eqBefore); }
+      const bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id), eqBefore = game.equity(st, 'now', funds.navOf), b = await body(req);
+      const r = b.limit ? game.placeLimit(st, b, funds.navOf) : game.open(st, b, funds.navOf);
+      if (bk) bk.save(); else store.save(u.id, st);
       heldCache.t = 0;
-      arenas.onTrade(u.id, bk && bk.arena.id, {kind: 'open', text: posText(r.position, 'eröffnet')});
-      return send(res, 200, {state: stateView(u.id, bk), events: r.events});
+      if (r.position) { if (!bk) copy.onOpen(u.id, r.position, eqBefore); arenas.onTrade(u.id, bk && bk.arena.id, {kind: 'open', text: posText(r.position, 'eröffnet')}); }
+      return send(res, 200, {state: stateView(u.id, bk), events: r.events, limit: b.limit ? {executed: !!r.executed} : undefined});
+    }
+    if (/^\/api\/orders\/[\w]+$/.test(p) && m === 'DELETE') {
+      const bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id);
+      game.cancelLimit(st, p.split('/').pop());
+      if (bk) bk.save(); else store.save(u.id, st);
+      return send(res, 200, {state: stateView(u.id, bk)});
     }
     if (/^\/api\/positions\/[\w-]+\/close$/.test(p) && m === 'POST') {
       const pid = p.split('/')[3], bk = bookOf(u, url), st = bk ? bk.st : store.load(u.id), pos = st.pos.find(x => x.id === pid), own = !(pos || {}).copyId;
@@ -292,17 +300,21 @@ const server = http.createServer((req, res) => {
 /* ---------- Hintergrund-Aufgaben ---------- */
 function checkAllBooks() {
   const closed = [];
+  const filled = [];
   for (const u of store.all()) {
-    const ev = game.check(u.st, funds.navOf); if (!ev.length) continue;
+    const ev = game.check(u.st, funds.navOf), lo = game.checkOrders(u.st, funds.navOf); if (!ev.length && !lo.length) continue;
     store.save(u.userId, u.st);
     for (const e of ev) if (!e.copy) closed.push([u.userId, e.id, e.why]);
+    for (const e of lo) if (e.type === 'filled') filled.push([u.userId, e]);
   }
+  for (const [uid, e] of filled) { copy.onOpen(uid, e.position, e.eqBefore); arenas.onTrade(uid, null, {kind: 'open', text: posText(e.position, 'eröffnet (Limit)')}); }
   // Erst danach die Kopierer nachziehen, damit kein veralteter Spielstand gespeichert wird
   for (const [leader, id, why] of closed) { copy.onClose(leader, id, why); arenas.onTrade(leader, null, {kind: 'auto', text: `${why}: eine Position wurde automatisch geschlossen`}); }
   // Eigene Arena-Depots: Stop-Loss, Knock-out und Verfall ebenso
   for (const b of arenas.allBooks()) {
-    const ev = game.check(b.st, funds.navOf); if (!ev.length) continue;
-    try { const bk = arenas.loadBook(b.userId, b.arenaId); bk.st.pos = b.st.pos; bk.st.cash = b.st.cash; bk.st.hist = b.st.hist; bk.st.realized = b.st.realized; bk.save(); } catch (e) {}
+    const ev = game.check(b.st, funds.navOf), lo = game.checkOrders(b.st, funds.navOf); if (!ev.length && !lo.length) continue;
+    try { const bk = arenas.loadBook(b.userId, b.arenaId); Object.assign(bk.st, {pos: b.st.pos, cash: b.st.cash, hist: b.st.hist, realized: b.st.realized, orders: b.st.orders, ts: b.st.ts, badges: b.st.badges, xp: b.st.xp}); bk.save(); } catch (e) {}
+    for (const e of lo) if (e.type === 'filled') arenas.onTrade(b.userId, b.arenaId, {kind: 'open', text: posText(e.position, 'eröffnet (Limit)')});
     for (const e of ev) arenas.onTrade(b.userId, b.arenaId, {kind: 'auto', text: `${e.why}: eine Position wurde automatisch geschlossen`});
   }
 }
@@ -314,7 +326,7 @@ let heldCache = {t: 0, set: new Set()};
 function held() {
   if (Date.now() - heldCache.t < 30_000) return heldCache.set;
   const set = new Set();
-  for (const u of store.all()) { for (const p of u.st.pos) if (p.sym) set.add(p.sym); for (const s of u.st.watch || []) set.add(s); }
+  for (const u of store.all()) { for (const p of u.st.pos) if (p.sym) set.add(p.sym); for (const s of u.st.watch || []) set.add(s); for (const o of u.st.orders || []) set.add(o.sym); }
   for (const r of qFundHoldings.all()) for (const h of JSON.parse(r.holdings)) set.add(h.sym);
   for (const b of arenas.allBooks()) for (const p of b.st.pos) if (p.sym) set.add(p.sym);
   heldCache = {t: Date.now(), set};

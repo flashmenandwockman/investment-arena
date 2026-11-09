@@ -31,7 +31,7 @@ db.exec('CREATE TABLE IF NOT EXISTS instruments (sym TEXT PRIMARY KEY, name TEXT
 const qInstr = db.prepare('SELECT * FROM instruments');
 const qAddInstr = db.prepare('INSERT OR IGNORE INTO instruments (sym, name, type, added_at) VALUES (?, ?, ?, ?)');
 const meta = (sym, name, type) => ({n: name, t: type === 'ETP' ? 'ETF' : 'Aktie', g: 'us', s: sym, x: true});
-for (const r of qInstr.all()) INSTRUMENTS[r.sym] = meta(r.sym, r.name, r.type);
+for (const r of qInstr.all()) INSTRUMENTS[r.sym] = meta(r.sym, cleanName(r.name), r.type);   // ältere Einträge nachträglich bereinigen
 
 let quotes = JSON.parse(JSON.stringify(fallback));
 let live = false, updatedAt = 0, kraken = null, cryptoHist = {};
@@ -116,6 +116,7 @@ function cleanName(raw) {
   if (n === n.toUpperCase()) n = n.toLowerCase().replace(/(^|[\s.&/-])([a-zà-ÿ])/g, (m, a, b) => a + b.toUpperCase());
   n = n.replace(/-us$/i, '').replace(/^ss\s+/i, '')
     .replace(/\b(etf|spdr|usd|reit|adr|s&p|msci|esg|ai|qqq|dow|nyse)\b/gi, m => m.toUpperCase()).replace(/\bishares\b/gi, 'iShares');
+  n = n.replace(/(?!^)\b(Of|And|The|De|For|In|On|At)\b/g, w => w.toLowerCase());   // „Bank of America“
   for (let i = 0; i < 3; i++) n = n.replace(/\s*\/the$/i, '').replace(/[-\s]+(cl(ass)?\.?\s*)?[a-c](\s+shares)?$/i, '').replace(/[,\s]+(inc|corp|corporation|co|company|plc|ltd|limited|sa|nv|ag|se|lp)\.?$/i, '').trim();
   return n;
 }
@@ -130,7 +131,7 @@ function setDirectory(list, at) {
   directory = list.map(x => ({...x, k: x.n.toLowerCase(), ks: x.s.toLowerCase()}));
   dirBySym = new Map(directory.map(x => [x.s, x])); dirAt = at;
 }
-const DIR_VERSION = 2;   // erhöhen, wenn sich die Namensbereinigung ändert
+const DIR_VERSION = 3;   // erhöhen, wenn sich die Namensbereinigung ändert
 try { const d = JSON.parse(fs.readFileSync(DIR_FILE, 'utf8')); if (d.v === DIR_VERSION) setDirectory(d.list, d.at); } catch (e) {}
 async function loadDirectory() {
   if (config.offline || (directory.length && Date.now() - dirAt < 24 * 3600_000)) return;

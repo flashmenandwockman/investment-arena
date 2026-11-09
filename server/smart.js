@@ -80,7 +80,7 @@ async function movesOf(g) {
 }
 function store(g, accession, rows) {
   q.del.run(g.cik);
-  for (const r of rows) q.ins.run(r.cik, r.person, r.firm, r.sym, r.name, r.action, r.chg, r.weight, r.value, r.flow, r.report, r.filing, r.prevReport);
+  for (const r of rows) q.ins.run(r.cik, r.person, r.firm, r.sym, market.cleanName(r.name), r.action, r.chg, r.weight, r.value, r.flow, r.report, r.filing, r.prevReport);
   q.setState.run(g.cik, accession, Date.now());
 }
 

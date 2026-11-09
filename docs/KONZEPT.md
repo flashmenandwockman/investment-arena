@@ -1,7 +1,7 @@
 # Investment Arena mit Florian Homm
 
 **Konzept, Idee und alle Funktionen**
-Stand: 8. November 2026 · www.investment-arena.com
+Stand: 9. November 2026 · www.investment-arena.com
 
 ---
 
@@ -65,13 +65,30 @@ Die App hat fünf Bereiche im Menü unten:
 - **Filter:** Alle, Krypto, Deutschland, USA, Indizes & Rohstoffe.
 - Jede Zeile zeigt Kurs, Tagesveränderung, Mini-Chart, Volatilität und Hinweise wie „Zahlen am 17.11.“, „Insider kauft“ oder „Volumen 2,3×“.
 
-### Kurs-Chart
-- Zeiträume **24h, Woche, Monat, Jahr, Max (5 Jahre)**.
-- Beim Darüberfahren oder Tippen erscheinen Kurs, Veränderung und Zeitpunkt.
-- Unter dem Chart: Veränderung im gewählten Zeitraum.
+### Kurs-Chart und Kerzen-Chart
+- Im Handelsfenster: Zeiträume **24h, Woche, Monat, Jahr, Max (5 Jahre)**, beim Darüberfahren Kurs, Veränderung und Zeitpunkt.
+- **Kerzen-Chart:** Tippen auf Kurs oder Mini-Chart in der Liste (oder „Kerzen-Chart“ im Handelsfenster) öffnet den Detail-Chart mit Kerzen oder Linie, Fadenkreuz mit Datum, Eröffnung, Hoch, Tief und Schluss, Zeiträume 1T bis 5J und den Knöpfen **Short** und **Long**.
+- **Stimmung der Top 100:** Anteil long und short der 100 besten Trader der Arena in diesem Titel.
+
+### Watchlist
+- Stern im Kerzen-Chart und im Handelsfenster, Filter „★ Watchlist“ in der Kursliste (bis zu 60 Titel).
+
+### Smart Money
+**Bereich „Alle Meldungen“:** Was 12 große Investoren zuletzt bei der SEC gemeldet haben (Formular 13F, Vergleich mit dem Vorquartal):
+- **Nettozuflüsse nach Branche** (z. B. „Medien & Kommunikation +12,2 Mrd. $, Halbleiter −6,6 Mrd. $“)
+- **Bewegungen** mit Filter Käufe/Verkäufe: neu gekauft, aufgestockt, reduziert, komplett verkauft (z. B. „Warren Buffett · Alphabet um 45 % aufgestockt“)
+- Tippen auf eine Bewegung öffnet den Kerzen-Chart des Titels.
+
+**Smart-Money-Feld je Titel**, mit Einordnung und Quelle in jeder Zeile:
+- **Großinvestoren:** wer den Titel hält, mit Anteil am Depot und Veränderung zum Vorquartal
+- **Insider-Käufe und -Verkäufe** (SEC Form 4, nur Börsenkäufe und -verkäufe) mit Einordnung: Käufe mit eigenem Geld sind ein starkes Signal, Verkäufe oft Gehalt oder Steuern
+- **Analystenkonsens** mit Florians Hinweis bei großer Einigkeit
+- **Quartalszahlen**, ungewöhnliches Volumen, Schlagzeilen
+
+*Options-Flow, Dark Pool und Kongress-Trades (z. B. Unusual Whales) sind nicht enthalten: Die Anzeige in einer öffentlichen App braucht dort eine Enterprise-Lizenz (ab etwa 625–750 $ im Monat).*
 
 ### Smart-Money-Radar
-Was die „großen Spieler“ tun, aufbereitet für jeden verständlich:
+Die auffälligsten Signale des Tages als Karten, vorne die größte Bewegung der Großinvestoren:
 - **Insider-Käufe und -Verkäufe** aus den Pflichtmeldungen an die US-Börsenaufsicht SEC, mit Insider-Stimmung
 - **Analystenkonsens** (Kaufen, Halten, Verkaufen)
 - **Quartalszahlen:** nächster Termin, letzte Überraschung
@@ -89,7 +106,8 @@ Was die „großen Spieler“ tun, aufbereitet für jeden verständlich:
 | **Hebel** | Start: 2×, 3×, 5× · Profi: 2×, 5×, 10×, 20×. Mit Knock-out-Schwelle; Finanzierung 0,02 % pro Tag auf das Positionsvolumen |
 | **Option** (Profi) | Call oder Put, Laufzeit rund 1, 3 oder 6 Monate, Basispreis am Geld oder 5 bzw. 10 % aus dem Geld. Bewertung nach Black-Scholes |
 
-- **Absicherung:** Stop-Loss bei −5 %, −10 % oder −20 %.
+- **Ausführung:** **Sofort** zum aktuellen Kurs oder **Limit** zum Wunschkurs (Eingabe oder Schnellwahl 1/2/5/10 % unter bzw. über dem Kurs, gültig 1 Tag, 1 Woche oder 1 Monat). Der Betrag wird vorgemerkt; der Server führt aus, sobald der Kurs das Limit erreicht. Offene Limit-Orders stehen im Depot und lassen sich löschen.
+- **Stop & Ziel:** Stop-Loss und Kursziel (Take-Profit) mit dem Finger im Chart ziehen oder per Schnellwahl (Stop 5/10/20 %, Ziel 10/20/50 %). Klartext: „Greift der Stop, verlieren Sie 900 €, also 0,71 % Ihres Kapitals. Erreichen Sie das Ziel, gewinnen Sie 2.700 €. Das ist das Dreifache Ihres Risikos.“
 - **Einsatz:** frei wählbar ab 100 €, Schnellwahl 1.000 / 5.000 / 10.000 / 25 % des Depots.
 - **Zusammenfassung vor dem Kauf:** Positionsgröße, Knock-out-Schwelle, Kosten pro Tag, Gewinn und Verlust bei ±10 %, maximaler Verlust.
 - **Begründung (optional):** ein Satz zum Trade. Zählt für den Talent-Score.
@@ -103,6 +121,7 @@ Was die „großen Spieler“ tun, aufbereitet für jeden verständlich:
 - **Offene Positionen** mit Einsatz, aktuellem Wert, Einstieg und Kurs, Gewinn/Verlust; Warnung bei drohendem Knock-out.
 - **Verlauf** aller Trades mit realisiertem Ergebnis.
 - **Kopierte Anleger** als eigene Karten (siehe Copy Trading).
+- **Limit-Orders** mit Limit, aktuellem Kurs, Abstand, vorgemerktem Betrag und Gültigkeit.
 - **Depot-Umschalter** „Hauptdepot | Arena-Depot“, sobald man in einer Arena mit eigenem Depot spielt.
 - **Arena zurücksetzen** auf 100.000 € nur mit ausdrücklicher Bestätigung: Man sieht, was verloren geht (Depotwert, Ranglistenplatz, Positionen, Kopien, Verlauf, Abzeichen), und muss ein Häkchen setzen.
 
@@ -206,6 +225,7 @@ Das Besondere der Arena: Die besten Investoren und Gruppen können sich beim **A
 - **Erklärkarte „Florian Homm erklärt“** an jeder Stelle der App, passend zur Situation (Begrüßung, erster Short, Hebel, Knock-out, Gewinn, Verlust, Fonds, Arenen, Talente und mehr).
 - **Tonspuren:** Jeder Text kann als MP3 von Florian eingesprochen werden; bis dahin liest die Browser-Stimme vor. Die Liste aller Texte steht in `public/audio/AUFNAHMELISTE.md`.
 - **Florians Tipps** im Handelsfenster, bei Fonds und beim Kopieren.
+- **Lernfortschritt:** gehörte Lektionen werden markiert.
 - **13 Lektionen:** Long, Short, Hebel, Call-Option, Put-Option, Stop-Loss, Positionsgröße, Krypto, Insider-Trades lesen, Analysten-Konsens, Quartalszahlen, ungewöhnliches Volumen, eigenen Fonds bauen.
 
 ---

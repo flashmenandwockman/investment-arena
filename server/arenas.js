@@ -145,7 +145,7 @@ function join(u, slug, b = {}) {
     if (b.start === 'copy') {
       // Kopie des Hauptdepots: eigene Positionen und Bargeld; kopierte Anleger fließen als Bargeld ein
       st = game.fresh();
-      st.cash = main.cash + (main.copies || []).reduce((s, c) => s + c.cash, 0) + main.pos.filter(p => p.copyId).reduce((s, p) => s + game.value(p, 'now', funds.navOf), 0);
+      st.cash = main.cash + (main.orders || []).reduce((s, o) => s + o.amt, 0) + (main.copies || []).reduce((s, c) => s + c.cash, 0) + main.pos.filter(p => p.copyId).reduce((s, p) => s + game.value(p, 'now', funds.navOf), 0);
       st.pos = main.pos.filter(p => !p.copyId).map(p => ({...p}));
       st.mode = main.mode;
     } else { st = game.fresh(); st.mode = main.mode; }

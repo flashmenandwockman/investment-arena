@@ -319,13 +319,22 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 h1,h2,h3,h4,.risktxt,.msg h3,.rc b,.trcm h3{text-wrap:balance}
 p,small,.hint,.coach p,.msg p,.risksub,.sec-sub,.fine,.tip{text-wrap:pretty;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
 .num,b.num,.num b{hyphens:none;-webkit-hyphens:none}
-.sm-row{padding:14px 0} .sm-row .l{align-items:baseline} .sm-row .l b{text-align:right}
+.sm-row{padding:14px 0} .sm-row .l{align-items:baseline;gap:16px} .sm-row .l span{flex:none} .sm-row .l b{text-align:right}
 .smart h4{margin-bottom:14px} .smart .src{margin-top:10px} .hold{padding:10px 0}
+
+/* Limit-Orders */
+.limtxt{margin:12px 2px 0;font-size:13.5px;line-height:1.55;color:var(--muted)} .limtxt b{color:var(--text)}
+.ordc{padding:18px;border-radius:16px;background:var(--card);border:1px dashed var(--line-gold)}
+.ordc .h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.ordc b.nm{display:block;font-size:15px;margin-top:10px} .ordc small{display:block;color:var(--muted);font-size:12.5px;line-height:1.5;margin-top:4px}
+.ordc .dist{text-align:right;flex:none} .ordc .dist b{display:block;font-size:16px} .ordc .dist small{margin-top:2px}
+.tag.lim{background:rgba(198,164,108,.16);color:var(--gold-p)}
 
 /* Smart Money */
 .smhead p{margin:10px 2px 0;font-size:14px;line-height:1.55;color:var(--muted)}
 .flows{margin-top:6px}
-.flow{display:grid;grid-template-columns:minmax(96px,34%) 1fr 64px;gap:10px;align-items:center;padding:9px 0;font-size:14px}
+.flow span:first-child{hyphens:none;-webkit-hyphens:none;text-wrap:balance}
+.flow{display:grid;grid-template-columns:minmax(110px,38%) 1fr 64px;gap:10px;align-items:center;padding:9px 0;font-size:14px}
 .flow .track{position:relative;height:10px} .flow .track::before{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--line)}
 .flow .track i{position:absolute;top:0;height:10px;border-radius:6px}
 .flow b{text-align:right}
@@ -634,6 +643,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
   <!-- DEPOT -->
   <main id="tab-depot" hidden>
     <div id="copiesBox" hidden><div class="sec-h"><h2>Kopierte Anleger</h2><span class="muted num" style="font-size:12px" id="copyCount"></span></div><div class="list" id="copies"></div></div>
+    <div id="ordersBox" hidden><div class="sec-h"><h2>Limit-Orders</h2><span class="muted num" style="font-size:12px" id="ordCount"></span></div><div class="list" id="orders"></div></div>
     <div class="sec-h"><h2>Offene Positionen</h2><span class="muted num" style="font-size:12px" id="posCount"></span></div>
     <div class="list" id="positions"></div>
     <div class="sec-h"><h2>Verlauf</h2><span class="muted num" style="font-size:12px" id="realized"></span></div>
@@ -803,9 +813,18 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
       </div>
     </div>
 
+    <div class="step" id="otStep"><label>4 · Ausführung</label>
+      <div class="seg c2"><button class="opt on" data-ot="market">Sofort<small>zum aktuellen Kurs</small></button><button class="opt" data-ot="limit">Limit<small>zu Ihrem Wunschkurs</small></button></div>
+      <div id="limBox" hidden>
+        <div class="amount" style="margin-top:12px"><input id="limIn" inputmode="decimal" aria-label="Limit-Kurs"><span id="limCur">$</span></div>
+        <div class="seg c4" id="limQ" style="margin-top:10px"></div>
+        <p class="limtxt" id="limTxt"></p>
+        <div class="step" style="margin-top:16px"><label>Gültig</label><div class="seg c3"><button class="opt" data-lv="1">1 Tag</button><button class="opt on" data-lv="7">1 Woche</button><button class="opt" data-lv="30">1 Monat</button></div></div>
+      </div>
+    </div>
     <div class="step" id="noteStep"><label>Ihre Begründung <span class="muted" style="text-transform:none;letter-spacing:0">optional · zählt fürs Talent-Programm</span></label>
       <input class="inp" id="tNote" maxlength="200" placeholder="Warum dieser Trade? Ein Satz genügt."></div>
-    <div class="step" id="slStep"><label>4 · Stop & Ziel <span class="muted" style="text-transform:none;letter-spacing:0">mit dem Finger ziehen</span></label>
+    <div class="step" id="slStep"><label>5 · Stop & Ziel <span class="muted" style="text-transform:none;letter-spacing:0">mit dem Finger ziehen</span></label>
       <div class="riskbox" id="rBox"><svg id="rSvg"></svg><div class="rzone r-up" id="rZt"></div><div class="rzone r-dn" id="rZs"></div><div class="rentry" id="rEntry"><span class="num" id="rEntryTxt"></span></div>
         <button class="rpill r-up num" id="rT" type="button"></button><button class="rpill r-dn num" id="rS" type="button"></button></div>
       <div class="rchips"><span>Stop</span><div class="seg c4"><button class="opt" data-sl="0">Kein</button><button class="opt" data-sl="0.05">5 %</button><button class="opt" data-sl="0.1">10 %</button><button class="opt" data-sl="0.2">20 %</button></div>
@@ -1148,7 +1167,7 @@ const BADGES = [['first','🥇 Erster Trade'],['short','📉 Erster Short'],['st
 let Q = {}, fx = 1.12;
 let S = {cash:START, pos:[], hist:[], realized:0, mode:null, badges:{}, xp:0, active:{}, follow:{}, equity:START, eqPrev:START};
 let ME = null, CFG = {freehomes:false}, LB = [], FUNDS = [], AUDIO = new Set(), FD = null, DISC = {traders:[], gurus:[]};
-let ui = {tp:0, rR:null, book:null, aseg:'global', tab:'markt', filter:'all', lb:'mon', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
+let ui = {ot:'market', limit:0, lv:7, tp:0, rR:null, book:null, aseg:'global', tab:'markt', filter:'all', lb:'mon', sym:null, dir:1, kind:'stock', lev:5, mny:0, tenor:63, sl:0, amt:5000, auth:'login'};
 async function api(path, opts={}){
   if(ui.book && /^\/api\/(state(\?|$)|orders|positions\/|funds\/\d+\/invest|copy)/.test(path) && opts.method!=='PATCH' && !/reset/.test(path)) path += (path.includes('?')?'&':'?')+'book='+ui.book;
   const r = await fetch(path, {method:opts.method||(opts.body?'POST':'GET'), credentials:'same-origin', cache:'no-store',
@@ -1157,7 +1176,7 @@ async function api(path, opts={}){
   if(!r.ok) throw Object.assign(new Error(d.error||'Verbindungsfehler'),{status:r.status});
   return d;
 }
-function setState(v){ S = {watch:v.watch||[], lessons:v.lessons||{}, copies:v.copies||[], cash:v.cash, pos:v.positions, hist:v.hist, realized:v.realized, mode:v.mode, badges:v.badges||{}, xp:v.xp||0, active:v.active||{}, follow:v.follow||{}, equity:v.equity, eqPrev:v.eqPrev}; }
+function setState(v){ S = {orders:v.orders||[], watch:v.watch||[], lessons:v.lessons||{}, copies:v.copies||[], cash:v.cash, pos:v.positions, hist:v.hist, realized:v.realized, mode:v.mode, badges:v.badges||{}, xp:v.xp||0, active:v.active||{}, follow:v.follow||{}, equity:v.equity, eqPrev:v.eqPrev}; }
 function showEvents(ev){ (ev||[]).forEach(e=>{ if(e.type==='badge'){ const b=BADGES.find(b=>b[0]===e.key); if(b) setTimeout(()=>toast('Abzeichen: '+b[1]+'  ·  +'+e.xp+' XP'),900); } }); }
 
 /* ---------- helpers ---------- */
@@ -1233,7 +1252,8 @@ function volRatio(s){ const v=(Q[s]&&Q[s].volm)||[]; if(v.length<10) return null
 function recInfo(r){ if(!r) return null; const buy=r.sb+r.b, hold=r.h, sell=r.s+r.ss, n=buy+hold+sell; return {buy,hold,sell,n,share:n?buy/n:0}; }
 function surprise(l){ return l && l.est ? (l.act-l.est)/Math.abs(l.est) : null; }
 function badges(s){
-  const r=RD[s]||{}, out=[], vr=volRatio(s);
+  const r=RD[s]||{}, out=[], vr=volRatio(s), lo=(S.orders||[]).find(o=>o.sym===s);
+  if(lo) out.push(`<span class="bd">Limit ${fmt(lo.limit,lo.cur||(Q[s]||{}).cur)}</span>`);
   if(r.next && daysTo(r.next.date)>=0 && daysTo(r.next.date)<=14) out.push(`<span class="bd">Zahlen ${dshort(r.next.date)}</span>`);
   if(r.ins && r.ins.buys) out.push(`<span class="bd green">Insider kauft</span>`);
   else if(r.ins && r.ins.sellVal>2e8) out.push(`<span class="bd red">Insider verkaufen</span>`);
@@ -1278,7 +1298,7 @@ function smartPanel(s){
       <div class="legend"><span>Gekauft ${i.buyVal?usd(i.buyVal):'0 $'}</span><span>Verkauft ${i.sellVal?usd(i.sellVal):'0 $'}</span></div><div class="hint">${i.buys?'Käufe mit eigenem Geld an der Börse gelten als eines der stärksten Signale.':'Verkäufe sind oft Gehalt, Steuern oder geplante Programme und allein kein Warnsignal. Käufe wären aussagekräftiger.'}</div><div class="legend">${full&&i.mspr!=null?`<span>Insider-Stimmung ${i.mspr<0?'−':''}${nf(i.mspr,0)} (−100 bis +100)</span>`:''}</div>
       ${full?i.top.map(t=>`<div class="tx"><span>${t.n}</span><b class="${t.c==='P'?'up':'down'}">${t.c==='P'?'Kauf':'Verkauf'}</b><small class="muted">${dshort(t.d)} · ${nf(t.sh,0)} Aktien à ${nf(t.p,2)} $</small><small class="muted">${usd(t.sh*t.p)}</small></div>`).join(''):''}</div>`); }
   if(r.next||r.last){ const x=surprise(r.last);
-    rows.push(`<div class="sm-row"><div class="l"><span>Nächste Quartalszahlen</span><b>${r.next?dshort(r.next.date)+(r.next.hour==='amc'?' · nach Börsenschluss':r.next.hour==='bmo'?' · vor Börsenstart':''):'noch offen'}</b></div>
+    rows.push(`<div class="sm-row"><div class="l"><span>Quartalszahlen</span><b>${r.next?dshort(r.next.date)+(r.next.hour==='amc'?', nach Börsenschluss':r.next.hour==='bmo'?', vor Börsenstart':''):'noch offen'}</b></div>
       ${r.last?`<div class="legend"><span>Letzte Zahlen ${dshort(r.last.date)}:</span><span class="${x<0?'down':'up'}">${x<0?'Erwartung verfehlt':'Erwartung übertroffen'} (${pct(x,Math.abs(x)<.01?1:0)})</span></div>`:''}</div>`); }
   if(vr) rows.push(`<div class="sm-row"><div class="l"><span>Handelsvolumen heute</span><b class="${vr>=1.6?'up':''}">${nf(vr,1)}× Durchschnitt</b></div></div>`);
   if(full && r.news && r.news.length) rows.push(`<div class="sm-row news"><div class="l"><span>Schlagzeilen (englisch)</span></div>${r.news.map(n=>`<a href="${n.url}" target="_blank" rel="noopener">${n.h}<small>${n.src} · ${new Date(n.t*1000).toLocaleDateString('de-DE')}</small></a>`).join('')}</div>`);
@@ -1326,7 +1346,7 @@ function renderMarket(){
   }).join('');
 }
 function renderHeader(){
-  const eq=S.equity, inv=eq-S.cash, d=eq-START, td=eq-S.eqPrev;
+  const eq=S.equity, inv=eq-S.cash-(S.orders||[]).reduce((a,o)=>a+o.amt,0), d=eq-START, td=eq-S.eqPrev;
   $('#equity').textContent=eur(eq);
   $('#equityChg').innerHTML=`<span class="${cls(d)}">${sgn(d)} (${pct(d/START)})</span> <span class="muted">seit Start</span>`;
   $('#cash').textContent=eur(S.cash,0); $('#invested').textContent=eur(inv,0);
@@ -1343,7 +1363,7 @@ function renderHeader(){
 }
 function kindLabel(p){ return p.label || ''; }
 function renderPositions(){
-  renderCopies();
+  renderCopies(); renderOrders();
   const own = S.pos.filter(p=>!p.copyId);
   $('#posCount').textContent = own.length ? own.length+' offen' : '';
   $('#positions').innerHTML = !own.length ? `<div class="empty">Noch keine Positionen.<br>Wählen Sie unter „Märkte“ einen Wert oder kopieren Sie unter „Entdecken“ einen Anleger.</div>` : own.map(p=>{
@@ -1426,11 +1446,22 @@ function closeTop(){
 }
 function closeSheets(){ SHEETS.length=0; document.body.classList.remove('sheet-open'); $('#scrim').classList.remove('on'); $$('.sheet').forEach(s=>s.classList.remove('on')); if('speechSynthesis' in window) speechSynthesis.cancel(); if(player){ player.pause(); player=null; } $$('.speaking').forEach(b=>b.classList.remove('speaking')); }
 
+/* ---------- Limit-Orders im Depot ---------- */
+function renderOrders(){
+  const os=S.orders||[]; $('#ordersBox').hidden=!os.length; $('#ordCount').textContent=os.length?os.length+' offen':'';
+  $('#orders').innerHTML=os.map(o=>{ const P=o.price, d=P?o.limit/P-1:0;
+    return `<div class="ordc"><div class="h"><div style="min-width:0"><span class="tag lim">LIMIT</span><span class="tag ${o.dir>0?'long':'short'}">${o.dir>0?'KAUF':'LEERVERKAUF'}</span>${o.kind==='lev'?`<span class="tag kind">Hebel ${o.lev}×</span>`:''}
+      <b class="nm">${esc(o.name)}</b><small class="num">Limit ${fmt(o.limit,o.cur)} · aktuell ${P?fmt(P,o.cur):'–'}</small><small class="num">${eur(o.amt,0)} vorgemerkt · gültig bis ${dshort2(o.expiresTs)}${o.sl?` · Stop −${nf(o.sl*100,o.sl*100%1?1:0)}${NB}%`:''}${o.tp?` · Ziel +${nf(o.tp*100,o.tp*100%1?1:0)}${NB}%`:''}</small></div>
+      <div class="dist num"><b>${pct(d,1)}</b><small>bis zum Limit</small></div></div>
+      <button class="btn2" style="margin-top:14px" data-cancelord="${o.id}">Order löschen</button></div>`; }).join('');
+}
+
 /* ---------- Smart Money (SEC 13F) ---------- */
 let SM=null, smF='all'; const SMS={};
 const big = v => { const a=Math.abs(v); return (v<0?'−':v>0?'+':'')+(a>=1e9?nf(a/1e9,1)+NB+'Mrd.'+NB+'$':nf(a/1e6,0)+NB+'Mio.'+NB+'$'); };
 const initials2 = n => n.split(/\s+/).filter(w=>/^[A-ZÄÖÜ]/.test(w)).slice(0,2).map(w=>w[0]).join('');
-const mvText = m => m.action==='neu'?`Neu gekauft: ${m.name}`:m.action==='raus'?`${m.name} komplett verkauft`:`${m.name} um ${nf(Math.abs(m.chg)*100,0)} % ${m.action==='auf'?'aufgestockt':'reduziert'}`;
+const mvName = m => SM&&SM.moves.some(x=>x.name===m.name&&x.sym!==m.sym)?`${m.name} (${m.sym})`:m.name;
+const mvText = m => m.action==='neu'?`Neu gekauft: ${mvName(m)}`:m.action==='raus'?`${mvName(m)} komplett verkauft`:`${mvName(m)} um ${nf(Math.abs(m.chg)*100,0)}${NB}% ${m.action==='auf'?'aufgestockt':'reduziert'}`;
 async function loadSmart(){ try{ SM=await api('/api/smart'); }catch(e){} }
 async function openSmart(){
   if(!SM) await loadSmart(); if(!SM) return toast('Smart-Money-Daten nicht erreichbar');
@@ -1488,13 +1519,13 @@ function riskGeom(){
 // Kursabstand (in % vom Einstieg, Vorzeichen: + über dem Einstieg) → senkrechte Position
 const rY = (g,d) => g.mid - d/g.R*g.half;
 function drawRisk(){
-  const q=Q[ui.sym]; if(!q) return; const g=riskGeom(), dir=ui.dir, lev=ui.kind==='lev'?ui.lev:1, P=q.price;
+  const q=Q[ui.sym]; if(!q) return; const g=riskGeom(), dir=ui.dir, lev=ui.kind==='lev'?ui.lev:1, P=entryPx();
   // Kursverlauf links
   const h=q.hist.slice(-30), xs=g.W*.54;
   const pts=h.map((v,i)=>`${(i/(h.length-1)*xs).toFixed(1)},${Math.max(4,Math.min(g.H-4,rY(g,v/P-1))).toFixed(1)}`).join(' ');
   $('#rSvg').setAttribute('viewBox',`0 0 ${g.W} ${g.H}`);
   $('#rSvg').innerHTML=`<polyline fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" points="${pts}"/><circle cx="${xs}" cy="${g.mid}" r="4.5" fill="#fff"/>`;
-  $('#rEntry').style.top=g.mid+'px'; $('#rEntryTxt').textContent='Einstieg '+fmt(P,q.cur);
+  $('#rEntry').style.top=g.mid+'px'; $('#rEntryTxt').textContent=(ui.ot==='limit'&&!limitNow()?'Limit ':'Einstieg ')+fmt(P,q.cur);
   const set=(pill,zone,val,kind,ghostD)=>{
     const side=(kind==='tp'?1:-1)*dir, d=val?side*val:side*ghostD, y=rY(g,d);
     pill.style.top=Math.max(20,Math.min(g.H-20,y))+'px'; pill.classList.toggle('ghost',!val);
@@ -1633,7 +1664,7 @@ function openTrade(sym){
   ui.sym=sym; const q=Q[sym], m=META[sym], c=chg(sym);
   if(!pro() && ui.kind==='option') ui.kind='stock';
   if(!pro() && ui.lev>5) ui.lev=5;
-  $('#tName').textContent=m.n; CH.head=null; syncStars(); loadSentiment(sym,'#tSent'); ui.rR=null;
+  $('#tName').textContent=m.n; CH.head=null; ui.ot='market'; syncStars(); loadSentiment(sym,'#tSent'); ui.rR=null;
   $('#tPrice').innerHTML=`${fmt(q.price,q.cur)} <span class="${cls(c)}">${pct(c)}</span>${pro()?` <span class="muted">· Vol. ${Math.round(q.vol*100)} % p. a.</span>`:''}`;
   // Erst die vorhandenen Tageskurse zeigen, dann den gewählten Zeitraum nachladen
   CH.pts=q.hist.slice(-30).map((v,i,a)=>[Date.now()-(a.length-1-i)*DAY,v]); CH.cur=q.cur; CH.daily=true; drawChart();
@@ -1644,8 +1675,10 @@ function openTrade(sym){
 }
 const defaultTip = () => ui.kind==='option'?(ui.dir>0?'call':'put'):ui.kind==='lev'?'lev':(ui.dir>0?'long':'short');
 
+const entryPx = () => { const q=Q[ui.sym]; return ui.kind!=='option' && ui.ot==='limit' && ui.limit>0 ? ui.limit : q.price; };
+const limitNow = () => { const P=Q[ui.sym].price; return ui.ot==='limit' && ui.limit>0 && (ui.dir>0 ? P<=ui.limit : P>=ui.limit); };
 function quote(){
-  const q=Q[ui.sym], P=q.price, amt=ui.amt, o={amt,cur:q.cur};
+  const q=Q[ui.sym], P=entryPx(), amt=ui.amt, o={amt,cur:q.cur};
   if(ui.kind==='option'){
     o.opt=ui.dir>0?'call':'put'; o.strike=roundK(ui.dir>0?P*(1+ui.mny):P*(1-ui.mny)); o.T=ui.tenor/252;
     o.prem=bs(P,o.strike,o.T,q.vol,o.opt); o.units=amt/toEur(o.prem,q.cur); o.be=o.opt==='call'?o.strike+o.prem:o.strike-o.prem;
@@ -1674,6 +1707,18 @@ function updateTrade(tip){
   $('#stockSub').textContent = ui.dir>0?'kaufen':'leerverkaufen'; $('#optSub').textContent = ui.dir>0?'Call':'Put';
   $('#levStep').hidden=ui.kind!=='lev'; $('#levVal').textContent=ui.lev+'×';
   $('#optStep').hidden=ui.kind!=='option'; $('#slStep').hidden=ui.kind==='option';
+  if(ui.kind==='option') ui.ot='market'; $('#otStep').hidden=ui.kind==='option';
+  $$('[data-ot]').forEach(b=>b.classList.toggle('on',b.dataset.ot===ui.ot)); $$('[data-lv]').forEach(b=>b.classList.toggle('on',+b.dataset.lv===ui.lv));
+  $('#limBox').hidden=ui.ot!=='limit';
+  if(ui.ot==='limit'){
+    const P=q.price, dist=ui.limit/P-1, cur=q.cur==='USD'?'$':'€';
+    $('#limCur').textContent=cur;
+    if(document.activeElement!==$('#limIn')) $('#limIn').value=nf(ui.limit,ui.limit>=1?2:4);
+    $('#limQ').innerHTML=[.01,.02,.05,.1].map(x=>{ const v=P*(1-ui.dir*x); return `<button class="opt ${Math.abs(ui.limit-v)/P<.0005?'on':''}" data-lq="${x}">${ui.dir>0?'−':'+'}${nf(x*100,0)}${NB}%<small>${fmt(v,q.cur)}</small></button>`; }).join('');
+    $('#limTxt').innerHTML = limitNow()
+      ? `Ihr Limit liegt ${ui.dir>0?'über':'unter'} dem aktuellen Kurs von ${fmt(P,q.cur)}. Die Order wird <b>sofort ausgeführt</b>.`
+      : `${ui.dir>0?'Gekauft wird':'Leerverkauft wird'} automatisch, sobald der Kurs ${ui.dir>0?'auf':'auf'} <b>${fmt(ui.limit,q.cur)}</b> ${ui.dir>0?'fällt':'steigt'} (${pct(dist,1)} zum aktuellen Kurs). Bis dahin sind <b>${eur(ui.amt,0)}</b> vorgemerkt.`;
+  }
   if(ui.kind==='option') [0,.05,.1].forEach((x,i)=>$(['#k0','#k5','#k10'][i]).textContent=fmt(roundK(ui.dir>0?q.price*(1+x):q.price*(1-x)),q.cur));
   const eq=equity(); ui.amt=Math.max(0,Math.min(ui.amt,S.cash));
   $('#amt').value=Math.round(ui.amt).toLocaleString('de-DE'); $('#amtRange').max=Math.max(100,Math.floor(S.cash/100)*100); $('#amtRange').value=ui.amt;
@@ -1687,8 +1732,9 @@ function updateTrade(tip){
     rows.push(['Positionsgröße am Markt',eur(o.exposure)]);
     if(o.ko) rows.push(['Knock-out-Schwelle',`${fmt(o.ko,o.cur)} (${pct(o.ko/q.price-1,1)})`]);
     if(pro() && ui.kind==='lev') rows.push(['Finanzierung pro Tag',eur(o.exposure*FEE_LEV)]);
-    if(ui.sl) rows.push(['Stop-Kurs',`<span class="down">${fmt(q.price*(1-ui.dir*ui.sl),q.cur)}</span>`]);
-    if(ui.tp) rows.push(['Zielkurs',`<span class="up">${fmt(q.price*(1+ui.dir*ui.tp),q.cur)}</span>`]);
+    if(ui.ot==='limit' && !limitNow()) rows.splice(1,0,['Limit-Kurs',`<span style="color:var(--gold-p)">${fmt(ui.limit,q.cur)}</span>`],['Gültig bis',dshort2(Date.now()+ui.lv*DAY)]);
+    if(ui.sl) rows.push(['Stop-Kurs',`<span class="down">${fmt(entryPx()*(1-ui.dir*ui.sl),q.cur)}</span>`]);
+    if(ui.tp) rows.push(['Zielkurs',`<span class="up">${fmt(entryPx()*(1+ui.dir*ui.tp),q.cur)}</span>`]);
   }
   rows.push(['Wenn der Kurs 10 % steigt',`<span class="${cls(o.up)}">${sgn(o.up)}</span>`]);
   rows.push(['Wenn der Kurs 10 % fällt',`<span class="${cls(o.dn)}">${sgn(o.dn)}</span>`]);
@@ -1702,7 +1748,7 @@ function updateTrade(tip){
   if(isC && ui.kind==='lev') al.push('Krypto mit Hebel: Kurssprünge von 10 % an einem Tag sind keine Seltenheit.');
   $('#alert').hidden=!al.length; $('#alert').innerHTML=al.join('<br>');
   const go=$('#go'); go.className='cta '+(ui.dir>0?'long':'short'); go.disabled=ui.amt<100;
-  go.textContent = ui.kind==='option' ? `${o.opt==='call'?'Call':'Put'} kaufen · ${eur(o.amt,0)}` : `${ui.dir>0?'Long':'Short'} eröffnen · ${eur(o.amt,0)}`;
+  go.textContent = ui.kind==='option' ? `${o.opt==='call'?'Call':'Put'} kaufen · ${eur(o.amt,0)}` : ui.ot==='limit'&&!limitNow() ? `${ui.dir>0?'Kauf-Limit':'Verkaufs-Limit'} setzen · ${eur(o.amt,0)}` : `${ui.dir>0?'Long':'Short'} eröffnen · ${eur(o.amt,0)}`;
   if(ui.kind!=='option') drawRisk();
   if(tip) ui.tip=tip; $('#tip').textContent=TIPS[ui.tip||'long'];
 }
@@ -1715,8 +1761,13 @@ $('#sheet').addEventListener('click',e=>{
   else if(d.tenor){ ui.tenor=+d.tenor; updateTrade(); }
   else if(d.sl!=null){ ui.sl=+d.sl; ui.rR=null; updateTrade('stop'); }
   else if(d.tp!=null){ ui.tp=+d.tp; ui.rR=null; updateTrade('stop'); }
+  else if(d.ot){ ui.ot=d.ot; if(ui.ot==='limit'){ const P=Q[ui.sym].price; ui.limit=Math.round(P*(1-ui.dir*.02)*(P>=1?100:1e4))/(P>=1?100:1e4); } ui.rR=null; updateTrade('limit'); }
+  else if(d.lq){ const P=Q[ui.sym].price; ui.limit=Math.round(P*(1-ui.dir*+d.lq)*(P>=1?100:1e4))/(P>=1?100:1e4); ui.rR=null; updateTrade('limit'); }
+  else if(d.lv){ ui.lv=+d.lv; updateTrade(); }
   else if(d.q){ const v=+d.q; ui.amt=v<1?Math.floor(equity()*v/100)*100:v; updateTrade('size'); }
 });
+$('#limIn').addEventListener('input',e=>{ const v=parseFloat(e.target.value.replace(/\./g,'').replace(',','.')); if(v>0){ ui.limit=v; ui.rR=null; updateTrade(); } });
+$('#limIn').addEventListener('blur',()=>updateTrade());
 $('#amtRange').oninput=e=>{ ui.amt=+e.target.value; updateTrade('size'); };
 $('#amt').oninput=e=>{ ui.amt=+e.target.value.replace(/\D/g,'')||0; updateTrade('size'); };
 
@@ -1724,10 +1775,10 @@ $('#go').onclick=async()=>{
   const o=quote(); if(o.amt<100 || o.amt>S.cash+.01) return;
   const btn=$('#go'); btn.disabled=true;
   try{
-    const r=await api('/api/orders',{body:{sym:ui.sym,dir:ui.dir,kind:ui.kind,lev:ui.lev,mny:ui.mny,tenor:ui.tenor,sl:ui.kind==='option'?0:ui.sl,tp:ui.kind==='option'?0:ui.tp,amt:o.amt,note:$('#tNote').value}});
+    const r=await api('/api/orders',{body:{sym:ui.sym,dir:ui.dir,kind:ui.kind,lev:ui.lev,mny:ui.mny,tenor:ui.tenor,sl:ui.kind==='option'?0:ui.sl,tp:ui.kind==='option'?0:ui.tp,amt:o.amt,note:$('#tNote').value,...(ui.ot==='limit'&&ui.kind!=='option'?{limit:ui.limit,valid:ui.lv}:{})}});
     $('#tNote').value='';
     setState(r.state); closeSheets(); render(); loadLB().then(renderArena);
-    toast(`${ui.dir>0?'Long':'Short'} ${META[ui.sym].n} eröffnet · ${eur(o.amt,0)}`); showEvents(r.events);
+    toast(r.limit&&!r.limit.executed?`Limit-Order aktiv: ${ui.dir>0?'Kauf':'Leerverkauf'} ${META[ui.sym].n} bei ${fmt(ui.limit,Q[ui.sym].cur)}`:`${ui.dir>0?'Long':'Short'} ${META[ui.sym].n} eröffnet · ${eur(o.amt,0)}`); showEvents(r.events);
     coach(ui.kind==='lev'?'lev':'live');
   }catch(e){ toast(e.message); }
   finally{ btn.disabled=false; }
@@ -2195,6 +2246,7 @@ $('#rsGo').onclick=async()=>{ if(!$('#rsOk').checked) return; $('#rsGo').disable
 document.addEventListener('click',e=>{
   const t=e.target;
   const c=t.closest('[data-close]'); if(c){ c.disabled=true; api(`/api/positions/${c.dataset.close}/close`,{body:{}}).then(r=>{ setState(r.state); render(); toast(`Position geschlossen · ${sgn(r.pl)}`); coach(r.pl>=0?'profit':'loss'); showEvents(r.events); loadLB().then(renderArena); loadFunds().then(renderFunds); }).catch(err=>{ toast(err.message); c.disabled=false; }); return; }
+  const co=t.closest('[data-cancelord]'); if(co){ co.disabled=true; api(`/api/orders/${co.dataset.cancelord}`,{method:'DELETE'}).then(st=>{ setState(st.state); render(); toast('Limit-Order gelöscht, Betrag wieder frei.'); }).catch(err=>{ toast(err.message); co.disabled=false; }); return; }
   const chg_=t.closest('[data-chart]'); if(chg_){ openChart(chg_.dataset.chart); return; }
   const cb=t.closest('[data-copy]'); if(cb){ openCopy(+cb.dataset.copy); return; }
   const sc=t.closest('[data-stopcopy]'); if(sc){ if(!confirm('Kopie beenden? Alle kopierten Positionen werden zum aktuellen Kurs geschlossen.')) return; sc.disabled=true;

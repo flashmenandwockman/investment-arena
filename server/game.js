@@ -49,7 +49,8 @@ function value(p, at = 'now', navOf) {
   }
   return Math.max(p.stake + p.dir * p.units * toEur(P - p.entry, p.sym) - feesOf(p), 0);
 }
-const equity = (st, at, navOf) => st.cash + (st.copies || []).reduce((a, c) => a + c.cash, 0) + st.pos.reduce((a, p) => a + value(p, at, navOf), 0);
+// Depotwert: Bargeld + vorgemerkte Limit-Orders + Kopier-Guthaben + Positionen
+const equity = (st, at, navOf) => st.cash + (st.orders || []).reduce((a, o) => a + o.amt, 0) + (st.copies || []).reduce((a, c) => a + c.cash, 0) + st.pos.reduce((a, p) => a + value(p, at, navOf), 0);
 
 /* ---------- Abzeichen & Aktivität ---------- */
 function award(st, key, xp, events) { if (!st.badges[key]) { st.badges[key] = true; st.xp += xp; events.push({type: 'badge', key, xp}); } }
@@ -105,6 +106,51 @@ function open(st, o, navOf, opts = {}) {
   return {position: p, events};
 }
 
+/* ---------- Limit-Orders ---------- */
+// Kauf-Limit (long): ausführen, sobald der Kurs auf oder unter das Limit fällt.
+// Verkaufs-Limit (short): ausführen, sobald der Kurs auf oder über das Limit steigt.
+// Der Betrag wird beim Erteilen vorgemerkt und bei Ausführung, Löschen oder Ablauf verrechnet.
+const VALID = {1: 1, 7: 7, 30: 30};
+const reached = (o, P) => o.dir > 0 ? P <= o.limit : P >= o.limit;
+function placeLimit(st, o, navOf) {
+  const sym = o.sym, I = market.INSTRUMENTS[sym], P = px(sym), amt = Math.floor(Number(o.amt) || 0), dir = Number(o.dir) === -1 ? -1 : 1;
+  const limit = Number(o.limit), kind = o.kind === 'option' ? null : o.kind === 'lev' ? 'lev' : 'stock';
+  if (!I || P == null) throw new Error('Unbekannter Wert');
+  if (!kind) throw new Error('Limit-Orders gibt es für Aktien und Hebel, nicht für Optionen');
+  if (!(limit > 0) || Math.abs(limit / P - 1) > .5) throw new Error('Das Limit muss innerhalb von 50 % um den aktuellen Kurs liegen');
+  if (amt < 100) throw new Error('Mindesteinsatz 100 €');
+  if (amt > st.cash + 0.01) throw new Error('Nicht genug verfügbares Spielgeld');
+  if ((st.orders || []).length >= 20) throw new Error('Höchstens 20 offene Limit-Orders');
+  const days = VALID[Number(o.valid)] || 7;
+  const ord = {id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), sym, dir, kind, lev: o.lev, sl: o.sl, tp: o.tp, note: o.note, amt, limit,
+    createdTs: Date.now(), expiresTs: Date.now() + days * DAY};
+  if (kind === 'lev' && !(st.mode === 'pro' ? LEVS.pro : LEVS.easy).includes(Number(o.lev))) throw new Error('Ungültiger Hebel');
+  // Limit schon erreicht? Dann sofort zum aktuellen Kurs ausführen
+  if (reached(ord, P)) { const r = open(st, ord, navOf); r.position.limit = limit; return {executed: true, ...r}; }
+  st.cash -= amt; st.orders = st.orders || []; st.orders.push(ord);
+  st.hist.push({t: `Limit-Order: ${dir > 0 ? 'Kauf' : 'Leerverkauf'} ${I.n} bei ${limit.toLocaleString('de-DE', {maximumFractionDigits: 4})}`, ts: Date.now(), d: 'vorgemerkt', stake: amt, pl: null});
+  return {executed: false, order: ord, events: []};
+}
+function cancelLimit(st, id, why) {
+  const i = (st.orders || []).findIndex(o => o.id === id); if (i < 0) throw new Error('Order nicht gefunden');
+  const o = st.orders[i]; st.orders.splice(i, 1); st.cash += o.amt;
+  st.hist.push({t: `Limit-Order ${why || 'gelöscht'}: ${(market.INSTRUMENTS[o.sym] || {}).n || o.sym}`, ts: Date.now(), d: `${Math.round(o.amt).toLocaleString('de-DE')} € frei`, stake: o.amt, pl: null});
+  return o;
+}
+// Bei jedem Kurs-Update: erreichte Limits ausführen, abgelaufene freigeben
+function checkOrders(st, navOf) {
+  const out = [];
+  for (const o of (st.orders || []).slice()) {
+    const P = px(o.sym);
+    if (Date.now() > o.expiresTs) { cancelLimit(st, o.id, 'abgelaufen'); out.push({type: 'expired', sym: o.sym}); continue; }
+    if (P == null || !reached(o, P)) continue;
+    st.orders = st.orders.filter(x => x.id !== o.id); st.cash += o.amt;
+    try { const eqBefore = equity(st, 'now', navOf), r = open(st, o, navOf); r.position.limit = o.limit; out.push({type: 'filled', sym: o.sym, position: r.position, eqBefore}); }
+    catch (e) { out.push({type: 'failed', sym: o.sym}); }
+  }
+  return out;
+}
+
 function label(p) {
   if (p.kind === 'fund') return p.fundKind === 'guru' ? 'Großinvestor' : 'Community-Fonds';
   const I = market.INSTRUMENTS[p.sym] || {};
@@ -141,4 +187,4 @@ function check(st, navOf) {
   return events;
 }
 
-module.exports = {fresh, copyOf, open, close, check, value, equity, label, vol, bs, roundK, feesOf, BADGES, LEVS, DAY};
+module.exports = {placeLimit, cancelLimit, checkOrders, fresh, copyOf, open, close, check, value, equity, label, vol, bs, roundK, feesOf, BADGES, LEVS, DAY};
