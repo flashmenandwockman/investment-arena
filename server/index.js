@@ -10,7 +10,7 @@ const radar = require('./radar');
 const game = require('./game');
 const store = require('./store');
 const funds = require('./funds');
-const bots = require('./bots');
+const daybot = require('./daybot');
 const trcm = require('./trcm');
 const homm = require('./homm');
 const news = require('./news');
@@ -357,8 +357,8 @@ async function start() {
   market.setHeldProvider(held);
   // TRCM- und Großinvestoren-Titel: Kurse holen, aber die Marktliste nicht damit füllen
   market.setPrivateProvider(() => new Set([...trcm.symbols(), ...gurus.symbols()]));
-  bots.seed();
   homm.seed();
+  daybot.ensure();   // täglicher Test-Trader statt Beispiel-Community
   if (require.main === module) {
     await market.refresh().catch(() => {});
     radar.refresh().catch(() => {});
@@ -367,6 +367,7 @@ async function start() {
     homm.sync().catch(() => {}); setInterval(() => homm.sync().catch(() => {}), 30 * 60_000);
     news.refresh().catch(() => {}); setInterval(() => news.refresh().catch(() => {}), 240 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
+    setInterval(() => { try { daybot.ensure(); } catch (e) {} }, 30 * 60_000);
     market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);
     gurus.sync().then(() => { heldCache.t = 0; return smart.sync(); }).catch(() => {});
     setInterval(() => gurus.sync().then(() => { heldCache.t = 0; return smart.sync(); }).catch(() => {}), 12 * 3600_000);

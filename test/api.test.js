@@ -99,11 +99,12 @@ test('Rangliste und Profile', async () => {
   const c = client();
   await c('/api/auth/demo', {});
   const lb = await c('/api/leaderboard');
-  assert.ok(lb.data.rows.length >= 10, 'Beispiel-Community vorhanden');
   assert.ok(lb.data.rows.some(r => r.me));
   const bot = lb.data.rows.find(r => r.bot);
+  assert.ok(bot && /^Test-Trader/.test(bot.name), 'täglicher Test-Trader vorhanden');
   const pr = await c(`/api/profile/${bot.id}`);
-  assert.ok(pr.data.equity > 0 && pr.data.items.length > 0);
+  assert.ok(pr.data.equity > 0 && pr.data.items.length > 0, 'Test-Trader hat aus den Nachrichten gehandelt');
+  assert.ok(pr.data.items.every(i => i.kind === 'lev' || i.kind === 'stock'));
 });
 
 test('Suche nach Titeln', async () => {

@@ -64,7 +64,6 @@ Tests: `npm test`
 | `GURUS` | `0` = Großinvestoren ausschalten |
 | `DATA_DIR` | Speicherort der Datenbank (Docker: `/data`) |
 | `MARKET_OFFLINE` | `1` = nur mitgelieferte Kurse (Tests, Offline-Demo) |
-| `SEED_BOTS` | `0` = keine Beispiel-Community anlegen |
 
 ## Deployment auf www.investment-arena.com
 
@@ -156,6 +155,10 @@ Florian Homm veröffentlicht bei Free Homes täglich ein Posting (Überschrift, 
 2. Ein eigenes Free-Homes-Konto für die Arena (z. B. „Investment Arena Leser“): `FREEHOMES_FEED_USER` und `FREEHOMES_FEED_PASS` setzen. Die Arena holt sich damit bei Keycloak ein Token (Password Grant, Client `public-client` oder per `FREEHOMES_FEED_CLIENT_ID` ein eigener Client, für den der Free-Homes-Administrator **Direct Access Grants** einschalten muss).
 
 Ohne Zugang lassen sich Meldungen im Admin-Bereich (Radar-Karte → Admin) von Hand anlegen, ausblenden und löschen; dort steht auch der Knopf „Jetzt abgleichen“ und das Protokoll. Ersatzweise liest `FREEHOMES_NEWS_URL` einen RSS-, Atom- oder JSON-Feed. Bis der Zugang steht, zeigen vier Beispielbeiträge nach dem Muster der Free-Homes-Postings (Quelle „beispiel“ im Admin), wie es aussieht; der erste echte Abgleich entfernt sie automatisch.
+
+## Täglicher Test-Trader
+
+Statt einer festen Beispiel-Community legt der Server jeden Tag ein neues Bot-Konto „Test-Trader TT.MM.“ an. Es liest die Schlagzeilen unter „Aktuell“ und die Postings von Florian Homm, erkennt die genannten Titel, entscheidet nach dem Ton der Meldung zwischen Long und Short, hebelt mit 2× bis 5×, setzt Stop-Loss (10 %) und Kursziel (20 %) und begründet jeden Trade mit der Schlagzeile. Gewinne ab 6 % nimmt es mit, nach 20 Stunden schließt es alles. Fehlen Titel in den Nachrichten, folgt es den größten Tagesbewegungen. Test-Trader älter als 14 Tage werden gelöscht; Konten der früheren Beispiel-Community werden beim Start entfernt.
 
 ## Copy Trading
 
@@ -252,14 +255,14 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   trcm.js      TRCM Portfolio (Admin-Pflege, Protokoll)
   homm.js      Postings von Florian Homm aus Free Homes (Import, Mitglieder-Sperre, Admin-Pflege)
   news.js      Aktuell: Nachrichten mit Marktwirkung aus RSS und Finnhub, alle 240 Minuten
-  popular.js   Beliebteste Titel des Tages für die Kursübersicht
+  popular.js   Beliebteste Titel des Tages für die Kursübersicht (ohne Daten: Top des Quartals)
   copy.js      Copy Trading und Kennzahlen (Rendite, Risiko, Kopierer)
   arenas.js    Private Arenen, Arena-Depots, Feed, Gruppen-Liga
   talents.js   Scouting & Talents (Score, Stufen, Vorstellungen, Scouting-Board)
   gurus.js     Großinvestoren aus SEC-13F-Meldungen
   market.js    Kurse (Finnhub, Yahoo, ccxt)
   radar.js     Smart-Money-Daten (Finnhub)
-  bots.js      Beispiel-Community für die Demo
+  daybot.js    Täglicher Test-Trader: handelt aus den Tagesnachrichten (Long/Short, Hebel, Stop, Ausstieg)
 public/        App (eine HTML-Datei, mobil optimiert), Bilder, Tonspuren
 test/          API-Tests (node --test)
 ```

@@ -1178,7 +1178,7 @@ const META = {
   'ALV.DE':{n:'Allianz',t:'Aktie',g:'de',s:'ALV'}, 'DBK.DE':{n:'Deutsche Bank',t:'Aktie',g:'de',s:'DBK'},
   '^GDAXI':{n:'DAX',t:'Index',g:'idx',s:'DAX'}, '^GSPC':{n:'S&P 500',t:'Index',g:'idx',s:'SPX'},
   'GC=F':{n:'Gold',t:'Rohstoff',g:'cmd',s:'XAU'}, 'CL=F':{n:'Öl (WTI)',t:'Rohstoff',g:'cmd',s:'OIL'},
-  'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'},
+  'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'}, 'URTH':{n:'MSCI World ETF',t:'ETF',g:'etf',s:'URTH'},
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'}
 };
@@ -1467,22 +1467,23 @@ function marketRow(s){
 }
 // Übersicht: die heute beliebtesten Titel der Arena je Gruppe (Positionen, Orders, Watchlists, Aufrufe aller Mitglieder);
 // bei Gleichstand die größte Tagesbewegung. 3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte.
+const qtr = s => { const h=(Q[s]&&Q[s].hist)||[]; return h.length>5 ? h.at(-1)/h[0]-1 : 0; };   // Entwicklung über das Quartal (rund 60 Handelstage)
 function compactGroups(){
-  const pop=s=>POP[s]||0, rank=(a,b)=>pop(b)-pop(a) || Math.abs(chg(b))-Math.abs(chg(a));
-  const of=(test,n)=>Object.keys(META).filter(s=>Q[s]&&test(META[s])).sort(rank).slice(0,n);
-  return [['Aktien','us',of(m=>m.t==='Aktie',3)],['Rohstoffe','cmd',of(m=>m.g==='cmd',2)],['ETFs','etf',of(m=>m.t==='ETF',2)],['Krypto','crypto',of(m=>m.g==='crypto',2)]];
+  const pop=s=>POP[s]||0, rank=(a,b)=>pop(b)-pop(a) || qtr(b)-qtr(a);
+  const of=(test,n)=>{ const l=Object.keys(META).filter(s=>Q[s]&&test(META[s])).sort(rank).slice(0,n); return [l, l.some(pop)?'heute beliebt':'Top im Quartal']; };
+  return [['Aktien','us',...of(m=>m.t==='Aktie',3)],['Rohstoffe','cmd',...of(m=>m.g==='cmd',2)],['ETFs','etf',...of(m=>m.t==='ETF',2)],['Krypto','crypto',...of(m=>m.g==='crypto',2)]];
 }
 function renderMarket(){
   if(!ui.allQuotes){
     $('#filters').innerHTML='';
-    $('#market').innerHTML=compactGroups().map(([l,g,syms])=>`<div class="grp"><span>${l} · heute beliebt</span><button class="link" data-f="${g}">Mehr ›</button></div>`+syms.map(marketRow).join('')).join('')
+    $('#market').innerHTML=compactGroups().map(([l,g,syms,lbl])=>`<div class="grp"><span>${l} · ${lbl}</span><button class="link" data-f="${g}">Mehr ›</button></div>`+syms.map(marketRow).join('')).join('')
       +`<div class="grp" style="justify-content:center;padding-top:16px"><button class="link" data-f="all">Alle Kurse und Filter ›</button></div>`;
     return;
   }
   $('#filters').innerHTML = FILTERS.map(([k,l])=>`<button class="chip ${ui.filter===k?'on':''}" data-f="${k}">${l}</button>`).join('');
   const W=S.watch||[], list=Object.keys(META).filter(s=>Q[s] && (!META[s].x || mine(s)) && (ui.filter==='all'||(ui.filter==='watch'?W.includes(s):META[s].g===ui.filter)));
   if(ui.filter==='watch' && !list.length){ $('#market').innerHTML='<div class="empty">Noch nichts auf Ihrer Watchlist.<br>Öffnen Sie einen Titel und tippen Sie oben auf ☆.</div>'; return; }
-  $('#market').innerHTML = list.map(marketRow).join('');
+  $('#market').innerHTML = list.map(marketRow).join('')+`<div class="grp" style="justify-content:center;padding-top:16px"><button class="link" data-f="compact">‹ Weniger anzeigen</button></div>`;
 }
 /* ---------- Aktuell: Nachrichten mit Wirkung auf Kurse und Wirtschaft, dazu der Beitrag aus Free Homes ---------- */
 let NW = null;
@@ -1498,7 +1499,7 @@ function renderNews(){
   const next=!ui.allNews&&n[2];
   let h='';
   if(rows.length) h+=`<div class="newsbox">${rows.join('')}${next?`<div class="nw blurtxt" aria-hidden="true"><small>${esc(next.src)} · ${agoNews(next.t)}</small><b>${esc(next.h)}</b></div>`:''}</div>`;
-  if(!ui.allNews&&n.length>2) h+=`<p style="text-align:center;margin:10px 0 0"><button class="link" id="moreNews" style="font-size:13px">Mehr aktuelle News laden ›</button></p>`;
+  if(n.length>2) h+=`<p style="text-align:center;margin:10px 0 0"><button class="link" id="moreNews" style="font-size:13px">${ui.allNews?'‹ Weniger anzeigen':'Mehr aktuelle News laden ›'}</button></p>`;
   $('#news').innerHTML=h||'<div class="empty">Nachrichten werden geladen …</div>';
   $('#newsAsof').textContent=NW&&NW.updatedAt?`Stand ${new Date(NW.updatedAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · alle 4 Std.`:'';
 }
@@ -2414,7 +2415,7 @@ document.addEventListener('click',e=>{
   const rcs=t.closest('[data-radar="__smart"]'); if(rcs){ openSmart(); return; }
   const rch=t.closest('[data-radar^="__homm:"]'); if(rch){ openHomm(+rch.dataset.radar.slice(7)); return; }
   const hr=t.closest('[data-homm]'); if(hr){ openHomm(+hr.dataset.homm); return; }
-  if(t.closest('#moreNews')){ ui.allNews=true; renderNews(); return; }
+  if(t.closest('#moreNews')){ ui.allNews=!ui.allNews; renderNews(); if(!ui.allNews) $('#news').scrollIntoView({block:'start',behavior:'smooth'}); return; }
   if(t.closest('#toQuotes')){ const e=$('#market'); window.scrollTo({top:e.getBoundingClientRect().top+window.scrollY-140,behavior:'smooth'}); return; }
   const rc=t.closest('[data-radar]'); if(rc){ openTrade(rc.dataset.radar); ui.tip=rc.dataset.tip; $('#tip').textContent=TIPS[rc.dataset.tip]; coach(rc.dataset.tip); return; }
   const ex=t.closest('[data-explain]'); if(ex){ ui.tip=ex.dataset.explain; $('#tip').textContent=TIPS[ui.tip]; speakKey(ui.tip,$('#tipBox')); $('#tipBox').scrollIntoView({behavior:'smooth',block:'center'}); return; }
