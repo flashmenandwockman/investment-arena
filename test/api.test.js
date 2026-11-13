@@ -376,3 +376,61 @@ test('Limit-Orders: vormerken, ausführen, löschen, ablaufen', async () => {
   st2.orders[0].expiresTs = Date.now() - 1; game.checkOrders(st2, funds.navOf);
   assert.strictEqual(st2.orders.length, 0); assert.strictEqual(st2.cash, 100000);
 });
+
+test('Florian-Homm-Postings: Radar mischt sie unter, Inhalt nur für Mitglieder', async () => {
+  const db = require('../server/db');
+  const homm = require('../server/homm');
+  const admin = client(), member = client(), guest = client();
+  await admin('/api/auth/register', {name: 'Redaktion', email: 'red@artvel.de', password: 'geheim1234'});
+  await member('/api/auth/register', {name: 'Mitglied2', email: 'm2@fh.de', password: 'geheim1234'});
+  await guest('/api/auth/demo', {});
+  assert.strictEqual((await admin('/api/admin/homm', {title: 'Test'})).status, 403, 'ohne Admin-Rolle keine Pflege');
+  db.prepare("UPDATE users SET role = 'admin' WHERE email = ?").run('red@artvel.de');
+  db.prepare("UPDATE users SET provider = 'freehomes', provider_sub = 'fh-2' WHERE email = ?").run('m2@fh.de');
+
+  const bad = await admin('/api/admin/homm', {title: 'ab'});
+  assert.strictEqual(bad.status, 400, 'Überschrift zu kurz');
+  const a = await admin('/api/admin/homm', {title: 'Cboe Put Volume Hits an All-Time High', teaser: 'Rekord bei Put-Kontrakten.', body: 'Ein Rekord von 11,23 Millionen Put-Kontrakten. NVIDIA bleibt im Blick.', syms: 'NVDA, $AAPL', url: 'https://app.free-homes.de/module/florian-homm/post/1'});
+  assert.strictEqual(a.status, 200);
+  assert.strictEqual(a.data.admin, true);
+  const mine = a.data.items.find(i => i.title === 'Cboe Put Volume Hits an All-Time High');
+  assert.deepStrictEqual(mine.syms, ['NVDA', 'AAPL']);
+  assert.ok(mine.bb.startsWith('https://homm-longshort.com'), 'Kopplung an den Börsenbrief');
+
+  // Gast: sieht, dass es das Posting gibt, aber keinen Inhalt
+  const g = await guest('/api/radar');
+  const gi = g.data.homm.items.find(i => i.id === mine.id);
+  assert.strictEqual(g.data.homm.member, false);
+  assert.strictEqual(gi.locked, true);
+  assert.strictEqual(gi.title, undefined, 'kein Titel für Nicht-Mitglieder');
+  assert.strictEqual(gi.body, undefined);
+  assert.match(gi.kick, /Florian Homm zu NVIDIA/);
+  const gs = await guest('/api/radar/NVDA');
+  assert.strictEqual(gs.data.homm[0].locked, true, 'auch im Smart-Money-Feld je Titel gesperrt');
+  assert.strictEqual((await guest(`/api/homm/${mine.id}/image`)).status, 403);
+
+  // Free-Homes-Mitglied: Volltext im Radar und je Titel
+  const mr = await member('/api/radar');
+  const mi = mr.data.homm.items.find(i => i.id === mine.id);
+  assert.strictEqual(mi.locked, false);
+  assert.strictEqual(mi.title, 'Cboe Put Volume Hits an All-Time High');
+  assert.strictEqual((await member('/api/radar/AAPL')).data.homm[0].body.includes('Put-Kontrakten'), true);
+  assert.strictEqual((await member('/api/admin/homm', {title: 'Nope'})).status, 403, 'Mitglied darf nicht pflegen');
+
+  // Ausblenden, Löschen
+  await admin(`/api/admin/homm/${mine.id}`, {hidden: true}, 'PATCH');
+  assert.ok(!(await guest('/api/radar')).data.homm.items.some(i => i.id === mine.id), 'ausgeblendet');
+  assert.strictEqual((await admin(`/api/admin/homm/${mine.id}`, undefined, 'DELETE')).status, 200);
+  assert.strictEqual((await admin('/api/admin/homm/sync', {})).status, 200, 'Abgleich ohne Zugang meldet Fehler, bricht aber nicht');
+
+  // Import: Antwort der Free-Homes-App und RSS werden erkannt
+  const post = homm.fromPost({postId: 77, fullName: 'Florian Homm', postingTime: 1763000000, title: 'China Is Electrifying Another Source of Oil Demand', contentText: 'English text about Tesla.', contentTextGermanTranslation: 'Neuenergiefahrzeuge machten im September 50,3 % aus. Tesla bleibt vorn.', videoCloudflareIds: ['abc'], imageIdsAndSignedLinks: [{id: 5, link: 'https://example.invalid/x.jpg'}], newsSubCategoryName: 'general'});
+  assert.strictEqual(post.ext, 'fh-77');
+  assert.strictEqual(post.kind, 'video');
+  assert.deepStrictEqual(post.syms, ['TSLA']);
+  assert.strictEqual(post.url, 'https://app.free-homes.de/module/florian-homm/post/77');
+  assert.strictEqual(new Date(post.at).getUTCFullYear(), 2025);
+  const rss = homm.parseFeed('<rss><channel><item><title>Zu Bitcoin und $NVDA</title><link>https://a/b</link><guid>g1</guid><pubDate>Mon, 10 Nov 2026 10:00:00 GMT</pubDate><description><![CDATA[<p>Text</p>]]></description></item></channel></rss>');
+  assert.strictEqual(rss.length, 1);
+  assert.deepStrictEqual(rss[0].syms.sort(), ['BTC/EUR', 'NVDA']);
+});

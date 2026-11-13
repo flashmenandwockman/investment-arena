@@ -12,6 +12,7 @@ const store = require('./store');
 const funds = require('./funds');
 const bots = require('./bots');
 const trcm = require('./trcm');
+const homm = require('./homm');
 const copy = require('./copy');
 const gurus = require('./gurus');
 const arenas = require('./arenas');
@@ -112,7 +113,7 @@ function profile(id) {
 async function api(req, res, url) {
   const m = req.method, p = url.pathname;
   try {
-    if (p === '/api/config') return send(res, 200, {version: pkg.version, startCash: config.startCash, freehomes: config.freehomes.enabled});
+    if (p === '/api/config') return send(res, 200, {version: pkg.version, startCash: config.startCash, freehomes: config.freehomes.enabled, boersenbrief: config.boersenbriefUrl});
     if (p === '/api/me') return send(res, 200, {user: publicUser(auth.currentUser(req))});
     if (p === '/api/auth/register' && m === 'POST') { auth.throttle('reg:' + req.socket.remoteAddress); const id = auth.register(await body(req)); auth.startSession(res, id); return send(res, 200, {user: publicUser(qUser.get(id))}); }
     if (p === '/api/auth/login' && m === 'POST') { const b = await body(req); auth.throttle('login:' + req.socket.remoteAddress); const id = auth.login(b); auth.startSession(res, id); return send(res, 200, {user: publicUser(qUser.get(id))}); }
@@ -130,12 +131,28 @@ async function api(req, res, url) {
     if (p === '/api/quotes') return send(res, 200, {...market.visible(), ...market.status()});
     if (p === '/api/search') { requireUser(req); limit(req, 150, ':s'); /* Suche läuft lokal, darf öfter */ return send(res, 200, {results: await market.search(url.searchParams.get('q'))}); }
     if (/^\/api\/instrument\/[A-Za-z]{1,5}(\.[A-Za-z])?$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
-    if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, {sym: p.split('/').pop().toUpperCase(), radar: await radar.one(p.split('/').pop().toUpperCase())}); }
+    if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { const u = requireUser(req); limit(req); const sym = p.split('/').pop().toUpperCase(); return send(res, 200, {sym, radar: await radar.one(sym), homm: homm.forSymbol(sym, u)}); }
     if (p === '/api/chart') { limit(req); return send(res, 200, await market.chart(url.searchParams.get('sym') || '', url.searchParams.get('r'))); }
     if (/^\/api\/sentiment\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, sentiment(decodeURIComponent(p.slice('/api/sentiment/'.length))));
     if (p === '/api/smart') return send(res, 200, smart.overview());
     if (/^\/api\/smart\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, smart.forSymbol(decodeURIComponent(p.slice('/api/smart/'.length))));
-    if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status()});
+    if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status(), homm: homm.view(auth.currentUser(req))});
+    // Postings von Florian Homm aus Free Homes: für alle sichtbar, dass es sie gibt; Inhalt nur für Mitglieder
+    if (p === '/api/homm' && m === 'GET') return send(res, 200, homm.view(auth.currentUser(req), 40));
+    if (/^\/api\/homm\/\d+\/image$/.test(p)) {
+      const file = homm.imageFile(Number(p.split('/')[3]), auth.currentUser(req));
+      res.writeHead(200, {'Content-Type': 'image/jpeg', 'Cache-Control': 'private, max-age=3600'}); return fs.createReadStream(file).pipe(res);
+    }
+    if (p.startsWith('/api/admin/homm')) {
+      const u = requireUser(req), b = m === 'GET' || m === 'DELETE' ? {} : await body(req), id = Number(p.split('/')[4]);
+      if (p === '/api/admin/homm' && m === 'POST') { limit(req); homm.add(u, b); }
+      else if (p === '/api/admin/homm/sync' && m === 'POST') { if (!trcm.isAdmin(u)) throw Object.assign(new Error('Nur für Admins'), {status: 403}); limit(req, 5, 'hommsync'); await homm.sync(u); }
+      else if (/^\/api\/admin\/homm\/\d+$/.test(p) && m === 'PATCH') homm.update(u, id, b);
+      else if (/^\/api\/admin\/homm\/\d+$/.test(p) && m === 'DELETE') homm.remove(u, id);
+      else if (!trcm.isAdmin(u)) throw Object.assign(new Error('Nur für Admins'), {status: 403});
+      else return send(res, 404, {error: 'Unbekannte Route'});
+      return send(res, 200, homm.view(u, 40));
+    }
     if (p === '/api/audio') {
       const dir = path.join(PUBLIC, 'audio');
       return send(res, 200, {files: fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => /\.(mp3|m4a)$/.test(f)) : []});
@@ -338,11 +355,13 @@ async function start() {
   // TRCM- und Großinvestoren-Titel: Kurse holen, aber die Marktliste nicht damit füllen
   market.setPrivateProvider(() => new Set([...trcm.symbols(), ...gurus.symbols()]));
   bots.seed();
+  homm.seed();
   if (require.main === module) {
     await market.refresh().catch(() => {});
     radar.refresh().catch(() => {});
     setInterval(() => tick().catch(() => {}), 30_000);
     setInterval(() => radar.refresh().catch(() => {}), 30 * 60_000);
+    homm.sync().catch(() => {}); setInterval(() => homm.sync().catch(() => {}), 30 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
     market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);
     gurus.sync().then(() => { heldCache.t = 0; return smart.sync(); }).catch(() => {});

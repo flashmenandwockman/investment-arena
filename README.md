@@ -13,6 +13,7 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
 | **Märkte** | 19 Werte als feste Auswahl (US- und DAX-Aktien, DAX, S&P 500, Gold, 6 Kryptowährungen) plus **Suche nach jeder US-Aktie und jedem US-ETF**. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
+| **Florian Homm aus Free Homes** | Die täglichen Postings und das Wochenvideo von Florian Homm aus Free Homes, untergemischt in die Radar-Karten und im Smart-Money-Feld je Titel. **Inhalt, Chart und Video nur für Free-Homes-Mitglieder**, alle anderen sehen eine unscharfe Karte mit Schloss. Jede Meldung verweist auf den Homm Long Short Börsenbrief |
 | **Kurs-Charts** | Zeiträume 24h, Woche, Monat, Jahr und Max (5 Jahre); beim Darüberfahren oder Tippen erscheinen Kurs, Veränderung und Zeitpunkt |
 | **Anleger kopieren** | Copy Trading wie bei Social-Trading-Plattformen: Trader der Arena mit Rendite (Woche, Monat, gesamt), Risikowert 1–7 und Zahl der Kopierer. Beim Kopieren werden die offenen Positionen anteilig übernommen und jeder neue Trade sowie jedes Schließen automatisch nachgebildet |
 | **Großinvestoren** | Depots bekannter Investoren (Buffett, Ackman, Dalio, Druckenmiller u. a.) aus den öffentlichen 13F-Meldungen an die SEC, als kopierbares Depot mit Anteilswert |
@@ -54,6 +55,9 @@ Tests: `npm test`
 | `FREEHOMES_CLIENT_ID` / `FREEHOMES_CLIENT_SECRET` | Aktiviert „Mit Free Homes anmelden“ (siehe unten) |
 | `FREEHOMES_ISSUER` | Standard: `https://keycloak.free-homes.de/realms/freehomes` |
 | `ADMIN_EMAILS` | Kommagetrennte E-Mail-Adressen, die beim Login über Free Homes (bestätigte Adresse) automatisch Admin werden |
+| `FREEHOMES_FEED_TOKEN` oder `FREEHOMES_FEED_USER` / `FREEHOMES_FEED_PASS` | Zugang, mit dem die Arena die Postings von Florian Homm aus der Free-Homes-App liest (siehe unten) |
+| `FREEHOMES_NEWS_URL` | Ersatzweise ein RSS-, Atom- oder JSON-Feed mit den Postings |
+| `BOERSENBRIEF_URL` | Standardlink zur Vertiefung an jeder Meldung (Standard: homm-longshort.com) |
 | `SEC_USER_AGENT` | Kennung für Abrufe bei der SEC. Die SEC verlangt Name und Kontakt-E-Mail, z. B. `Investment Arena kontakt@ihre-domain.de` |
 | `GURUS` | `0` = Großinvestoren ausschalten |
 | `DATA_DIR` | Speicherort der Datenbank (Docker: `/data`) |
@@ -136,6 +140,21 @@ Im Bereich **Arena → Talente** steht die Nachricht von Florian Homm (Text in `
 - **Scouting-Board** für Admins: Vorstellungen mit Kennzahlen, Status (Neu, Gesichtet, Gespräch, Abgeschlossen, Abgesagt) und internen Notizen. Status „Gespräch“ zeigt dem Mitglied die Stufe „Pitch“.
 - **Pitch-Day:** nach Quartalsende, die Shortlist schließt am letzten Tag des Quartals.
 
+## Florian Homm aus Free Homes
+
+Florian Homm veröffentlicht bei Free Homes täglich ein Posting (Überschrift, Chart, deutscher Text, Quelle) und einmal die Woche ein Video. Die Arena übernimmt diese Beiträge alle 30 Minuten und mischt sie in das Smart-Money-Radar: als Karte zwischen Insider-, Analysten- und Großinvestoren-Signalen und im Smart-Money-Feld jedes Titels, der im Posting vorkommt (erkannt über `$NVDA`-Kürzel und bekannte Namen wie NVIDIA, SAP, DAX, Bitcoin).
+
+**Sperre wie beim TRCM Portfolio:** Wer nicht über Free Homes angemeldet ist, sieht nur, dass es ein Posting gibt, mit Datum und Titelbezug („Florian Homm zu NVIDIA“), dazu eine unscharfe Karte mit Schloss und den Knopf „Mit Free Homes anmelden“. Überschrift, Text, Chart und Video werden Nicht-Mitgliedern gar nicht erst vom Server geliefert. Chart-Bilder legt der Server lokal unter `DATA_DIR/homm/` ab und liefert sie nur an Mitglieder aus (`/api/homm/:id/image`), weil die Bild-Links von Free Homes signiert sind und ablaufen.
+
+**Kopplung an den Börsenbrief:** Jede Meldung trägt den Kasten „Vertiefung: Homm Long Short Börsenbrief“ mit Link (`BOERSENBRIEF_URL`, je Meldung im Admin überschreibbar).
+
+**Quelle:** Die Free-Homes-App liefert die Beiträge über `POST /api/getRecentNews` (Kategorie `florian-homm`, Felder `title`, `contentText`, `contentTextGermanTranslation`, `imageIdsAndSignedLinks`, `videoCloudflareIds`, `postingTime`). Der Aufruf braucht ein Keycloak-Token. Zwei Wege:
+
+1. Free Homes stellt der Arena einen festen Zugangsschlüssel aus: `FREEHOMES_FEED_TOKEN` setzen.
+2. Ein eigenes Free-Homes-Konto für die Arena (z. B. „Investment Arena Leser“): `FREEHOMES_FEED_USER` und `FREEHOMES_FEED_PASS` setzen. Die Arena holt sich damit bei Keycloak ein Token (Password Grant, Client `public-client` oder per `FREEHOMES_FEED_CLIENT_ID` ein eigener Client, für den der Free-Homes-Administrator **Direct Access Grants** einschalten muss).
+
+Ohne Zugang lassen sich Meldungen im Admin-Bereich (Radar-Karte → Admin) von Hand anlegen, ausblenden und löschen; dort steht auch der Knopf „Jetzt abgleichen“ und das Protokoll. Ersatzweise liest `FREEHOMES_NEWS_URL` einen RSS-, Atom- oder JSON-Feed. In der Offline-Demo zeigen zwei als „Beispiel“ gekennzeichnete Platzhalter, wie die Karten aussehen.
+
 ## Copy Trading
 
 Im Bereich **Entdecken** stehen unter „Anleger kopieren“ die Trader der Arena, sortierbar nach Beliebtheit (Kopierer), Rendite im Monat, Rendite der Woche und geringem Risiko.
@@ -199,7 +218,9 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | GET | `/api/config`, `/api/me` | Konfiguration, angemeldeter Nutzer |
 | POST | `/api/auth/register`, `/api/auth/login`, `/api/auth/demo`, `/api/auth/logout` | Anmeldung |
 | GET | `/api/auth/freehomes/start`, `/api/auth/freehomes/callback` | Login über Free Homes |
-| GET | `/api/quotes`, `/api/radar` | Kurse, Smart-Money-Radar |
+| GET | `/api/quotes`, `/api/radar` | Kurse, Smart-Money-Radar (mit `homm`: Postings von Florian Homm, Inhalt nur für Mitglieder) |
+| GET | `/api/homm`, `/api/homm/:id/image` | Alle Postings von Florian Homm, Chart-Bild (nur Mitglieder) |
+| POST/PATCH/DELETE | `/api/admin/homm[/:id]`, `/api/admin/homm/sync` | Meldungen pflegen, Abgleich mit Free Homes anstoßen (nur Admins) |
 | GET/PATCH | `/api/state` | Spielstand, Modus, Folgen |
 | POST | `/api/orders`, `/api/positions/:id/close` | Order eröffnen, Position schließen |
 | GET | `/api/leaderboard`, `/api/profile/:id` | Rangliste, Trader-Profil |
@@ -226,6 +247,7 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   game.js      Orders, Bewertung, Stop-Loss/Knock-out/Verfall, Abzeichen
   funds.js     Community-Fonds und Anteilswerte
   trcm.js      TRCM Portfolio (Admin-Pflege, Protokoll)
+  homm.js      Postings von Florian Homm aus Free Homes (Import, Mitglieder-Sperre, Admin-Pflege)
   copy.js      Copy Trading und Kennzahlen (Rendite, Risiko, Kopierer)
   arenas.js    Private Arenen, Arena-Depots, Feed, Gruppen-Liga
   talents.js   Scouting & Talents (Score, Stufen, Vorstellungen, Scouting-Board)

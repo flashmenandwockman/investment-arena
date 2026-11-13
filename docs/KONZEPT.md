@@ -85,6 +85,8 @@ Die App hat fünf Bereiche im Menü unten:
 - **Analystenkonsens** mit Florians Hinweis bei großer Einigkeit
 - **Quartalszahlen**, ungewöhnliches Volumen, Schlagzeilen
 
+**Florian Homm aus Free Homes:** Seine täglichen Postings (Überschrift, Chart, deutscher Text) und das Wochenvideo werden alle 30 Minuten aus Free Homes übernommen und ins Radar gemischt: als Karte zwischen den Signalen und im Smart-Money-Feld jedes genannten Titels. Für alle sichtbar ist nur, dass es ein Posting gibt, mit Datum und Titelbezug. Überschrift, Text, Chart und Video sehen nur Free-Homes-Mitglieder, alle anderen eine unscharfe Karte mit Schloss und „Mit Free Homes anmelden“, wie beim TRCM Portfolio. Jede Meldung trägt den Verweis „Vertiefung im Homm Long Short Börsenbrief“.
+
 *Options-Flow, Dark Pool und Kongress-Trades (z. B. Unusual Whales) sind nicht enthalten: Die Anzeige in einer öffentlichen App braucht dort eine Enterprise-Lizenz (ab etwa 625–750 $ im Monat).*
 
 ### Smart-Money-Radar
@@ -262,8 +264,8 @@ Das Besondere der Arena: Die besten Investoren und Gruppen können sich beim **A
 
 | Baustein | Rolle in der Arena |
 |---|---|
-| **Free Homes** | Login, Zugang zu den Titeln des TRCM Portfolios, Voraussetzung für die Talent-Wertung, Preis (Free-Homes-Abo) |
-| **Homm Long Short Börsenbrief** | Verweis im TRCM Portfolio, Preis (Abo), Hintergründe und Analysen |
+| **Free Homes** | Login, Zugang zu den Titeln des TRCM Portfolios und zu den Postings von Florian Homm im Radar, Voraussetzung für die Talent-Wertung, Preis (Free-Homes-Abo) |
+| **Homm Long Short Börsenbrief** | Verweis im TRCM Portfolio und an jedem Posting von Florian Homm, Preis (Abo), Hintergründe und Analysen |
 | **Short-Selling-Kurs / Long & Short Workshop** | Hauptpreis des Monats |
 | **Analystenteam von Florian Homm** | TRCM Portfolio, Scouting & Talents, Pitch-Day |
 | **Partner und Sponsoren** | zusätzliche Preise (in Vorbereitung) |
@@ -294,6 +296,7 @@ Das Besondere der Arena: Die besten Investoren und Gruppen können sich beim **A
 - [ ] Rechtliche Prüfung: Anzeige der TRCM-Titel und der Großinvestoren-Depots (mögliche Einordnung als Anlageempfehlung)
 - [ ] Texte und Nachricht von Florian Homm freigeben, Tonspuren einsprechen
 - [ ] Free-Homes-Login freischalten (Zugang bei Free Homes einrichten lassen)
+- [ ] Zugang zu den Postings von Florian Homm bei Free Homes einrichten (fester Schlüssel oder Lesekonto mit Direct Access Grants)
 - [ ] Datensicherung der Datenbank einrichten
 - [ ] Teilnahmebedingungen für die Preise festlegen (Aufteilung, Verlosung, Partnerpreise)
 

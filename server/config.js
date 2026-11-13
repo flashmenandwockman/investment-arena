@@ -19,6 +19,19 @@ module.exports = {
   sessionDays: 30,
   demoUserDays: 7,
   // Login über Free Homes (Keycloak, OpenID Connect). Aktiv, sobald FREEHOMES_CLIENT_ID gesetzt ist.
+  // Postings von Florian Homm aus Free Homes (siehe server/homm.js)
+  freehomesFeed: {
+    base: env('FREEHOMES_APP_URL', 'https://app.free-homes.de').replace(/\/$/, ''),
+    category: env('FREEHOMES_FEED_CATEGORY', 'florian-homm'),
+    author: env('FREEHOMES_FEED_AUTHOR', 'homm').toLowerCase(),   // nur Beiträge dieses Autors, leer = alle der Kategorie
+    token: env('FREEHOMES_FEED_TOKEN', ''),                        // fester Zugangsschlüssel (Bearer), falls Free Homes einen ausstellt
+    user: env('FREEHOMES_FEED_USER', ''),                          // oder: Free-Homes-Konto, mit dem die Arena die Postings liest
+    pass: env('FREEHOMES_FEED_PASS', ''),
+    clientId: env('FREEHOMES_FEED_CLIENT_ID', 'public-client'),
+    clientSecret: env('FREEHOMES_FEED_CLIENT_SECRET', ''),
+  },
+  freehomesNewsUrl: env('FREEHOMES_NEWS_URL', ''),                 // ersatzweise ein RSS/Atom/JSON-Feed
+  boersenbriefUrl: env('BOERSENBRIEF_URL', 'https://homm-longshort.com/'),
   freehomes: {
     issuer: env('FREEHOMES_ISSUER', 'https://keycloak.free-homes.de/realms/freehomes'),
     clientId: env('FREEHOMES_CLIENT_ID', ''),

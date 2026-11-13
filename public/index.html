@@ -557,6 +557,20 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 .brand{gap:4px} .brand span{line-height:1.2}
 /* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
 @media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spk{display:none} }
+/* Postings von Florian Homm aus Free Homes */
+.rc.homm{border-color:var(--gold);background:linear-gradient(160deg,#1e2440,#0d1226)} .rc.homm .kick{color:var(--gold-l)}
+.blurtxt{filter:blur(5px);user-select:none;pointer-events:none;opacity:.8}
+.hn{display:block;width:100%;text-align:left;padding:12px 0;border-top:1px solid var(--line);background:none;border-left:0;border-right:0;border-bottom:0;color:var(--text)}
+.hn:first-of-type{border-top:0} .hn b{display:block;font-size:14.5px;line-height:1.35} .hn small{display:block;color:var(--muted);font-size:12px;margin-top:3px} .hn .kk{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--gold-l);margin-bottom:4px}
+.hpost .kick{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-l)}
+.hpost h3{font-family:var(--serif);font-weight:400;font-size:23px;margin:6px 0 4px;line-height:1.25}
+.hpost .meta{font-size:12.5px;color:var(--muted)} .hpost img{display:block;width:100%;border-radius:14px;margin:14px 0 4px;background:#fff}
+.hpost .txt{font-size:14.5px;line-height:1.6;white-space:pre-line;margin-top:12px} .hpost .txt.blurtxt{white-space:normal}
+.hpost .vid{margin-top:14px;padding:14px;border-radius:14px;border:1px solid var(--line-gold);background:rgba(198,164,108,.06);font-size:13.5px}
+.bbbox{margin-top:18px;padding:16px;border-radius:16px;background:linear-gradient(160deg,#18233f,#0b1126);border:1px solid var(--gold)}
+.bbbox .kick{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-l)} .bbbox b{display:block;font-size:15px;margin-top:6px} .bbbox p{margin:6px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
+.bbbox a{display:inline-block;margin-top:10px;font-size:13.5px;font-weight:600;color:var(--gold-p)}
+.hadm{padding:10px 0;border-top:1px solid var(--line);font-size:13px;display:flex;gap:10px;align-items:flex-start} .hadm span{flex:1;min-width:0} .hadm small{display:block;color:var(--muted);font-size:11.5px} .hadm button{font-size:12px;padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text)}
 </style>
 </head>
 <body>
@@ -1084,6 +1098,34 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
   </div>
 </section>
 
+<!-- Postings von Florian Homm aus Free Homes -->
+<section class="sheet" id="hommSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Aus Free Homes</span><h3>Florian Homm</h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div id="hmBody"></div>
+    <div class="admin" id="hmAdmin" hidden>
+      <span class="kick">Admin</span><h4>Abgleich mit Free Homes</h4>
+      <p class="fine" id="hmSync" style="margin-top:6px"></p>
+      <button class="btn2" id="hmSyncGo">Jetzt abgleichen</button>
+      <h4 style="margin-top:30px">Meldung von Hand anlegen</h4>
+      <div class="step"><label>Überschrift</label><input class="inp" id="haTitle" maxlength="160"></div>
+      <div class="step"><label>Kurzfassung für die Karte</label><textarea class="inp" id="haTeaser" rows="2" maxlength="400"></textarea></div>
+      <div class="step"><label>Text</label><textarea class="inp" id="haBody" rows="5" maxlength="6000"></textarea></div>
+      <div class="step"><label>Betroffene Titel (Kürzel, mit Komma)</label><input class="inp" id="haSyms" placeholder="z. B. NVDA, SAP.DE"></div>
+      <div class="step"><label>Datum (leer = jetzt)</label><input class="inp" id="haDate" type="datetime-local"></div>
+      <div class="step"><label>Link zum Beitrag bei Free Homes</label><input class="inp" id="haUrl" placeholder="https://app.free-homes.de/…"></div>
+      <div class="step"><label>Link zur Vertiefung im Börsenbrief</label><input class="inp" id="haBb" placeholder="leer = homm-longshort.com"></div>
+      <div class="alert" id="haErr" hidden></div>
+      <button class="cta" id="haGo">Meldung veröffentlichen</button>
+      <h4 style="margin-top:34px">Alle Meldungen</h4>
+      <div id="hmList" style="margin-top:8px"></div>
+      <h4 style="margin-top:30px">Protokoll</h4>
+      <div id="hmLog" style="margin-top:12px"></div>
+    </div>
+  </div>
+</section>
+
 <!-- Fonds gründen -->
 <section class="sheet" id="fundNew" role="dialog" aria-modal="true">
   <div class="sheet-in">
@@ -1244,7 +1286,7 @@ const avatar = (r,id) => `<div class="av"${id?` id="${id}"`:''} style="backgroun
 const esc = t => String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- Smart-Money-Radar ---------- */
-let RD = {};
+let RD = {}, HN = null, RDH = {}, HL = null;   // HN: Postings fürs Radar, RDH: je Titel, HL: vollständige Liste im Fenster
 const usd = v => v>=1e9 ? nf(v/1e9,1)+NB+'Mrd.'+NB+'$' : v>=1e6 ? nf(v/1e6,0)+NB+'Mio.'+NB+'$' : nf(v/1e3,0)+NB+'Tsd.'+NB+'$';
 const dshort = d => { const x=new Date(d+'T12:00:00'); return x.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); };
 const daysTo = d => Math.round((new Date(d+'T12:00:00')-new Date())/864e5);
@@ -1276,7 +1318,9 @@ function radarCards(){
   if(fav[0]){ const s=fav[0], r=recInfo(RD[s].rec); cards.push({c:'',k:'Liebling der Analysten',s,t:`${META[s].n}: ${r.buy} von ${r.n} Analysten sagen Kaufen`,d:'Florian fragt: Wer soll da eigentlich noch kaufen?',tip:'analyst'}); }
   if(SM && SM.flows && SM.flows.length){ const top=SM.flows[0], low=SM.flows.at(-1), mv=SM.moves[0];
     cards.unshift({c:'gold',k:`Großinvestoren · ${SM.report?quarter(SM.report):'13F'}`,s:'__smart',t:`Die Großen kaufen ${top.sector}${low&&low.net<0?`, verkaufen ${low.sector}`:''}`,d:mv?`Größte Bewegung: ${mv.person}, ${mvText(mv)}`:'SEC-Pflichtmeldungen',tip:'insider'}); }
-  $('#radar').innerHTML = cards.map(c=>`<button class="rc ${c.c}" data-radar="${c.s}" data-tip="${c.tip}"><span class="kick">${c.k}</span><b>${c.t}</b><small>${c.d}</small><span class="go">Ansehen und handeln →</span></button>`).join('') || '<div class="empty" style="width:100%">Radar-Daten werden geladen …</div>';
+  // Postings von Florian Homm untermischen: das neueste an zweiter Stelle, das nächste weiter hinten
+  const hn=(HN&&HN.items)||[]; if(hn[0]) cards.splice(Math.min(1,cards.length),0,hommCard(hn[0])); if(hn[1]) cards.splice(Math.min(4,cards.length),0,hommCard(hn[1]));
+  $('#radar').innerHTML = cards.map(c=>`<button class="rc ${c.c}" data-radar="${c.s}" data-tip="${c.tip}"><span class="kick">${c.k}</span><b>${c.t}</b><small>${c.d}</small><span class="go">${c.go||'Ansehen und handeln →'}</span></button>`).join('') || '<div class="empty" style="width:100%">Radar-Daten werden geladen …</div>';
 }
 function smartPanel(s){
   if(!RD[s]) loadRadar(s); const r=RD[s]||{};
@@ -1302,10 +1346,72 @@ function smartPanel(s){
       ${r.last?`<div class="legend"><span>Letzte Zahlen ${dshort(r.last.date)}:</span><span class="${x<0?'down':'up'}">${x<0?'Erwartung verfehlt':'Erwartung übertroffen'} (${pct(x,Math.abs(x)<.01?1:0)})</span></div>`:''}</div>`); }
   if(vr) rows.push(`<div class="sm-row"><div class="l"><span>Handelsvolumen heute</span><b class="${vr>=1.6?'up':''}">${nf(vr,1)}× Durchschnitt</b></div></div>`);
   if(full && r.news && r.news.length) rows.push(`<div class="sm-row news"><div class="l"><span>Schlagzeilen (englisch)</span></div>${r.news.map(n=>`<a href="${n.url}" target="_blank" rel="noopener">${n.h}<small>${n.src} · ${new Date(n.t*1000).toLocaleDateString('de-DE')}</small></a>`).join('')}</div>`);
+  const hs=RDH[s]||((HN&&HN.items)||[]).filter(i=>i.syms.includes(s)); if(hs.length) rows.push(`<div class="sm-row"><div class="l"><span>Florian Homm · Free Homes</span><b>${hs.length} ${hs.length===1?'Posting':'Postings'}</b></div>${hs.map(hommRow).join('')}</div>`);
   if(!rows.length) return '';
   const tip = r.ins&&(r.ins.buys||r.ins.sellVal>2e8)?'insider':r.next&&daysTo(r.next.date)<=14?'earnings':vr&&vr>=1.6?'volume':'analyst';
   return `<div class="smart"><h4>Smart Money <small>SEC-Meldungen · Finnhub</small></h4>${rows.join('')}<button class="explain" data-explain="${tip}">Florian ordnet ein</button></div>`;
 }
+
+/* ---------- Postings von Florian Homm aus Free Homes ---------- */
+// Nicht-Mitglieder sehen nur, dass es ein Posting gibt, mit Datum und Titelbezug. Der Text kommt gar nicht erst vom Server; hier steht ein unscharfer Platzhalter.
+const HBLUR='Florian Homm ordnet die Lage ein und erklärt, was sie für Long- und Short-Positionen bedeutet. Die Einzelheiten lesen Free-Homes-Mitglieder hier in der Arena.';
+const hdate = t => { const d=new Date(t), h=(Date.now()-t)/36e5; return h<1?'gerade eben':h<24?`vor ${Math.round(h)} Std.`:h<48?'gestern':d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); };
+function hommCard(it){
+  if(it.locked) return {c:'homm',k:`🔒 ${esc(it.kick)}`,s:'__homm:'+it.id,tip:'radar',t:`<span class="blurtxt">${HBLUR.slice(0,72)}</span>`,d:`${it.kind==='video'?'Video':'Posting'} aus Free Homes · ${hdate(it.date)} · Vertiefung im Börsenbrief`,go:'Mit Free Homes freischalten →'};
+  return {c:'homm',k:esc(it.kick),s:'__homm:'+it.id,tip:'radar',t:esc(it.title),d:`${it.kind==='video'?'🎬 Video · ':''}${hdate(it.date)}${it.teaser?' · '+esc(it.teaser.slice(0,80))+(it.teaser.length>80?' …':''):''}`,go:'Lesen →'};
+}
+function hommRow(it){
+  if(it.locked) return `<button class="hn" data-homm="${it.id}"><span class="kk">🔒 ${esc(it.kick)}</span><b class="blurtxt">${HBLUR.slice(0,60)}</b><small>${it.kind==='video'?'Video':'Posting'} · ${hdate(it.date)} · nur für Free-Homes-Mitglieder</small></button>`;
+  return `<button class="hn" data-homm="${it.id}"><span class="kk">${it.kind==='video'?'🎬 Video':'Posting'} · ${hdate(it.date)}</span><b>${esc(it.title)}</b>${it.teaser?`<small>${esc(it.teaser.slice(0,120))}${it.teaser.length>120?' …':''}</small>`:''}</button>`;
+}
+async function loadHomm(){ try{ HL=await api('/api/homm'); }catch(e){} }
+async function openHomm(id){
+  if(!HL) await loadHomm(); if(!HL) return toast('Nicht erreichbar');
+  renderHommSheet(id); if(!SHEETS.includes('#hommSheet')) openSheet('#hommSheet'); $('#hommSheet .sheet-in').scrollTop=0;
+}
+function bbBox(it){ return `<div class="bbbox"><span class="kick">Vertiefung</span><b>Homm Long Short Börsenbrief</b><p>Die Hintergründe, Long- und Short-Ideen und das Total-Return-Musterportfolio erscheinen monatlich im Börsenbrief.</p><a class="link" href="${esc(it?it.bb:(HL&&HL.boersenbrief)||CFG.boersenbrief||'https://homm-longshort.com/')}" target="_blank" rel="noopener">Zum Börsenbrief ↗</a></div>`; }
+function renderHommSheet(id){
+  const items=HL.items||[], it=items.find(x=>x.id===id)||items[0];
+  let h='';
+  if(!it){ h='<div class="empty">Noch keine Postings.</div>'; }
+  else if(it.locked){
+    h=`<div class="hpost"><span class="kick">🔒 ${esc(it.kick)}</span><h3 class="blurtxt">${HBLUR.slice(0,46)}</h3><div class="meta">${it.kind==='video'?'Video':'Posting'} aus Free Homes · ${hdate(it.date)}${it.names.length?' · '+it.names.map(esc).join(', '):''}</div>
+      ${it.hasImage||it.kind==='video'?`<div class="blurtxt" style="height:150px;border-radius:14px;background:linear-gradient(160deg,#f1ede6,#d8d0c2);margin-top:14px"></div>`:''}
+      <p class="txt blurtxt">${HBLUR} ${HBLUR}</p></div>
+      <div class="lock"><div class="ic">🔒</div><b>Die Postings von Florian Homm sehen nur Free-Homes-Mitglieder</b><p>Täglich eine Einordnung mit Chart, einmal die Woche ein Video. Alles, was Florian Homm bei Free Homes veröffentlicht, erscheint hier im Smart-Money-Radar, für Mitglieder im Volltext. Die Vertiefung steht im <a class="link" href="${esc(it.bb)}" target="_blank" rel="noopener">Homm Long Short Börsenbrief</a>.</p>
+      ${CFG.freehomes?'<button class="cta" id="hmFh" style="margin-top:18px">Mit Free Homes anmelden</button>':'<p style="margin-top:12px;color:var(--gold-p)">Der Login über Free Homes wird in Kürze freigeschaltet.</p>'}</div>`;
+  } else {
+    h=`<div class="hpost"><span class="kick">${esc(it.kick)}${it.channel?' · '+esc(it.channel):''}</span><h3>${esc(it.title)}</h3><div class="meta">${it.kind==='video'?'🎬 Video · ':''}${new Date(it.date).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}${it.names.length?' · '+it.names.map(esc).join(', '):''}</div>
+      ${it.image?`<img src="${esc(it.image)}" alt="Chart zum Posting" loading="lazy">`:''}
+      ${it.video&&it.video.length?`<div class="vid">🎬 Das Video von Florian Homm läuft bei Free Homes.${it.url?` <a class="link" href="${esc(it.url)}" target="_blank" rel="noopener">Video ansehen ↗</a>`:''}</div>`:''}
+      <p class="txt">${esc(it.body||it.teaser)}</p>
+      ${it.url?`<p style="margin:12px 0 0"><a class="link" href="${esc(it.url)}" target="_blank" rel="noopener">Original bei Free Homes ansehen ↗</a></p>`:''}</div>${bbBox(it)}
+      ${it.syms.length?`<div class="tc-h"><h4>Jetzt handeln</h4></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">${it.syms.filter(s=>META[s]).map(s=>`<button class="chip" data-sym="${esc(s)}">${esc(META[s].n)} →</button>`).join('')}</div>`:''}`;
+  }
+  const rest=items.filter(x=>!it||x.id!==it.id);
+  if(rest.length) h+=`<div class="tc-h"><h4>Weitere Postings</h4></div>`+rest.map(hommRow).join('');
+  $('#hmBody').innerHTML=h;
+  const adm=$('#hmAdmin'); adm.hidden=!HL.admin;
+  if(HL.admin){
+    const sy=HL.sync||{}; $('#hmSync').textContent=sy.mode==='aus'?'Kein Zugang zu Free Homes konfiguriert (FREEHOMES_FEED_TOKEN oder FREEHOMES_FEED_USER/PASS in der .env). Meldungen lassen sich von Hand anlegen.':sy.at?`Letzter Abgleich ${new Date(sy.at).toLocaleString('de-DE')}: ${sy.ok?`${sy.added} neu von ${sy.total} geprüft`:'Fehler: '+sy.error}`:'Noch kein Abgleich.';
+    $('#hmList').innerHTML=(HL.all||[]).map(x=>`<div class="hadm"><span><b>${esc(x.title)}</b><small>${x.kind==='video'?'Video · ':''}${new Date(x.date).toLocaleDateString('de-DE')} · ${esc(x.source)}${x.syms.length?' · '+x.syms.join(', '):''}${x.hidden?' · ausgeblendet':''}</small></span><button data-hhide="${x.id}" data-hidden="${x.hidden?1:0}">${x.hidden?'Einblenden':'Ausblenden'}</button><button data-hdel="${x.id}">Löschen</button></div>`).join('')||'<div class="empty">Keine Meldungen.</div>';
+    $('#hmLog').innerHTML=(HL.log||[]).map(l=>`<div class="logrow">${esc({add:'Angelegt',edit:'Geändert',hide:'Ausgeblendet',show:'Eingeblendet',delete:'Gelöscht',import:'Import'}[l.action]||l.action)}: ${esc(l.detail)}<small>${esc(l.user_name||'System')} · ${new Date(l.ts).toLocaleString('de-DE')}</small></div>`).join('')||'<div class="empty">Noch keine Änderungen.</div>';
+  }
+}
+async function hommAdmin(path, method, body){
+  try{ HL=await api('/api/admin/homm'+path,{method,body}); const r=await api('/api/radar'); HN=r.homm||null; RDH={}; radarCards(); renderHommSheet(); $('#haErr').hidden=true; return true; }
+  catch(e){ $('#haErr').textContent=e.message; $('#haErr').hidden=false; return false; }
+}
+$('#hmBody').addEventListener('click',e=>{ if(e.target.closest('#hmFh')){ location.href='/api/auth/freehomes/start'; } });
+$('#hmAdmin').addEventListener('click',async e=>{
+  const hd=e.target.closest('[data-hhide]'); if(hd){ await hommAdmin('/'+hd.dataset.hhide,'PATCH',{hidden:hd.dataset.hidden!=='1'}); return; }
+  const dl=e.target.closest('[data-hdel]'); if(dl){ if(!confirm('Meldung endgültig löschen?')) return; await hommAdmin('/'+dl.dataset.hdel,'DELETE'); return; }
+});
+$('#hmSyncGo').onclick=async()=>{ $('#hmSyncGo').disabled=true; await hommAdmin('/sync','POST',{}); $('#hmSyncGo').disabled=false; };
+$('#haGo').onclick=async()=>{
+  const ok=await hommAdmin('','POST',{title:$('#haTitle').value,teaser:$('#haTeaser').value,body:$('#haBody').value,syms:$('#haSyms').value,date:$('#haDate').value||undefined,url:$('#haUrl').value,bb:$('#haBb').value});
+  if(ok){ ['#haTitle','#haTeaser','#haBody','#haSyms','#haDate','#haUrl','#haBb'].forEach(i=>$(i).value=''); toast('Meldung veröffentlicht'); }
+};
 
 /* ---------- Suche nach jeder US-Aktie ---------- */
 let RAW = {}, RECENT = [];
@@ -1333,7 +1439,7 @@ const radarPending=new Set();
 function loadRadar(s){
   if(RD[s]||radarPending.has(s)||!META[s]||META[s].g!=='us') return;
   radarPending.add(s);
-  api('/api/radar/'+encodeURIComponent(s)).then(d=>{ RD[s]=d.radar||{}; if(ui.sym===s && $('#sheet').classList.contains('on')) $('#smart').innerHTML=smartPanel(s); renderMarket(); }).catch(()=>{}).finally(()=>radarPending.delete(s));
+  api('/api/radar/'+encodeURIComponent(s)).then(d=>{ RD[s]=d.radar||{}; RDH[s]=d.homm||[]; if(ui.sym===s && $('#sheet').classList.contains('on')) $('#smart').innerHTML=smartPanel(s); renderMarket(); }).catch(()=>{}).finally(()=>radarPending.delete(s));
 }
 
 function renderMarket(){
@@ -2255,6 +2361,8 @@ document.addEventListener('click',e=>{
   const fq=t.closest('[data-fq]'); if(fq){ const v=+fq.dataset.fq; $('#fdAmt').value=Math.floor(v<1?S.equity*v/100*100/100:v).toLocaleString('de-DE'); updFundAmt(); return; }
   const sk=t.closest('[data-saykey]'); if(sk){ speakKey(sk.dataset.saykey, sk.closest('.coach')); return; }
   const rcs=t.closest('[data-radar="__smart"]'); if(rcs){ openSmart(); return; }
+  const rch=t.closest('[data-radar^="__homm:"]'); if(rch){ openHomm(+rch.dataset.radar.slice(7)); return; }
+  const hr=t.closest('[data-homm]'); if(hr){ openHomm(+hr.dataset.homm); return; }
   const rc=t.closest('[data-radar]'); if(rc){ openTrade(rc.dataset.radar); ui.tip=rc.dataset.tip; $('#tip').textContent=TIPS[rc.dataset.tip]; coach(rc.dataset.tip); return; }
   const ex=t.closest('[data-explain]'); if(ex){ ui.tip=ex.dataset.explain; $('#tip').textContent=TIPS[ui.tip]; speakKey(ui.tip,$('#tipBox')); $('#tipBox').scrollIntoView({behavior:'smooth',block:'center'}); return; }
   const ad=t.closest('[data-add]'); if(ad){ addInstrument(ad.dataset.add); return; }
@@ -2324,7 +2432,7 @@ async function refresh(manual){
 async function enter(){
   $('#ob').hidden=true;
   await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(), loadArenas(), loadSmart(),
-    api('/api/radar').then(d=>{ RD=d.radar||{}; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
+    api('/api/radar').then(d=>{ RD=d.radar||{}; HN=d.homm||null; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
     api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{})]);
   render();
   if(!S.mode){ $('#ob').hidden=false; $('#obAuth').hidden=true; $('#obMode').hidden=false; }
