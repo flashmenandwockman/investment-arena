@@ -558,7 +558,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 /* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
 @media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spk{display:none} }
 /* Aktuell: Nachrichten und der Beitrag aus Free Homes */
-.nw{display:block;color:var(--text);text-decoration:none;padding:11px 2px;border-top:1px solid var(--line)} .nw:first-of-type{border-top:0}
+.nw{display:block;width:100%;text-align:left;color:var(--text);text-decoration:none;padding:11px 2px;border:0;border-top:1px solid var(--line);background:none;font:inherit} .nw:first-child{border-top:0}
 .nw small{display:block;color:var(--muted);font-size:11.5px;margin-bottom:3px} .nw b{font-size:14px;line-height:1.35;font-weight:600} .nw .enb{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;border:1px solid var(--line);border-radius:5px;padding:0 4px;margin-left:6px;vertical-align:1px;color:var(--muted)}
 .newsbox{padding:4px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-top:10px}
 .fhc{display:block;width:100%;text-align:left;padding:16px;border-radius:18px;background:linear-gradient(160deg,#1e2440,#0d1226);border:1px solid var(--gold);color:var(--text)}
@@ -1484,16 +1484,16 @@ let NW = null;
 async function loadNews(){ try{ NW=await api('/api/news'); }catch(e){} }
 const agoNews = t => { const h=(Date.now()/1000-t)/3600; return h<1?`vor ${Math.max(1,Math.round(h*60))} Min.`:h<24?`vor ${Math.round(h)} Std.`:h<48?'gestern':new Date(t*1000).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); };
 function renderNews(){
-  const it=(HN&&HN.items||[])[0];
-  let h='';
-  if(it) h+=`<button class="fhc" data-homm="${it.id}"><span class="kick">${esc(it.kick)} · Free Homes</span><b>${esc(it.title||'')}</b>${it.teaser?`<p>${esc(it.teaser)}${it.locked?' …':''}</p>`:''}<div class="foot"><span>${it.kind==='video'?'🎬 Video':'Posting'} · ${hdate(it.date)}</span><span>${it.locked?'🔒 Weiterlesen mit Free Homes ›':'Lesen ›'}</span></div></button>`;
-  const n=(NW&&NW.items)||[], keep=it?2:3;   // zusammen mit dem Free-Homes-Beitrag drei Einträge, der nächste unscharf
+  // Drei Einträge: zwei Nachrichten, als dritter der neueste Beitrag von Florian Homm aus Free Homes im selben Stil, der vierte unscharf
+  const it=(HN&&HN.items||[])[0], n=(NW&&NW.items)||[];
   const nwRow=x=>`<a class="nw" href="${esc(x.url)}" target="_blank" rel="noopener"><small>${esc(x.src)} · ${agoNews(x.t)}${x.lang==='en'?'<span class="enb">EN</span>':''}</small><b>${esc(x.h)}</b></a>`;
-  if(n.length){
-    const shown=ui.allNews?n:n.slice(0,keep), next=!ui.allNews&&n[keep];
-    h+=`<div class="newsbox">${shown.map(nwRow).join('')}${next?`<div class="nw blurtxt" aria-hidden="true"><small>${esc(next.src)} · ${agoNews(next.t)}</small><b>${esc(next.h)}</b></div>`:''}</div>`;
-    if(!ui.allNews&&n.length>keep) h+=`<p style="text-align:center;margin:10px 0 0"><button class="link" id="moreNews" style="font-size:13px">Mehr aktuelle News laden ›</button></p>`;
-  }
+  const fhRow=it?`<button class="nw" data-homm="${it.id}"><small>Florian Homm · Free Homes · ${hdate(it.date)}${it.kind==='video'?' · Video':''}</small><b>${esc(it.title||it.kick)}</b></button>`:'';
+  const rows=ui.allNews?n.map(nwRow):n.slice(0,2).map(nwRow);
+  if(fhRow) rows.splice(Math.min(2,rows.length),0,fhRow);
+  const next=!ui.allNews&&n[2];
+  let h='';
+  if(rows.length) h+=`<div class="newsbox">${rows.join('')}${next?`<div class="nw blurtxt" aria-hidden="true"><small>${esc(next.src)} · ${agoNews(next.t)}</small><b>${esc(next.h)}</b></div>`:''}</div>`;
+  if(!ui.allNews&&n.length>2) h+=`<p style="text-align:center;margin:10px 0 0"><button class="link" id="moreNews" style="font-size:13px">Mehr aktuelle News laden ›</button></p>`;
   $('#news').innerHTML=h||'<div class="empty">Nachrichten werden geladen …</div>';
   $('#newsAsof').textContent=NW&&NW.updatedAt?`Stand ${new Date(NW.updatedAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · alle 4 Std.`:'';
 }
