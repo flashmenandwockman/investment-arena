@@ -11,7 +11,7 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | Bereich | Inhalt |
 |---|---|
 | **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
-| **Märkte** | Oben die Suche nach jeder US-Aktie und jedem US-ETF, darunter **Aktuell** (Nachrichten mit Wirkung auf Kurse und Wirtschaft, alle 240 Minuten, plus der neueste Beitrag von Florian Homm aus Free Homes mit Teaser), dann die **Kurse** in der Übersicht (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte, auf Wunsch alle 22 Werte mit Filtern), darunter das Smart-Money-Radar. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
+| **Märkte** | Oben die Suche nach jeder US-Aktie und jedem US-ETF, darunter **Aktuell** (drei Einträge: der neueste Beitrag von Florian Homm aus Free Homes mit Teaser plus zwei Nachrichten mit Wirkung auf Kurse und Wirtschaft, der vierte Eintrag unscharf, „Mehr aktuelle News laden“ zeigt alle; alle 240 Minuten aktualisiert), dann die **Kurse** in der Übersicht (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte, auf Wunsch alle 22 Werte mit Filtern), darunter das Smart-Money-Radar. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Aktuell** | Überschriften von tagesschau.de (RSS, `NEWS_FEEDS`) und Finnhub-Marktnachrichten, nach Stichworten (Notenbanken, Zinsen, Inflation, Zölle, Öl, Quartalszahlen, Indizes) gewichtet, nur Überschrift, Quelle, Zeit und Link; englische Meldungen mit Kennzeichnung |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
 | **Florian Homm aus Free Homes** | Die täglichen Postings und das Wochenvideo von Florian Homm aus Free Homes, untergemischt in die Radar-Karten und im Smart-Money-Feld je Titel. **Inhalt, Chart und Video nur für Free-Homes-Mitglieder**, alle anderen sehen eine unscharfe Karte mit Schloss. Jede Meldung verweist auf den Homm Long Short Börsenbrief |
@@ -155,7 +155,7 @@ Florian Homm veröffentlicht bei Free Homes täglich ein Posting (Überschrift, 
 1. Free Homes stellt der Arena einen festen Zugangsschlüssel aus: `FREEHOMES_FEED_TOKEN` setzen.
 2. Ein eigenes Free-Homes-Konto für die Arena (z. B. „Investment Arena Leser“): `FREEHOMES_FEED_USER` und `FREEHOMES_FEED_PASS` setzen. Die Arena holt sich damit bei Keycloak ein Token (Password Grant, Client `public-client` oder per `FREEHOMES_FEED_CLIENT_ID` ein eigener Client, für den der Free-Homes-Administrator **Direct Access Grants** einschalten muss).
 
-Ohne Zugang lassen sich Meldungen im Admin-Bereich (Radar-Karte → Admin) von Hand anlegen, ausblenden und löschen; dort steht auch der Knopf „Jetzt abgleichen“ und das Protokoll. Ersatzweise liest `FREEHOMES_NEWS_URL` einen RSS-, Atom- oder JSON-Feed. In der Offline-Demo zeigen zwei als „Beispiel“ gekennzeichnete Platzhalter, wie die Karten aussehen.
+Ohne Zugang lassen sich Meldungen im Admin-Bereich (Radar-Karte → Admin) von Hand anlegen, ausblenden und löschen; dort steht auch der Knopf „Jetzt abgleichen“ und das Protokoll. Ersatzweise liest `FREEHOMES_NEWS_URL` einen RSS-, Atom- oder JSON-Feed. Bis der Zugang steht, zeigen vier Beispielbeiträge nach dem Muster der Free-Homes-Postings (Quelle „beispiel“ im Admin), wie es aussieht; der erste echte Abgleich entfernt sie automatisch.
 
 ## Copy Trading
 

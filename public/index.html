@@ -649,8 +649,9 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
   <!-- MÄRKTE -->
   <main id="tab-markt">
     <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Jede US-Aktie suchen, z. B. Netflix, Coca-Cola" autocomplete="off" enterkeyhint="search" aria-label="Aktie suchen">
+      <input id="q" type="search" placeholder="Aktie, Rohstoff, ETF, Krypto suchen …" autocomplete="off" enterkeyhint="search" aria-label="Aktie suchen">
       <div class="sres" id="sres" hidden></div></div>
+    <p class="muted" style="margin:8px 2px 0;font-size:13px">Aktien, Rohstoffe, ETFs und Krypto: <button class="link" id="toQuotes" style="font-size:13px">Märkte entdecken ›</button></p>
     <div class="sec-h"><h2>Aktuell</h2><span class="muted" style="font-size:12px" id="newsAsof"></span></div>
     <div id="news"></div>
     <div class="sec-h"><h2>Kurse</h2><span class="muted" style="font-size:12px" id="asof"></span></div>
@@ -1486,8 +1487,13 @@ function renderNews(){
   const it=(HN&&HN.items||[])[0];
   let h='';
   if(it) h+=`<button class="fhc" data-homm="${it.id}"><span class="kick">${esc(it.kick)} · Free Homes</span><b>${esc(it.title||'')}</b>${it.teaser?`<p>${esc(it.teaser)}${it.locked?' …':''}</p>`:''}<div class="foot"><span>${it.kind==='video'?'🎬 Video':'Posting'} · ${hdate(it.date)}</span><span>${it.locked?'🔒 Weiterlesen mit Free Homes ›':'Lesen ›'}</span></div></button>`;
-  const n=(NW&&NW.items)||[];
-  if(n.length) h+=`<div class="newsbox">${n.map(x=>`<a class="nw" href="${esc(x.url)}" target="_blank" rel="noopener"><small>${esc(x.src)} · ${agoNews(x.t)}${x.lang==='en'?'<span class="enb">EN</span>':''}</small><b>${esc(x.h)}</b></a>`).join('')}</div>`;
+  const n=(NW&&NW.items)||[], keep=it?2:3;   // zusammen mit dem Free-Homes-Beitrag drei Einträge, der nächste unscharf
+  const nwRow=x=>`<a class="nw" href="${esc(x.url)}" target="_blank" rel="noopener"><small>${esc(x.src)} · ${agoNews(x.t)}${x.lang==='en'?'<span class="enb">EN</span>':''}</small><b>${esc(x.h)}</b></a>`;
+  if(n.length){
+    const shown=ui.allNews?n:n.slice(0,keep), next=!ui.allNews&&n[keep];
+    h+=`<div class="newsbox">${shown.map(nwRow).join('')}${next?`<div class="nw blurtxt" aria-hidden="true"><small>${esc(next.src)} · ${agoNews(next.t)}</small><b>${esc(next.h)}</b></div>`:''}</div>`;
+    if(!ui.allNews&&n.length>keep) h+=`<p style="text-align:center;margin:10px 0 0"><button class="link" id="moreNews" style="font-size:13px">Mehr aktuelle News laden ›</button></p>`;
+  }
   $('#news').innerHTML=h||'<div class="empty">Nachrichten werden geladen …</div>';
   $('#newsAsof').textContent=NW&&NW.updatedAt?`Stand ${new Date(NW.updatedAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · alle 4 Std.`:'';
 }
@@ -2403,6 +2409,8 @@ document.addEventListener('click',e=>{
   const rcs=t.closest('[data-radar="__smart"]'); if(rcs){ openSmart(); return; }
   const rch=t.closest('[data-radar^="__homm:"]'); if(rch){ openHomm(+rch.dataset.radar.slice(7)); return; }
   const hr=t.closest('[data-homm]'); if(hr){ openHomm(+hr.dataset.homm); return; }
+  if(t.closest('#moreNews')){ ui.allNews=true; renderNews(); return; }
+  if(t.closest('#toQuotes')){ const e=$('#market'); window.scrollTo({top:e.getBoundingClientRect().top+window.scrollY-140,behavior:'smooth'}); return; }
   const rc=t.closest('[data-radar]'); if(rc){ openTrade(rc.dataset.radar); ui.tip=rc.dataset.tip; $('#tip').textContent=TIPS[rc.dataset.tip]; coach(rc.dataset.tip); return; }
   const ex=t.closest('[data-explain]'); if(ex){ ui.tip=ex.dataset.explain; $('#tip').textContent=TIPS[ui.tip]; speakKey(ui.tip,$('#tipBox')); $('#tipBox').scrollIntoView({behavior:'smooth',block:'center'}); return; }
   const ad=t.closest('[data-add]'); if(ad){ addInstrument(ad.dataset.add); return; }

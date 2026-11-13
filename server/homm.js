@@ -291,23 +291,35 @@ async function sync(u) {
       items = parseFeed(await r.text()); source = 'feed';
     } else { syncState = {...syncState, at: Date.now(), ok: false, added: 0, error: 'Kein Zugang konfiguriert'}; return syncState; }
     const added = await store(items, source);
+    if (added && items.length) qDelExamples.run();
     syncState = {...syncState, at: Date.now(), ok: true, added, total: items.length, error: ''};
     if (added) log(u, 'import', `${added} neue Postings von Florian Homm aus Free Homes`);
   } catch (e) { syncState = {...syncState, at: Date.now(), ok: false, added: 0, error: e.message}; }
   return syncState;
 }
 
-// Offline-Demo: zwei klar gekennzeichnete Beispielmeldungen, damit die Karten sichtbar sind
+// Beispielbeiträge nach dem Muster der Free-Homes-Postings, bis der Zugang zu Free Homes eingerichtet ist.
+// Quelle „beispiel“; sobald der Abgleich echte Beiträge liefert, werden sie entfernt.
+const qDelExamples = db.prepare("DELETE FROM homm_news WHERE source = 'beispiel'");
 function seed() {
-  if (!config.offline || q.count.get().n > 0) return;
+  db.prepare("DELETE FROM homm_news WHERE source = 'beispiel' AND title LIKE 'Beispiel:%'").run();   // ältere Platzhalter ersetzen
+  if (q.count.get().n > 0) return;
   const now = Date.now();
   const ex = [
-    ['Beispiel: Einordnung von Florian Homm zu NVIDIA', 'Platzhalter, bis die Postings aus Free Homes angebunden sind. So sieht eine Meldung für Mitglieder aus.',
-      'Dies ist eine Beispielmeldung. Hier erscheint das tägliche Posting von Florian Homm aus Free Homes mit Überschrift, Chart und deutschem Text: was die Lage für Long- und Short-Positionen bedeutet und wo die Vertiefung im Börsenbrief steht.', ['NVDA'], 'post', now - 6 * 3600e3],
-    ['Beispiel: Wochenvideo von Florian Homm', 'Platzhalter für das wöchentliche Video aus Free Homes.',
-      'Dies ist eine Beispielmeldung. Sobald der Zugang zu Free Homes konfiguriert ist, werden Postings und das Wochenvideo alle 30 Minuten übernommen und hier für Mitglieder angezeigt.', ['^GDAXI', 'SAP.DE'], 'video', now - 30 * 3600e3],
+    ['Equity Exposure Remains High With Little Cash Available',
+      'Laut der zuletzt veröffentlichten Zusammenfassung halten Privatkunden von BofA 65,2 % ihres Vermögens in Aktien und 9,5 % in Bargeld. Die Aktienquote liegt weiterhin nahe dem oberen Ende der historischen Bandbreite der Bank. Der Bargeldanteil liegt unter der für den Zeitraum von Juni 2005 bis August 2025 gemeldeten Bandbreite von 10 % bis 21 %. Quelle: BofA Private Client Asset Allocation, Stand 13. November 2026',
+      ['^GSPC'], 'post', now - 5 * 3600e3],
+    ['Cboe Put Volume Hits an All-Time High',
+      'Ein Rekord von 11,23 Millionen gehandelten Put-Kontrakten an der Cboe Options Exchange am Donnerstag, dem 5. November 2026. Das waren etwa 10 % mehr als der bisherige Rekord von 10,22 Millionen Kontrakten vom 4. April 2025. Quelle: Cboe Market Stats via Haver Analytics, Cboe',
+      ['^GSPC', 'SPY'], 'post', now - 10 * 3600e3],
+    ['China Is Electrifying Another Source of Oil Demand',
+      'Neuenergiefahrzeuge machten im September 50,3 % der inländischen Schwerlastwagen-Verkäufe aus, gegenüber 28,9 % im Vorjahr. Die vorläufige Schätzung für Oktober liegt bei nahezu 55 %. Batterieelektrische Lkw dominieren diese Kategorie, zu der auch Plug-in-Hybride und Brennstoffzellenfahrzeuge gehören. Niedrigere Betriebskosten, Ersatzanreize und eine dichte Ladeinfrastruktur treiben den Wechsel. Quelle: China New-Energy Heavy Truck Sales',
+      ['CL=F'], 'post', now - 29 * 3600e3],
+    ['Wochenvideo: Florian Homm zur Lage an den Märkten',
+      'Das wöchentliche Video von Florian Homm aus Free Homes. Sobald der Zugang zu Free Homes eingerichtet ist, erscheint hier das aktuelle Video mit Link zum Beitrag.',
+      ['^GDAXI', '^GSPC'], 'video', now - 3 * 86400e3],
   ];
-  for (const [t, te, b, syms, kind, at] of ex) q.ins.run(null, t, te, b, '', '', '', JSON.stringify(syms), kind, '', '[]', 'general', at, 'beispiel', now, null);
+  for (const [t, b, syms, kind, at] of ex) q.ins.run(null, t, teaserOf(b), b, '', '', '', JSON.stringify(syms), kind, '', '[]', 'general', at, 'beispiel', now, null);
 }
 
 module.exports = {view, forSymbol, imageFile, add, update, remove, sync, seed, parseFeed, fromPost, detectSyms, status: () => syncState};
