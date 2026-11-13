@@ -10,6 +10,7 @@ const radar = require('./radar');
 const game = require('./game');
 const store = require('./store');
 const funds = require('./funds');
+const bots = require('./bots');
 const daybot = require('./daybot');
 const trcm = require('./trcm');
 const homm = require('./homm');
@@ -76,7 +77,7 @@ function leaderboard(meId) {
   return store.all().map(u => {
     const eq = game.equity(u.st, 'now', funds.navOf), prev = game.equity(u.st, 'prev', funds.navOf);
     const wk = eq / copy.baseline(u.userId, ps.week) - 1, mon = eq / copy.baseline(u.userId, ps.month) - 1;
-    return {id: u.userId, name: u.name, sub: u.bio || (u.provider === 'freehomes' ? 'Free-Homes-Mitglied' : 'Mitglied'), color: u.color,
+    return {id: u.userId, name: u.name, sub: u.isBot ? 'Gründungsmitglied' + (u.bio ? ' · ' + u.bio : '') : (u.bio || (u.provider === 'freehomes' ? 'Free-Homes-Mitglied' : 'Mitglied')), color: u.color,
       eq, day: prev ? eq / prev - 1 : 0, wk, mon, tot: eq / config.startCash - 1, me: u.userId === meId, bot: u.isBot, badges: Object.keys(u.st.badges || {})};
   });
 }
@@ -107,7 +108,7 @@ function profile(id) {
   });
   const own = funds.list().filter(f => f.ownerId === id).map(f => ({id: f.id, name: f.name, perf: f.perf}));
   const copied = (st.copies || []).reduce((a, c) => a + c.cash, 0);
-  return {id, name: u.name, sub: u.bio, color: u.color, badges: Object.keys(st.badges || {}), equity: eq, cashWeight: eq ? (st.cash + copied) / eq : 0, items, funds: own,
+  return {id, name: u.name, sub: u.is_bot ? 'Gründungsmitglied' + (u.bio ? ' · ' + u.bio : '') : u.bio, color: u.color, badges: Object.keys(st.badges || {}), equity: eq, cashWeight: eq ? (st.cash + copied) / eq : 0, items, funds: own,
     stats: copy.statsOf(id), copying: (st.copies || []).map(c => c.leaderName)};
 }
 
@@ -357,8 +358,9 @@ async function start() {
   market.setHeldProvider(held);
   // TRCM- und Großinvestoren-Titel: Kurse holen, aber die Marktliste nicht damit füllen
   market.setPrivateProvider(() => new Set([...trcm.symbols(), ...gurus.symbols()]));
+  bots.seed();
   homm.seed();
-  daybot.ensure();   // täglicher Test-Trader statt Beispiel-Community
+  daybot.ensure();   // täglich ein neues Gründungsmitglied, das aus den Tagesnachrichten handelt
   if (require.main === module) {
     await market.refresh().catch(() => {});
     radar.refresh().catch(() => {});

@@ -60,6 +60,7 @@ Tests: `npm test`
 | `FREEHOMES_NEWS_URL` | Ersatzweise ein RSS-, Atom- oder JSON-Feed mit den Postings |
 | `BOERSENBRIEF_URL` | Standardlink zur Vertiefung an jeder Meldung (Standard: homm-longshort.com) |
 | `NEWS_FEEDS` | RSS-Feeds für „Aktuell“, kommagetrennt (Standard: tagesschau Wirtschaft) |
+| `SEED_BOTS` | `0` = keine Beispiel-Community (Gründungsmitglieder) anlegen |
 | `SEC_USER_AGENT` | Kennung für Abrufe bei der SEC. Die SEC verlangt Name und Kontakt-E-Mail, z. B. `Investment Arena kontakt@ihre-domain.de` |
 | `GURUS` | `0` = Großinvestoren ausschalten |
 | `DATA_DIR` | Speicherort der Datenbank (Docker: `/data`) |
@@ -156,9 +157,9 @@ Florian Homm veröffentlicht bei Free Homes täglich ein Posting (Überschrift, 
 
 Ohne Zugang lassen sich Meldungen im Admin-Bereich (Radar-Karte → Admin) von Hand anlegen, ausblenden und löschen; dort steht auch der Knopf „Jetzt abgleichen“ und das Protokoll. Ersatzweise liest `FREEHOMES_NEWS_URL` einen RSS-, Atom- oder JSON-Feed. Bis der Zugang steht, zeigen vier Beispielbeiträge nach dem Muster der Free-Homes-Postings (Quelle „beispiel“ im Admin), wie es aussieht; der erste echte Abgleich entfernt sie automatisch.
 
-## Täglicher Test-Trader
+## Gründungsmitglieder und täglicher Trader
 
-Statt einer festen Beispiel-Community legt der Server jeden Tag ein neues Bot-Konto „Test-Trader TT.MM.“ an. Es liest die Schlagzeilen unter „Aktuell“ und die Postings von Florian Homm, erkennt die genannten Titel, entscheidet nach dem Ton der Meldung zwischen Long und Short, hebelt mit 2× bis 5×, setzt Stop-Loss (10 %) und Kursziel (20 %) und begründet jeden Trade mit der Schlagzeile. Gewinne ab 6 % nimmt es mit, nach 20 Stunden schließt es alles. Fehlen Titel in den Nachrichten, folgt es den größten Tagesbewegungen. Test-Trader älter als 14 Tage werden gelöscht; Konten der früheren Beispiel-Community werden beim Start entfernt.
+Zusätzlich zur Beispiel-Community (Gründungsmitglieder) legt der Server jeden Tag ein neues Konto mit einem echt wirkenden Namen an, das im Profil als „Gründungsmitglied“ erscheint. Es liest die Schlagzeilen unter „Aktuell“ und die Postings von Florian Homm, erkennt die genannten Titel, entscheidet nach dem Ton der Meldung zwischen Long und Short, hebelt mit 2× bis 5×, setzt Stop-Loss (10 %) und Kursziel (20 %) und begründet jeden Trade mit der Schlagzeile. Gewinne ab 6 % nimmt es mit, nach 20 Stunden schließt es alles. Fehlen Titel in den Nachrichten, folgt es den größten Tagesbewegungen. Diese Tageskonten werden nach 14 Tagen gelöscht, die Gründungsmitglieder bleiben.
 
 ## Copy Trading
 
@@ -262,7 +263,8 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   gurus.js     Großinvestoren aus SEC-13F-Meldungen
   market.js    Kurse (Finnhub, Yahoo, ccxt)
   radar.js     Smart-Money-Daten (Finnhub)
-  daybot.js    Täglicher Test-Trader: handelt aus den Tagesnachrichten (Long/Short, Hebel, Stop, Ausstieg)
+  bots.js      Beispiel-Community (Gründungsmitglieder) mit Depots und drei Community-Fonds
+  daybot.js    Täglich ein neues Gründungsmitglied, das aus den Tagesnachrichten handelt (Long/Short, Hebel, Stop, Ausstieg)
 public/        App (eine HTML-Datei, mobil optimiert), Bilder, Tonspuren
 test/          API-Tests (node --test)
 ```

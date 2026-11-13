@@ -1549,7 +1549,7 @@ function renderArena(){
   const k = LBKEY[ui.lb]||'eq';
   $('#leaderboard').innerHTML = ranked(ui.lb).map((r,i)=>`<button class="lbr ${r.me?'mine':''}" ${r.me?'data-go="depot"':`data-person="${r.id}"`}>
     <span class="rk">${medal(i+1)}</span>${avatar(r)}
-    <span class="nm"><b>${esc(r.me?r.name+' (Sie)':r.name)}${r.bot?'<span class="bot">Beispiel</span>':''}${S.follow[r.id]?' <span class="muted" style="font-size:11px">· folge ich</span>':''}</b><small>${esc(r.sub)}</small></span>
+    <span class="nm"><b>${esc(r.me?r.name+' (Sie)':r.name)}${S.follow[r.id]?' <span class="muted" style="font-size:11px">· folge ich</span>':''}</b><small>${esc(r.sub)}</small></span>
     <span class="vv num">${k==='eq'?`<b>${eur(r.eq,0)}</b><small class="${cls(r.tot)}">${pct(r.tot,1)}</small>`:`<b class="${cls(r[k])}">${pct(r[k],2)}</b><small class="muted">${eur(r.eq,0)}</small>`}</span></button>`).join('');
 }
 function renderLessons(){
@@ -1947,7 +1947,7 @@ async function openProfile(id){
   const all=ranked('all'), row=LB.find(r=>r.id===pr.id)||{};
   $('#pfAv').outerHTML=avatar(pr,'pfAv');
   $('#pfName').textContent=pr.name; $('#pfSub').textContent=`${pr.sub||'Mitglied'} · Rang ${all.findIndex(r=>r.id===pr.id)+1}`;
-  $('#pfBadges').innerHTML=pr.badges.map(k=>{ const b=BADGES.find(b=>b[0]===k); return b?`<span class="bdg on">${b[1]}</span>`:''; }).join('') + (row.bot?'<span class="bdg">Beispiel-Profil</span>':'');
+  $('#pfBadges').innerHTML=pr.badges.map(k=>{ const b=BADGES.find(b=>b[0]===k); return b?`<span class="bdg on">${b[1]}</span>`:''; }).join('');
   $('#pfEq').textContent=eur(pr.equity,0);
   $('#pfVal').setAttribute('aria-expanded','false'); $('#pfHold').classList.remove('on');
   $('#pfHoldIn').innerHTML=pr.items.map(it=>`<div class="hd"><span>${it.kind==='fund'?'<span class="tag kind">FONDS</span>':`<span class="tag ${it.dir>0?'long':'short'}">${it.dir>0?'LONG':'SHORT'}</span>`} <b>${esc(it.name)}</b> <span class="muted">· ${esc(it.label)}</span></span><b class="num">${nf(it.weight*100,1)} %</b><span class="w"><i style="width:${Math.min(it.weight*100,100)}%"></i></span><small class="muted num">Wert ${eur(it.value,0)}</small><small class="num ${cls(it.pl)}">${pct(it.pl,1)}</small></div>`).join('')
@@ -2190,7 +2190,7 @@ function sortedTraders(){
 function traderCard(t){
   const r=trSort==='w1'?['w1','diese Woche']:['m1','1 Monat'];
   return `<div class="trader" data-person="${t.id}" role="button" tabindex="0">${avatar(t)}
-    <span class="nm"><b>${esc(t.name)}${t.bot?'<span class="bot">Beispiel</span>':''}</b><small>${esc(t.sub)}</small></span>
+    <span class="nm"><b>${esc(t.name)}</b><small>${esc(t.sub)}</small></span>
     <span class="r num"><b class="${cls(t[r[0]])}">${pct(t[r[0]],1)}</b><small>${r[1]}</small></span>
     <div class="tstats num">${riskPill(t.risk)}<span class="pill2">👥 ${t.copiers} Kopierer</span><span class="pill2">${pct(t.tot,1)} gesamt</span>
       <button class="copyb ${t.copying?'on':''}" data-copy="${t.id}">${t.copying?'✓ Kopiert':'Kopieren'}</button></div></div>`;

@@ -101,9 +101,14 @@ test('Rangliste und Profile', async () => {
   const lb = await c('/api/leaderboard');
   assert.ok(lb.data.rows.some(r => r.me));
   const bot = lb.data.rows.find(r => r.bot);
-  assert.ok(bot && /^Test-Trader/.test(bot.name), 'täglicher Test-Trader vorhanden');
-  const pr = await c(`/api/profile/${bot.id}`);
-  assert.ok(pr.data.equity > 0 && pr.data.items.length > 0, 'Test-Trader hat aus den Nachrichten gehandelt');
+  assert.ok(lb.data.rows.length >= 10, 'Gründungsmitglieder vorhanden');
+  assert.ok(bot && /^[A-ZÄÖÜ][a-zäöüß]+ [A-ZÄÖÜ][a-zäöüß]+/.test(bot.name) || /\./.test(bot.name), 'Namen wie echte Namen');
+  assert.match(bot.sub, /^Gründungsmitglied/);
+  const daily = lb.data.rows.find(r => r.bot && r.sub === 'Gründungsmitglied');
+  assert.ok(daily, 'täglicher Trader mit echtem Namen vorhanden');
+  const pr = await c(`/api/profile/${daily.id}`);
+  assert.match(pr.data.sub, /^Gründungsmitglied/);
+  assert.ok(pr.data.equity > 0 && pr.data.items.length > 0, 'hat aus den Nachrichten gehandelt');
   assert.ok(pr.data.items.every(i => i.kind === 'lev' || i.kind === 'stock'));
 });
 

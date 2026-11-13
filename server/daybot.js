@@ -1,7 +1,7 @@
 // Täglicher Test-Trader: Jeden Tag entsteht ein neues Bot-Konto, das aus den Tagesnachrichten handelt.
 // Es liest „Aktuell“ und die Postings von Florian Homm, erkennt die genannten Titel, entscheidet nach dem Ton der
 // Schlagzeile zwischen Long und Short, hebelt (2× bis 5×), setzt Stop und Ziel und steigt im Lauf des Tages aus.
-// Ältere Test-Trader werden nach 14 Tagen gelöscht. Ersetzt die frühere Beispiel-Community.
+// Die Konten tragen echte Namen und erscheinen als Gründungsmitglieder; ältere werden nach 14 Tagen gelöscht.
 const db = require('./db');
 const market = require('./market');
 const game = require('./game');
@@ -14,13 +14,14 @@ const qToday = db.prepare("SELECT id FROM users WHERE provider = 'daybot' AND pr
 const qAll = db.prepare("SELECT id, provider_sub, created_at FROM users WHERE provider = 'daybot' ORDER BY created_at DESC");
 const qIns = db.prepare("INSERT INTO users (email, name, pass, provider, provider_sub, bio, color, is_bot, created_at) VALUES (NULL, ?, NULL, 'daybot', ?, ?, ?, 1, ?)");
 const qDel = db.prepare('DELETE FROM users WHERE id = ?');
-const qOldExamples = db.prepare("DELETE FROM users WHERE provider = 'bot'");
+const qNames = db.prepare("SELECT name FROM users WHERE is_bot = 1");
 
+const FIRST = ['Jana', 'Lukas', 'Mira', 'Tobias', 'Nele', 'Finn', 'Laura', 'Jonas', 'Elif', 'Niklas', 'Sarah', 'David', 'Hannah', 'Paul', 'Lea', 'Max', 'Anna', 'Felix', 'Emma', 'Tim', 'Julia', 'Ben', 'Lisa', 'Noah', 'Marie', 'Leon', 'Clara', 'Jan', 'Sophia', 'Moritz'];
+const LAST = ['Fischer', 'Weber', 'Meyer', 'Wagner', 'Becker', 'Schulz', 'Hoffmann', 'Koch', 'Richter', 'Klein', 'Wolf', 'Schröder', 'Neumann', 'Braun', 'Zimmermann', 'Krüger', 'Hartmann', 'Lange', 'Schmitt', 'Werner', 'Krause', 'Lehmann', 'Huber', 'Kaiser', 'Fuchs', 'Peters', 'Scholz', 'Möller', 'Weiß', 'Jung'];
 const COLORS = ['#8fd3ff', '#f3e2bd', '#ffb38a', '#b7a6ff', '#a6f0c6', '#ff9aa8', '#e0c28a', '#9fe3e0', '#ffd48a'];
 const POS = /\b(rekord|record|allzeithoch|rally|rallye|steigt|steigen|surge|surges|soars|jumps|beats|übertrifft|übertroffen|gewinn|boom|erholt|recover|stabil|hoch|high|kaufen|buy|upgrade|zinssenkung|rate cut)\b/i;
 const NEG = /\b(fällt|fallen|sinkt|crash|sell-?off|ausverkauf|warnt|warnung|drops|slips|falls|schwächelt|schwäche|verfehlt|misses|rezession|recession|sorgen|unter druck|pressure|knock|einbruch|plunge|zölle|tariff|verkaufen|downgrade|zinserhöhung|rate hike|inflation)\b/i;
 const day = d => new Date(d).toISOString().slice(0, 10);
-const fmtDay = d => new Date(d).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit'});
 
 // Titel aus den Schlagzeilen des Tages und den Postings von Florian Homm, mit Richtung aus dem Ton der Meldung
 function ideas() {
@@ -58,15 +59,15 @@ function manage(id, createdAt) {
 }
 
 function ensure() {
-  qOldExamples.run();
   const today = day(Date.now()), bots = qAll.all();
   for (const b of bots) {
     if (Date.now() - b.created_at > 14 * 86400e3) qDel.run(b.id);
     else manage(b.id, b.created_at);
   }
   if (qToday.get(today)) return;
-  const n = bots.length % COLORS.length;
-  const id = Number(qIns.run(`Test-Trader ${fmtDay(Date.now())}`, today, 'Test-Trader · handelt aus den Tagesnachrichten', COLORS[n], Date.now()).lastInsertRowid);
+  const used = new Set(qNames.all().map(r => r.name)), seed = Number(today.replace(/-/g, ''));
+  let name = ''; for (let i = 0; i < 50 && (!name || used.has(name)); i++) name = `${FIRST[(seed * 7 + i * 11) % FIRST.length]} ${LAST[(seed * 13 + i * 17) % LAST.length]}`;
+  const id = Number(qIns.run(name, today, '', COLORS[bots.length % COLORS.length], Date.now()).lastInsertRowid);
   const st = game.fresh(); st.mode = 'pro'; store.save(id, st);
   trade(id, ideas());
 }
