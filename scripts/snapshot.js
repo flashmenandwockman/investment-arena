@@ -6,11 +6,15 @@ const market = require('../server/market');
 const radar = require('../server/radar');
 const gurus = require('../server/gurus');
 const smart = require('../server/smart');
+const news = require('../server/news');
 
 (async () => {
   const dir = path.join(__dirname, '..', 'server', 'fallback');
   const q = await market.refresh();
   fs.writeFileSync(path.join(dir, 'quotes.json'), JSON.stringify(q));
+  const n = await news.refresh();
+  fs.writeFileSync(path.join(dir, 'news.json'), JSON.stringify({items: n}));
+  console.log(`Aktuell: ${n.length} Meldungen`);
   const r = await radar.refresh();
   fs.writeFileSync(path.join(dir, 'radar.json'), JSON.stringify(r));
   const g = await gurus.snapshot();

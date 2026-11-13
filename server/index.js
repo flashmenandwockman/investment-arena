@@ -13,6 +13,7 @@ const funds = require('./funds');
 const bots = require('./bots');
 const trcm = require('./trcm');
 const homm = require('./homm');
+const news = require('./news');
 const copy = require('./copy');
 const gurus = require('./gurus');
 const arenas = require('./arenas');
@@ -136,6 +137,7 @@ async function api(req, res, url) {
     if (/^\/api\/sentiment\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, sentiment(decodeURIComponent(p.slice('/api/sentiment/'.length))));
     if (p === '/api/smart') return send(res, 200, smart.overview());
     if (/^\/api\/smart\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, smart.forSymbol(decodeURIComponent(p.slice('/api/smart/'.length))));
+    if (p === '/api/news') return send(res, 200, news.get());
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status(), homm: homm.view(auth.currentUser(req))});
     // Postings von Florian Homm aus Free Homes: für alle sichtbar, dass es sie gibt; Inhalt nur für Mitglieder
     if (p === '/api/homm' && m === 'GET') return send(res, 200, homm.view(auth.currentUser(req), 40));
@@ -309,7 +311,7 @@ const server = http.createServer((req, res) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-Frame-Options', 'DENY');
   const url = new URL(req.url, config.baseUrl);
-  if (url.pathname === '/healthz') return send(res, 200, {ok: true, market: market.status(), radar: radar.status()});
+  if (url.pathname === '/healthz') return send(res, 200, {ok: true, market: market.status(), radar: radar.status(), news: {live: news.get().live, updatedAt: news.get().updatedAt}});
   if (url.pathname.startsWith('/api/')) return api(req, res, url);
   return serveStatic(req, res, url);
 });
@@ -362,6 +364,7 @@ async function start() {
     setInterval(() => tick().catch(() => {}), 30_000);
     setInterval(() => radar.refresh().catch(() => {}), 30 * 60_000);
     homm.sync().catch(() => {}); setInterval(() => homm.sync().catch(() => {}), 30 * 60_000);
+    news.refresh().catch(() => {}); setInterval(() => news.refresh().catch(() => {}), 240 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
     market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);
     gurus.sync().then(() => { heldCache.t = 0; return smart.sync(); }).catch(() => {});

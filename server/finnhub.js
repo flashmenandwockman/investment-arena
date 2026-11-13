@@ -25,7 +25,7 @@ function pump() {
 function get(path, {priority = false} = {}) {
   return new Promise((resolve, reject) => {
     const run = async () => {
-      const r = await fetch(`https://finnhub.io/api/v1/${path}`, {headers: {'X-Finnhub-Token': config.finnhubKey || 'proxy-injected'}, signal: AbortSignal.timeout(15000)});
+      const r = await fetch(`https://finnhub.io/api/v1/${path}`, {headers: config.finnhubKey ? {'X-Finnhub-Token': config.finnhubKey} : {}, signal: AbortSignal.timeout(15000)});
       if (!r.ok) throw new Error(`Finnhub ${r.status}`);
       return r.json();
     };

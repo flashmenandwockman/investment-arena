@@ -15,7 +15,9 @@ const CORE = {
   'AMZN':{n:'Amazon',t:'Aktie',g:'us',s:'AMZN'}, 'TSLA':{n:'Tesla',t:'Aktie',g:'us',s:'TSLA'},
   'SAP.DE':{n:'SAP',t:'Aktie',g:'de',s:'SAP'}, 'SIE.DE':{n:'Siemens',t:'Aktie',g:'de',s:'SIE'}, 'RHM.DE':{n:'Rheinmetall',t:'Aktie',g:'de',s:'RHM'},
   'ALV.DE':{n:'Allianz',t:'Aktie',g:'de',s:'ALV'}, 'DBK.DE':{n:'Deutsche Bank',t:'Aktie',g:'de',s:'DBK'},
-  '^GDAXI':{n:'DAX',t:'Index',g:'idx',s:'DAX'}, '^GSPC':{n:'S&P 500',t:'Index',g:'idx',s:'SPX'}, 'GC=F':{n:'Gold',t:'Rohstoff',g:'idx',s:'XAU'},
+  '^GDAXI':{n:'DAX',t:'Index',g:'idx',s:'DAX'}, '^GSPC':{n:'S&P 500',t:'Index',g:'idx',s:'SPX'},
+  'GC=F':{n:'Gold',t:'Rohstoff',g:'cmd',s:'XAU'}, 'CL=F':{n:'Öl (WTI)',t:'Rohstoff',g:'cmd',s:'OIL'},
+  'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'},
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'},
 };

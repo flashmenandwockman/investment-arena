@@ -557,6 +557,16 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 .brand{gap:4px} .brand span{line-height:1.2}
 /* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
 @media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spk{display:none} }
+/* Aktuell: Nachrichten und der Beitrag aus Free Homes */
+.nw{display:block;color:var(--text);text-decoration:none;padding:11px 2px;border-top:1px solid var(--line)} .nw:first-of-type{border-top:0}
+.nw small{display:block;color:var(--muted);font-size:11.5px;margin-bottom:3px} .nw b{font-size:14px;line-height:1.35;font-weight:600} .nw .enb{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;border:1px solid var(--line);border-radius:5px;padding:0 4px;margin-left:6px;vertical-align:1px;color:var(--muted)}
+.newsbox{padding:4px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-top:10px}
+.fhc{display:block;width:100%;text-align:left;padding:16px;border-radius:18px;background:linear-gradient(160deg,#1e2440,#0d1226);border:1px solid var(--gold);color:var(--text)}
+.fhc .kick{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-l)} .fhc b{display:block;font-size:16px;line-height:1.3;margin-top:6px}
+.fhc p{margin:6px 0 0;font-size:13px;line-height:1.5;color:var(--muted)} .fhc .foot{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:12.5px;font-weight:600;color:var(--gold-p)} .fhc .foot span:first-child{color:var(--muted);font-weight:500}
+.grp{display:flex;justify-content:space-between;align-items:baseline;padding:14px 2px 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)} .grp:first-child{padding-top:4px} .grp .link{font-size:12px;letter-spacing:0;text-transform:none;font-weight:600}
+/* Play/Pause-Icon folgt dem Zustand */
+.say .pz{display:none} .speaking .say .pl,.say.speaking .pl{display:none} .speaking .say .pz,.say.speaking .pz{display:block}
 /* Postings von Florian Homm aus Free Homes */
 .rc.homm{border-color:var(--gold);background:linear-gradient(160deg,#1e2440,#0d1226)} .rc.homm .kick{color:var(--gold-l)}
 .blurtxt{filter:blur(5px);user-select:none;pointer-events:none;opacity:.8}
@@ -633,19 +643,21 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
       <div class="who">Florian Homm erklärt <span class="wave"><i></i><i></i><i></i><i></i></span></div>
       <p id="coachText"></p>
     </div>
-    <button class="say" id="sayBtn" aria-label="Erklärung anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="say" id="sayBtn" aria-label="Erklärung anhören"><svg class="pl" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="pz" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
   </div>
 
   <!-- MÄRKTE -->
   <main id="tab-markt">
-    <div class="sec-h"><h2>Smart-Money-Radar</h2><button class="link" id="smOpen" style="font-size:12.5px;text-decoration:none">Alle Meldungen ›</button></div>
-    <div class="radar" id="radar"></div>
-    <div class="sec-h"><h2>Märkte</h2><span class="muted" style="font-size:12px" id="asof"></span></div>
     <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Jede US-Aktie suchen, z. B. Netflix, Coca-Cola" autocomplete="off" enterkeyhint="search" aria-label="Aktie suchen">
       <div class="sres" id="sres" hidden></div></div>
+    <div class="sec-h"><h2>Aktuell</h2><span class="muted" style="font-size:12px" id="newsAsof"></span></div>
+    <div id="news"></div>
+    <div class="sec-h"><h2>Kurse</h2><span class="muted" style="font-size:12px" id="asof"></span></div>
     <div class="chips" id="filters"></div>
     <div class="list" id="market"></div>
+    <div class="sec-h"><h2>Smart-Money-Radar</h2><button class="link" id="smOpen" style="font-size:12.5px;text-decoration:none">Alle Meldungen ›</button></div>
+    <div class="radar" id="radar"></div>
 
     <div class="sec-h"><h2>Fair Play</h2><span class="muted num" style="font-size:12px" id="lastUpd"></span></div>
     <div class="card">
@@ -758,7 +770,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
   </main>
 
   <p class="foot">Simulation mit Spielgeld zu Lernzwecken. Keine Anlageberatung, kein echtes Geld, keine Orders an Börsen.<br>
-  Kurse: Finnhub (US-Aktien in Echtzeit), Yahoo Finance (DAX-Werte, Indizes, Gold, Volumen) und Kraken via ccxt (Krypto), ohne Gewähr. Smart-Money-Daten: Finnhub (SEC-Insidermeldungen, Analystenkonsens, Quartalstermine, News). Erklärtexte: Entwurf zur Freigabe durch Florian Homm. Sprachausgabe: Platzhalter (Browser-Stimme) bis zur Aufnahme mit Florians Stimme.</p>
+  Kurse: Finnhub (US-Aktien in Echtzeit), Yahoo Finance (DAX-Werte, Indizes, Rohstoffe, ETFs, Volumen) und Kraken via ccxt (Krypto), ohne Gewähr. Aktuell: Überschriften von tagesschau.de (RSS) und Finnhub, alle 4 Stunden; Beiträge von Florian Homm aus Free Homes. Smart-Money-Daten: Finnhub (SEC-Insidermeldungen, Analystenkonsens, Quartalstermine, News). Erklärtexte: Entwurf zur Freigabe durch Florian Homm. Sprachausgabe: Platzhalter (Browser-Stimme) bis zur Aufnahme mit Florians Stimme.</p>
 </div>
 
 <nav class="nav"><div class="nav-in">
@@ -852,7 +864,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
     <div class="coach mini" id="tipBox">
       <img alt="Florian Homm" src="/img/florian-homm.jpg">
       <div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p id="tip"></p></div>
-      <button class="say" id="tipSay" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="say" id="tipSay" aria-label="Tipp anhören"><svg class="pl" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="pz" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
     </div>
 
     <button class="cta" id="go">Position eröffnen</button>
@@ -895,7 +907,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
       </div>
       <button class="cta long" id="fdGo">Investieren</button>
     </div>
-    <div class="coach mini" id="fdTip"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundInvest"></p></div><button class="say" data-saykey="fundInvest" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
+    <div class="coach mini" id="fdTip"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundInvest"></p></div><button class="say" data-saykey="fundInvest" aria-label="Tipp anhören"><svg class="pl" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="pz" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button></div>
     <p class="fine" id="fdFine">Ihr Anteil entwickelt sich mit dem Anteilswert des Fonds. Simulation mit Spielgeld, keine Anlageberatung.</p>
   </div>
 </section>
@@ -1135,7 +1147,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
     <div class="step"><label>Ihre Strategie in zwei Sätzen</label><textarea class="inp" id="nfStrat" maxlength="400" rows="3" placeholder="Worauf setzen Sie und warum?"></textarea></div>
     <div class="step"><label>Werte (3 bis 10) <span class="num" id="nfSum">0 %</span></label><div id="nfRows"></div><button class="btn2" id="nfAdd" type="button">+ Wert hinzufügen</button></div>
     <div class="alert" id="nfErr" hidden></div>
-    <div class="coach mini"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundCreate"></p></div><button class="say" data-saykey="fundCreate" aria-label="Tipp anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
+    <div class="coach mini"><img alt="Florian Homm" src="/img/florian-homm.jpg"><div style="flex:1;min-width:0"><div class="who">Florians Tipp <span class="wave"><i></i><i></i><i></i><i></i></span></div><p data-tipkey="fundCreate"></p></div><button class="say" data-saykey="fundCreate" aria-label="Tipp anhören"><svg class="pl" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="pz" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button></div>
     <button class="cta" id="nfGo">Fonds veröffentlichen</button>
     <p class="fine">Der Anteilswert startet bei 100. Die Gewichte gelten ab Gründung und bleiben danach fest.</p>
   </div>
@@ -1160,11 +1172,13 @@ const META = {
   'AMZN':{n:'Amazon',t:'Aktie',g:'us',s:'AMZN'}, 'TSLA':{n:'Tesla',t:'Aktie',g:'us',s:'TSLA'},
   'SAP.DE':{n:'SAP',t:'Aktie',g:'de',s:'SAP'}, 'SIE.DE':{n:'Siemens',t:'Aktie',g:'de',s:'SIE'}, 'RHM.DE':{n:'Rheinmetall',t:'Aktie',g:'de',s:'RHM'},
   'ALV.DE':{n:'Allianz',t:'Aktie',g:'de',s:'ALV'}, 'DBK.DE':{n:'Deutsche Bank',t:'Aktie',g:'de',s:'DBK'},
-  '^GDAXI':{n:'DAX',t:'Index',g:'idx',s:'DAX'}, '^GSPC':{n:'S&P 500',t:'Index',g:'idx',s:'SPX'}, 'GC=F':{n:'Gold',t:'Rohstoff',g:'idx',s:'XAU'},
+  '^GDAXI':{n:'DAX',t:'Index',g:'idx',s:'DAX'}, '^GSPC':{n:'S&P 500',t:'Index',g:'idx',s:'SPX'},
+  'GC=F':{n:'Gold',t:'Rohstoff',g:'cmd',s:'XAU'}, 'CL=F':{n:'Öl (WTI)',t:'Rohstoff',g:'cmd',s:'OIL'},
+  'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'},
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'}
 };
-const FILTERS = [['all','Alle'],['watch','★ Watchlist'],['crypto','Krypto'],['de','Deutschland'],['us','USA'],['idx','Indizes & Gold']];
+const FILTERS = [['compact','‹ Übersicht'],['all','Alle'],['watch','★ Watchlist'],['us','USA'],['de','Deutschland'],['cmd','Rohstoffe'],['etf','ETFs'],['crypto','Krypto'],['idx','Indizes']];
 const START = 100000, FEE_LEV = 0.0002, FEE_SHORT = 0.0001;
 
 const TIPS = {
@@ -1318,8 +1332,6 @@ function radarCards(){
   if(fav[0]){ const s=fav[0], r=recInfo(RD[s].rec); cards.push({c:'',k:'Liebling der Analysten',s,t:`${META[s].n}: ${r.buy} von ${r.n} Analysten sagen Kaufen`,d:'Florian fragt: Wer soll da eigentlich noch kaufen?',tip:'analyst'}); }
   if(SM && SM.flows && SM.flows.length){ const top=SM.flows[0], low=SM.flows.at(-1), mv=SM.moves[0];
     cards.unshift({c:'gold',k:`Großinvestoren · ${SM.report?quarter(SM.report):'13F'}`,s:'__smart',t:`Die Großen kaufen ${top.sector}${low&&low.net<0?`, verkaufen ${low.sector}`:''}`,d:mv?`Größte Bewegung: ${mv.person}, ${mvText(mv)}`:'SEC-Pflichtmeldungen',tip:'insider'}); }
-  // Postings von Florian Homm untermischen: das neueste an zweiter Stelle, das nächste weiter hinten
-  const hn=(HN&&HN.items)||[]; if(hn[0]) cards.splice(Math.min(1,cards.length),0,hommCard(hn[0])); if(hn[1]) cards.splice(Math.min(4,cards.length),0,hommCard(hn[1]));
   $('#radar').innerHTML = cards.map(c=>`<button class="rc ${c.c}" data-radar="${c.s}" data-tip="${c.tip}"><span class="kick">${c.k}</span><b>${c.t}</b><small>${c.d}</small><span class="go">${c.go||'Ansehen und handeln →'}</span></button>`).join('') || '<div class="empty" style="width:100%">Radar-Daten werden geladen …</div>';
 }
 function smartPanel(s){
@@ -1399,7 +1411,7 @@ function renderHommSheet(id){
   }
 }
 async function hommAdmin(path, method, body){
-  try{ HL=await api('/api/admin/homm'+path,{method,body}); const r=await api('/api/radar'); HN=r.homm||null; RDH={}; radarCards(); renderHommSheet(); $('#haErr').hidden=true; return true; }
+  try{ HL=await api('/api/admin/homm'+path,{method,body}); const r=await api('/api/radar'); HN=r.homm||null; RDH={}; radarCards(); renderNews(); renderHommSheet(); $('#haErr').hidden=true; return true; }
   catch(e){ $('#haErr').textContent=e.message; $('#haErr').hidden=false; return false; }
 }
 $('#hmBody').addEventListener('click',e=>{ if(e.target.closest('#hmFh')){ location.href='/api/auth/freehomes/start'; } });
@@ -1442,14 +1454,42 @@ function loadRadar(s){
   api('/api/radar/'+encodeURIComponent(s)).then(d=>{ RD[s]=d.radar||{}; RDH[s]=d.homm||[]; if(ui.sym===s && $('#sheet').classList.contains('on')) $('#smart').innerHTML=smartPanel(s); renderMarket(); }).catch(()=>{}).finally(()=>radarPending.delete(s));
 }
 
+function marketRow(s){
+  const q=Q[s], m=META[s], c=chg(s), W=S.watch||[];
+  return `<button class="row" data-sym="${s}"><span class="logo">${m.s}</span><span class="n"><b>${W.includes(s)?'<span class="wstar">★</span>':''}${m.n}</b><small>${m.t}${pro()?` · Vol. ${Math.round(q.vol*100)} %`:''}</small>${badges(s)}</span><span class="spk" data-chart="${s}">${spark(q.hist.slice(-40),70,30,c>=0?'#3ccf91':'#ff6b6b')}</span><span class="p num" data-chart="${s}"><b>${fmt(q.price,q.cur)}</b><small class="${cls(c)}">${pct(c)}</small></span></button>`;
+}
+// Übersicht: 3 Aktien (eigene Positionen und Watchlist zuerst, dann die größten Bewegungen), 2 Rohstoffe, 2 ETFs, 2 Kryptowerte
+function compactGroups(){
+  const W=S.watch||[], held=new Set(S.pos.map(p=>p.sym)), core=s=>Q[s]&&!META[s].x;
+  const stocks=Object.keys(META).filter(s=>core(s)&&(META[s].g==='us'||META[s].g==='de'))
+    .sort((a,b)=>((held.has(b)?2:0)+(W.includes(b)?1:0))-((held.has(a)?2:0)+(W.includes(a)?1:0)) || Math.abs(chg(b))-Math.abs(chg(a)));
+  const of=(g,n)=>Object.keys(META).filter(s=>core(s)&&META[s].g===g).slice(0,n);
+  return [['Aktien','us',stocks.slice(0,3)],['Rohstoffe','cmd',of('cmd',2)],['ETFs','etf',of('etf',2)],['Krypto','crypto',of('crypto',2)]];
+}
 function renderMarket(){
+  if(!ui.allQuotes){
+    $('#filters').innerHTML='';
+    $('#market').innerHTML=compactGroups().map(([l,g,syms])=>`<div class="grp"><span>${l}</span><button class="link" data-f="${g}">Mehr ›</button></div>`+syms.map(marketRow).join('')).join('')
+      +`<div class="grp" style="justify-content:center;padding-top:16px"><button class="link" data-f="all">Alle Kurse und Filter ›</button></div>`;
+    return;
+  }
   $('#filters').innerHTML = FILTERS.map(([k,l])=>`<button class="chip ${ui.filter===k?'on':''}" data-f="${k}">${l}</button>`).join('');
   const W=S.watch||[], list=Object.keys(META).filter(s=>Q[s] && (!META[s].x || mine(s)) && (ui.filter==='all'||(ui.filter==='watch'?W.includes(s):META[s].g===ui.filter)));
   if(ui.filter==='watch' && !list.length){ $('#market').innerHTML='<div class="empty">Noch nichts auf Ihrer Watchlist.<br>Öffnen Sie einen Titel und tippen Sie oben auf ☆.</div>'; return; }
-  $('#market').innerHTML = list.map(s=>{
-    const q=Q[s], m=META[s], c=chg(s);
-    return `<button class="row" data-sym="${s}"><span class="logo">${m.s}</span><span class="n"><b>${W.includes(s)?'<span class="wstar">★</span>':''}${m.n}</b><small>${m.t}${pro()?` · Vol. ${Math.round(q.vol*100)} %`:''}</small>${badges(s)}</span><span class="spk" data-chart="${s}">${spark(q.hist.slice(-40),70,30,c>=0?'#3ccf91':'#ff6b6b')}</span><span class="p num" data-chart="${s}"><b>${fmt(q.price,q.cur)}</b><small class="${cls(c)}">${pct(c)}</small></span></button>`;
-  }).join('');
+  $('#market').innerHTML = list.map(marketRow).join('');
+}
+/* ---------- Aktuell: Nachrichten mit Wirkung auf Kurse und Wirtschaft, dazu der Beitrag aus Free Homes ---------- */
+let NW = null;
+async function loadNews(){ try{ NW=await api('/api/news'); }catch(e){} }
+const agoNews = t => { const h=(Date.now()/1000-t)/3600; return h<1?`vor ${Math.max(1,Math.round(h*60))} Min.`:h<24?`vor ${Math.round(h)} Std.`:h<48?'gestern':new Date(t*1000).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); };
+function renderNews(){
+  const it=(HN&&HN.items||[])[0];
+  let h='';
+  if(it) h+=`<button class="fhc" data-homm="${it.id}"><span class="kick">${esc(it.kick)} · Free Homes</span><b>${esc(it.title||'')}</b>${it.teaser?`<p>${esc(it.teaser)}${it.locked?' …':''}</p>`:''}<div class="foot"><span>${it.kind==='video'?'🎬 Video':'Posting'} · ${hdate(it.date)}</span><span>${it.locked?'🔒 Weiterlesen mit Free Homes ›':'Lesen ›'}</span></div></button>`;
+  const n=(NW&&NW.items)||[];
+  if(n.length) h+=`<div class="newsbox">${n.map(x=>`<a class="nw" href="${esc(x.url)}" target="_blank" rel="noopener"><small>${esc(x.src)} · ${agoNews(x.t)}${x.lang==='en'?'<span class="enb">EN</span>':''}</small><b>${esc(x.h)}</b></a>`).join('')}</div>`;
+  $('#news').innerHTML=h||'<div class="empty">Nachrichten werden geladen …</div>';
+  $('#newsAsof').textContent=NW&&NW.updatedAt?`Stand ${new Date(NW.updatedAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · alle 4 Std.`:'';
 }
 function renderHeader(){
   const eq=S.equity, inv=eq-S.cash-(S.orders||[]).reduce((a,o)=>a+o.amt,0), d=eq-START, td=eq-S.eqPrev;
@@ -1503,8 +1543,8 @@ function renderArena(){
 function renderLessons(){
   const done=S.lessons||{}, n=LESSONS.filter(([k])=>done[k]).length;
   $('#lProg').hidden=!ME; $('#lProg').innerHTML=`<b>${n===LESSONS.length?'Alle Lektionen gehört. Stark!':`${n} von ${LESSONS.length} Lektionen gehört`}</b><div class="lvl"><i style="width:${n/LESSONS.length*100}%"></i></div><small>Tippen Sie auf eine Lektion, Florian erklärt sie in etwa 30 Sekunden.</small>`;
-  $('#lessons').innerHTML = LESSONS.map(([k,l],i)=>`<button class="row lesson ${done[k]?'done':''}" style="grid-template-columns:42px 1fr auto" data-lesson="${k}"><span class="logo">${done[k]?'✓':i+1}</span><span class="n"><b>${l}</b><small>Florian erklärt · ca. 30 Sek.</small></span><span class="say" style="width:40px;height:40px"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg></span></button>`).join(''); }
-function render(){ renderLessons(); renderHeader(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); renderDiscover(); }
+  $('#lessons').innerHTML = LESSONS.map(([k,l],i)=>`<button class="row lesson ${done[k]?'done':''}" style="grid-template-columns:42px 1fr auto" data-lesson="${k}"><span class="logo">${done[k]?'✓':i+1}</span><span class="n"><b>${l}</b><small>Florian erklärt · ca. 30 Sek.</small></span><span class="say" style="width:40px;height:40px"><svg class="pl" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg><svg class="pz" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></span></button>`).join(''); }
+function render(){ renderLessons(); renderHeader(); renderNews(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); renderDiscover(); }
 
 /* ---------- coach / voice ---------- */
 let curCoach='welcome';
@@ -2060,7 +2100,7 @@ const STAGES=[['locked','Talent-Wertung freischalten'],['watch','Beobachtet'],['
 function renderTalents(){
   if(!TL) return; const m=TL.message, me=TL.me;
   $('#tlMsg').innerHTML=`<div class="top2"><img src="/img/florian-homm.jpg" alt="Florian Homm"><div style="flex:1;min-width:0"><span class="kick">Scouting & Talents</span><div class="muted" style="font-size:13px;margin-top:3px">Eine Nachricht von Florian Homm</div></div>
-    <button class="say" data-saykey="scouting" aria-label="Nachricht anhören"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>
+    <button class="say" data-saykey="scouting" aria-label="Nachricht anhören"><svg class="pl" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="pz" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button></div>
     <h3>${esc(m.title)}</h3>${m.text.map(t=>`<p>${esc(t)}</p>`).join('')}<div class="sig">${esc(m.sign)}</div>`;
   $('#tlQuarter').textContent=TL.quarter.replace('-',' · ');
   if(!me){ $('#tlSteps').innerHTML='<p class="muted">Bitte anmelden.</p>'; return; }
@@ -2367,7 +2407,7 @@ document.addEventListener('click',e=>{
   const ex=t.closest('[data-explain]'); if(ex){ ui.tip=ex.dataset.explain; $('#tip').textContent=TIPS[ui.tip]; speakKey(ui.tip,$('#tipBox')); $('#tipBox').scrollIntoView({behavior:'smooth',block:'center'}); return; }
   const ad=t.closest('[data-add]'); if(ad){ addInstrument(ad.dataset.add); return; }
   const r=t.closest('[data-sym]'); if(r){ openTrade(r.dataset.sym); return; }
-  const f=t.closest('[data-f]'); if(f){ ui.filter=f.dataset.f; renderMarket(); return; }
+  const f=t.closest('[data-f]'); if(f){ if(f.dataset.f==='compact'){ ui.allQuotes=false; } else { ui.allQuotes=true; ui.filter=f.dataset.f; } renderMarket(); return; }
   const l=t.closest('[data-lb]'); if(l){ ui.lb=l.dataset.lb; renderArena(); return; }
   const pe=t.closest('[data-person]'); if(pe){ openProfile(+pe.dataset.person); return; }
   const ls=t.closest('[data-lesson]'); if(ls){ markLesson(ls.dataset.lesson); coach(ls.dataset.lesson); speakKey(ls.dataset.lesson,$('#coach')); window.scrollTo({top:0,behavior:'smooth'}); return; }
@@ -2433,7 +2473,8 @@ async function enter(){
   $('#ob').hidden=true;
   await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(), loadArenas(), loadSmart(),
     api('/api/radar').then(d=>{ RD=d.radar||{}; HN=d.homm||null; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
-    api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{})]);
+    api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{}), loadNews()]);
+  setInterval(()=>{ loadNews().then(renderNews); }, 240*60000);
   render();
   if(!S.mode){ $('#ob').hidden=false; $('#obAuth').hidden=true; $('#obMode').hidden=false; }
   coach(S.pos.length?'live':pro()?'welcomePro':'welcome');

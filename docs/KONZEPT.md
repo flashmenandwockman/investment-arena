@@ -37,7 +37,7 @@ Die App hat fünf Bereiche im Menü unten:
 
 | Bereich | Inhalt |
 |---|---|
-| **Märkte** | Depotwert, Florians Erklärungen, Smart-Money-Radar, Suche, Kursliste, Fair-Play-Hinweis |
+| **Märkte** | Depotwert, Florians Erklärungen, Suche, Aktuell (Nachrichten mit Marktwirkung und der Beitrag von Florian Homm aus Free Homes), Kurse in der Übersicht (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte) oder als volle Liste, Smart-Money-Radar, Fair-Play-Hinweis |
 | **Depot** | Kopierte Anleger, offene Positionen, Verlauf, Zurücksetzen |
 | **Entdecken** | TRCM Portfolio, Anleger kopieren, Großinvestoren, Community-Fonds |
 | **Arena** | Drei Reiter: Global (Preise, Profil, Rangliste), Meine Arenen (private Arenen, Gruppen-Liga), Talente (Scouting & Talents) |
@@ -60,9 +60,11 @@ Die App hat fünf Bereiche im Menü unten:
 ## 4. Märkte
 
 ### Kurse und Auswahl
-- **19 Werte als feste Auswahl:** Apple, NVIDIA, Microsoft, Amazon, Tesla, SAP, Siemens, Rheinmetall, Allianz, Deutsche Bank, DAX, S&P 500, Gold, Bitcoin, Ethereum, Solana, XRP, Cardano, Dogecoin.
+- **Aktuell:** Überschriften mit Wirkung auf Kurse und Wirtschaft (tagesschau Wirtschaft per RSS, Finnhub-Marktnachrichten), nach Stichworten wie Notenbank, Zinsen, Inflation, Zölle, Öl, Quartalszahlen gewichtet, alle 240 Minuten aktualisiert. Ganz oben immer der neueste Beitrag von Florian Homm aus Free Homes mit Teaser, der Rest hinter dem Free-Homes-Login.
+- **Kurse in der Übersicht:** 3 Aktien (eigene Positionen und Watchlist zuerst, dann die größten Bewegungen), 2 Rohstoffe (Gold, Öl), 2 ETFs (S&P 500, Nasdaq 100), 2 Kryptowerte (Bitcoin, Ethereum). „Mehr“ öffnet die volle Liste mit Filtern.
+- **22 Werte als feste Auswahl:** Apple, NVIDIA, Microsoft, Amazon, Tesla, SAP, Siemens, Rheinmetall, Allianz, Deutsche Bank, DAX, S&P 500, Gold, Öl (WTI), S&P 500 ETF, Nasdaq 100 ETF, Bitcoin, Ethereum, Solana, XRP, Cardano, Dogecoin.
 - **Suche nach jeder US-Aktie, jedem US-ETF und ADR** (rund 27.000 Titel, auch Aktienklassen wie Berkshire Hathaway BRK.B). Treffer erscheinen nach rund 0,2 Sekunden, ein neuer Titel öffnet in etwa 0,1 Sekunden.
-- **Filter:** Alle, Krypto, Deutschland, USA, Indizes & Rohstoffe.
+- **Filter:** Übersicht, Alle, Watchlist, USA, Deutschland, Rohstoffe, ETFs, Krypto, Indizes.
 - Jede Zeile zeigt Kurs, Tagesveränderung, Mini-Chart, Volatilität und Hinweise wie „Zahlen am 17.11.“, „Insider kauft“ oder „Volumen 2,3×“.
 
 ### Kurs-Chart und Kerzen-Chart

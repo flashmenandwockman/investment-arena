@@ -67,7 +67,8 @@ function row(r, full) {
   const base = {id: r.id, date: r.published_at, syms, names: syms.map(name), kind: r.kind, source: r.source, channel: r.channel,
     bb: r.bb_url || config.boersenbriefUrl, hasImage: !!r.image,
     kick: r.kind === 'video' ? 'Video von Florian Homm' : syms.length ? `Florian Homm zu ${syms.slice(0, 2).map(name).join(' und ')}` : 'Florian Homm'};
-  if (!full) return {...base, locked: true};
+  // Nicht-Mitglieder: Teaser-Vorschau (Überschrift, erster Satz), der Rest bleibt hinter dem Free-Homes-Login
+  if (!full) return {...base, locked: true, title: r.title, teaser: (r.teaser || r.body).slice(0, 160)};
   return {...base, locked: false, title: r.title, teaser: r.teaser, body: r.body, bodyEn: r.body_en, url: r.url, video,
     image: r.image ? `/api/homm/${r.id}/image` : ''};
 }

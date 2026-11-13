@@ -402,8 +402,10 @@ test('Florian-Homm-Postings: Radar mischt sie unter, Inhalt nur für Mitglieder'
   const gi = g.data.homm.items.find(i => i.id === mine.id);
   assert.strictEqual(g.data.homm.member, false);
   assert.strictEqual(gi.locked, true);
-  assert.strictEqual(gi.title, undefined, 'kein Titel für Nicht-Mitglieder');
-  assert.strictEqual(gi.body, undefined);
+  assert.strictEqual(gi.title, 'Cboe Put Volume Hits an All-Time High', 'Teaser-Vorschau: Überschrift sichtbar');
+  assert.ok(gi.teaser.length <= 160);
+  assert.strictEqual(gi.body, undefined, 'Text nur für Mitglieder');
+  assert.strictEqual(gi.image, undefined);
   assert.match(gi.kick, /Florian Homm zu NVIDIA/);
   const gs = await guest('/api/radar/NVDA');
   assert.strictEqual(gs.data.homm[0].locked, true, 'auch im Smart-Money-Feld je Titel gesperrt');
@@ -433,4 +435,21 @@ test('Florian-Homm-Postings: Radar mischt sie unter, Inhalt nur für Mitglieder'
   const rss = homm.parseFeed('<rss><channel><item><title>Zu Bitcoin und $NVDA</title><link>https://a/b</link><guid>g1</guid><pubDate>Mon, 10 Nov 2026 10:00:00 GMT</pubDate><description><![CDATA[<p>Text</p>]]></description></item></channel></rss>');
   assert.strictEqual(rss.length, 1);
   assert.deepStrictEqual(rss[0].syms.sort(), ['BTC/EUR', 'NVDA']);
+});
+
+test('Aktuell: Nachrichten mit Marktwirkung, Kurse mit Rohstoffen und ETFs', async () => {
+  const news = require('../server/news');
+  const c = client();
+  const n = await c('/api/news');
+  assert.ok(Array.isArray(n.data.items) && n.data.items.length >= 3, 'Fallback-Nachrichten vorhanden');
+  assert.ok(n.data.items.every(i => i.h && i.url && i.src && i.t), 'nur Überschrift, Quelle, Zeit, Link');
+  assert.ok(news.score('Fed signalisiert Zinssenkung, DAX auf Rekordhoch') >= 7);
+  assert.ok(news.score('Jim Cramer\'s top 10 things to watch') < 3, 'Rauschen wird aussortiert');
+  const now = Math.floor(Date.now() / 1000);
+  const picked = news.pick([{h: 'EZB hebt den Leitzins an, Anleihen unter Druck', url: 'https://a', src: 'x', t: now, lang: 'de'}, {h: 'Promi-Hochzeit in Berlin', url: 'https://b', src: 'x', t: now, lang: 'de'}, {h: 'Alte Meldung zur Inflation', url: 'https://c', src: 'x', t: now - 3 * 86400, lang: 'de'}]);
+  assert.deepStrictEqual(picked.map(p => p.url), ['https://a']);
+  const q = await c('/api/quotes');
+  for (const s of ['GC=F', 'CL=F', 'SPY', 'QQQ']) assert.ok(q.data.quotes[s] && q.data.quotes[s].price > 0, s);
+  assert.strictEqual(q.data.instruments['CL=F'].g, 'cmd');
+  assert.strictEqual(q.data.instruments['QQQ'].g, 'etf');
 });
