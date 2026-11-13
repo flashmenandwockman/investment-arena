@@ -22,6 +22,8 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | **TRCM Portfolio** | Portfolio des Analystenteams von Florian Homm, mit Verweis auf den Homm Long Short Börsenbrief. Wertentwicklung für alle sichtbar, **gehaltene Titel nur für Free-Homes-Mitglieder**. Gepflegt über den Admin-Zugang |
 | **Private Arenen** | Eigene Gruppen mit Freunden und Kollegen wie bei einer Tipprunde: eröffnen, per Link, WhatsApp oder QR-Code einladen, Rangliste mit Auf- und Abstiegen, Aktivitäts-Feed mit Reaktionen, Gruppen-Liga. Wahlweise mit dem Hauptdepot oder einem eigenen Arena-Depot (neu oder als Kopie des Hauptdepots) |
 | **Scouting & Talents** | Nachricht von Florian Homm, Talent-Score, Stufen bis zum Pitch beim Analystenteam, Vorstellung mit Einwilligung, Scouting-Board für Admins |
+| **Depot im Detail** | Tippen auf den Depotkasten im Bereich Depot: Rendite seit Start, Verlauf gegen MSCI World (Start = 100), Aufteilung nach Aktien, ETFs, Rohstoffen, Indizes, Krypto, Fonds und Bargeld, Monatsrenditen, größter Rückgang, Trefferquote, Sharpe Ratio, bester und schwächster Trade |
+| **Mein Konto** | Profiltext (wie bei den Gründungsmitgliedern, z. B. „Azubi, 20 · Krypto & Tech“), Liste „Ich folge“ mit Profilen, eigene Watchlist |
 | **Arena** | Ranglisten (Monat, Heute, Woche, Depotwert), Monatspreise (Short-Selling-Kurs, Börsenbrief-Abo, Free-Homes-Abo, Partnerpreise), Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
 | **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
@@ -228,7 +230,9 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | GET | `/api/news` | Aktuell: Nachrichten mit Marktwirkung (alle 240 Minuten) |
 | GET | `/api/homm`, `/api/homm/:id/image` | Alle Postings von Florian Homm, Chart-Bild (nur Mitglieder) |
 | POST/PATCH/DELETE | `/api/admin/homm[/:id]`, `/api/admin/homm/sync` | Meldungen pflegen, Abgleich mit Free Homes anstoßen (nur Admins) |
-| GET/PATCH | `/api/state` | Spielstand, Modus, Folgen |
+| GET/PATCH | `/api/state` | Spielstand, Modus, Folgen, Watchlist |
+| GET/PATCH | `/api/me` | Angemeldeter Nutzer, Profiltext ändern |
+| GET | `/api/portfolio` | Eigenes Depot im Detail: Verlauf, Aufteilung, Monatsrenditen, Kennzahlen |
 | POST | `/api/orders`, `/api/positions/:id/close` | Order eröffnen, Position schließen |
 | GET | `/api/leaderboard`, `/api/profile/:id` | Rangliste, Trader-Profil |
 | GET/POST | `/api/funds`, `/api/funds/:id`, `/api/funds/:id/invest` | Community-Fonds |

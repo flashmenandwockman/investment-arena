@@ -557,6 +557,19 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 .brand{gap:4px} .brand span{line-height:1.2}
 /* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
 @media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spk{display:none} }
+/* Seitentitel je Bereich, Einblendung beim Wechsel */
+.page-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:14px 2px 10px} .page-h h1{font-family:var(--serif);font-weight:400;font-size:28px;margin:0;line-height:1.1} .page-h{animation:pagein .28s ease-out} .page-h small{color:var(--muted);font-size:12.5px;text-align:right}
+main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){main{animation:none}}
+.hero.tap{cursor:pointer} .hero .hint{position:absolute;right:16px;top:16px;font-size:12px;color:var(--gold-p);font-weight:600}
+/* Depot im Detail */
+.pfo .big{font-family:var(--serif);font-size:36px;line-height:1;margin:6px 0 4px} .pfo .sub{color:var(--muted);font-size:13px}
+.pfo svg{display:block;width:100%;height:auto}
+.alloc{display:grid;grid-template-columns:90px 1fr 54px;gap:10px;align-items:center;font-size:13px;padding:6px 0} .alloc .bar{height:6px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden} .alloc .bar i{display:block;height:100%;background:var(--gold-grad)} .alloc b{text-align:right}
+.krow{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:14px} .krow small{display:block;color:var(--muted);font-size:12px;margin-top:2px} .krow b{font-size:16px;white-space:nowrap}
+.seg-t{display:flex;gap:6px;margin:14px 0 4px} .seg-t button{flex:1;padding:9px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-weight:600;font-size:13px} .seg-t button.on{color:var(--text);border-color:var(--gold);background:rgba(198,164,108,.1)}
+/* Konto: Profil, Ich folge, Watchlist */
+.acl{margin-top:22px} .acl h4{margin:0 0 8px;font-family:var(--serif);font-weight:400;font-size:18px}
 /* Aktuell: Nachrichten und der Beitrag aus Free Homes */
 .nw{display:block;width:100%;text-align:left;color:var(--text);text-decoration:none;padding:11px 2px;border:0;border-top:1px solid var(--line);background:none;font:inherit} .nw:first-child{border-top:0}
 .nw small{display:block;color:var(--muted);font-size:11.5px;margin-bottom:3px} .nw b{font-size:14px;line-height:1.35;font-weight:600} .nw .enb{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;border:1px solid var(--line);border-radius:5px;padding:0 4px;margin-left:6px;vertical-align:1px;color:var(--muted)}
@@ -624,9 +637,10 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
     </div>
   </header>
 
+  <div class="page-h" id="pageH"><h1 id="pageT">Märkte</h1><small id="pageS">Aktuelles, Kurse, Smart Money</small></div>
   <div class="books" id="books" hidden></div>
-  <section class="hero">
-    <small id="heroLbl">Mein Depot · Spielgeld</small>
+  <section class="hero" id="hero">
+    <small id="heroLbl">Mein Depot · Spielgeld</small><span class="hint" id="heroHint" hidden>Details ›</span>
     <div class="val num" id="equity">100.000,00 €</div>
     <div class="chg num" id="equityChg"></div>
     <div class="stats">
@@ -672,6 +686,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 
   <!-- DEPOT -->
   <main id="tab-depot" hidden>
+    <button class="valbtn" id="pfolioBtn"><span><small>Mein Depot im Detail</small><b style="font-family:var(--sans);font-size:15px;font-weight:600">Verlauf, Aufteilung, Kennzahlen</b></span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></button>
     <div id="copiesBox" hidden><div class="sec-h"><h2>Kopierte Anleger</h2><span class="muted num" style="font-size:12px" id="copyCount"></span></div><div class="list" id="copies"></div></div>
     <div id="ordersBox" hidden><div class="sec-h"><h2>Limit-Orders</h2><span class="muted num" style="font-size:12px" id="ordCount"></span></div><div class="list" id="orders"></div></div>
     <div class="sec-h"><h2>Offene Positionen</h2><span class="muted num" style="font-size:12px" id="posCount"></span></div>
@@ -780,7 +795,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 <nav class="nav"><div class="nav-in">
   <button class="on" data-tab="markt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg>Märkte</button>
   <button data-tab="depot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M8 6V4h8v2"/></svg>Depot<span class="badge" id="navBadge" hidden>0</span></button>
-  <button data-tab="fonds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>Entdecken</button>
+  <button data-tab="fonds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21"/><path d="M16.2 7.8l-2.6 6-6 2.6 2.6-6z" fill="currentColor" stroke="none"/></svg>Entdecken</button>
   <button data-tab="arena"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Arena</button>
   <button data-tab="lernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l10-5 10 5-10 5z"/><path d="M6 10v5c3 2.5 9 2.5 12 0v-5"/></svg>Lernen</button>
 </div></nav>
@@ -1164,7 +1179,23 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
     <div class="sheet-h"><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Mein Konto</span><button class="x" data-closesheet aria-label="Schließen">×</button></div>
     <div class="pf-top"><div class="av" id="acAv"></div><h3 id="acName"></h3><div class="muted" id="acSub" style="font-size:13px"></div></div>
     <div class="alert" id="acDemo" hidden>Sie spielen als Gast. Gastkonten werden nach 7 Tagen gelöscht. Registrieren Sie sich, um dauerhaft in der Rangliste zu stehen.</div>
-    <button class="btn2" id="acLogout" style="margin-top:16px">Abmelden</button>
+    <div class="acl"><h4>Über mich</h4>
+      <input class="inp" id="acBio" maxlength="60" placeholder="z. B. Studentin, 19 · Krypto & Tech">
+      <p class="fine" style="margin-top:6px">Erscheint unter Ihrem Namen in Rangliste und Profil. Höchstens 60 Zeichen.</p>
+      <button class="btn2" id="acBioSave" style="margin-top:10px">Speichern</button></div>
+    <div class="acl"><h4>Ich folge</h4><div class="list" id="acFollow"></div></div>
+    <div class="acl"><h4>Meine Watchlist</h4><div class="list" id="acWatch"></div></div>
+    <button class="btn2" id="acLogout" style="margin-top:26px">Abmelden</button>
+  </div>
+</section>
+
+<!-- Depot im Detail -->
+<section class="sheet" id="pfolioSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Mein Depot</span><h3>Im Detail</h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div class="seg-t" id="pfoSeg"><button class="on" data-pfo="ueberblick">Überblick</button><button data-pfo="aufteilung">Aufteilung</button><button data-pfo="kennzahlen">Kennzahlen</button></div>
+    <div class="pfo" id="pfoBody"></div>
   </div>
 </section>
 
@@ -2430,9 +2461,14 @@ document.addEventListener('click',e=>{
   const md=t.closest('[data-mode]'); if(md){ setMode(md.dataset.mode,true); return; }
   const pk=t.closest('[data-pick]'); if(pk){ setMode(pk.dataset.pick,false); $('#ob').hidden=true; let js=null; try{ js=sessionStorage.getItem('joinSlug'); sessionStorage.removeItem('joinSlug'); }catch(e){} if(js) setTimeout(()=>openArena(js),400); return; }
   if(t.closest('#acctBtn')){ openAccount(); return; }
+  if(t.closest('#pfolioBtn')||(t.closest('#hero')&&ui.tab==='depot'&&!t.closest('.rankline'))){ openPortfolio(); return; }
+  const ps=t.closest('[data-pfo]'); if(ps){ pfoTab=ps.dataset.pfo; renderPortfolio(); return; }
   const g=t.closest('[data-tab],[data-go]'); if(g){ const tab=g.dataset.tab||g.dataset.go; ui.tab=tab;
     $$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
-    ['markt','depot','fonds','arena','lernen'].forEach(k=>$('#tab-'+k).hidden=k!==tab);
+    ['markt','depot','fonds','arena','lernen'].forEach(k=>{ const el=$('#tab-'+k); el.hidden=k!==tab; if(k===tab){ el.style.animation='none'; void el.offsetWidth; el.style.animation=''; } });
+    $('#hero').hidden=!(tab==='markt'||tab==='depot'); $('#hero').classList.toggle('tap',tab==='depot'); $('#heroHint').hidden=tab!=='depot';
+    const PT={markt:['Märkte','Aktuelles, Kurse, Smart Money'],depot:['Depot','Positionen, Orders, Verlauf'],fonds:['Entdecken','TRCM Portfolio, Anleger kopieren, Fonds'],arena:['Arena','Rangliste, private Arenen, Talente'],lernen:['Lernen','13 Lektionen von Florian Homm']}[tab];
+    $('#pageT').textContent=PT[0]; $('#pageS').textContent=PT[1]; $('#pageH').style.animation='none'; void $('#pageH').offsetWidth; $('#pageH').style.animation='';
     if(tab==='depot'&&!S.pos.length) coach('empty'); if(tab==='arena'){ coach('arena'); loadLB().then(renderArena); } if(tab==='fonds'){ coach('fundIntro'); loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); loadDiscover().then(renderDiscover); }
     window.scrollTo({top:0,behavior:'smooth'}); }
 });
@@ -2446,9 +2482,69 @@ async function setMode(m, notify){
 function openAccount(){
   if(!ME) return;
   $('#acAv').outerHTML=avatar(ME,'acAv'); $('#acName').textContent=ME.name;
-  $('#acSub').textContent = ME.provider==='freehomes' ? 'Angemeldet über Free Homes' : ME.provider==='demo' ? 'Gastzugang (Demo)' : (ME.email||'');
+  $('#acSub').textContent = (ME.bio?ME.bio+' · ':'') + (ME.provider==='freehomes' ? 'Angemeldet über Free Homes' : ME.provider==='demo' ? 'Gastzugang (Demo)' : (ME.email||''));
   $('#acDemo').hidden = ME.provider!=='demo';
+  $('#acBio').value=ME.bio||'';
+  renderAccountLists();
   openSheet('#acctSheet'); coach('account');
+}
+function renderAccountLists(){
+  const ids=Object.keys(S.follow||{}).filter(k=>S.follow[k]);
+  $('#acFollow').innerHTML=ids.length?ids.map(id=>{ const r=LB.find(x=>String(x.id)===String(id))||{id,name:'Mitglied',sub:'',color:''}; return `<button class="trader" data-profile="${esc(id)}" style="display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line);color:var(--text)">${avatar(r)}<span class="nm" style="min-width:0"><b>${esc(r.name)}</b><small>${esc(r.sub||'')}</small></span><span class="r">${r.mon!=null?`<b class="num ${cls(r.mon)}">${pct(r.mon,1)}</b><small class="muted">Monat</small>`:'<small class="muted">Profil ›</small>'}</span></button>`; }).join('')
+    :'<div class="empty">Sie folgen noch niemandem.<br>Öffnen Sie in der Rangliste ein Profil und tippen Sie auf „Folgen“.</div>';
+  const W=(S.watch||[]).filter(s=>META[s]&&Q[s]);
+  $('#acWatch').innerHTML=W.length?W.map(marketRow).join(''):'<div class="empty">Noch nichts auf der Watchlist.<br>Öffnen Sie einen Titel und tippen Sie oben auf ☆.</div>';
+}
+$('#acBioSave').onclick=async()=>{ try{ ME=(await api('/api/me',{method:'PATCH',body:{bio:$('#acBio').value}})).user; toast('Profil gespeichert'); openAccount(); await loadLB(); renderArena(); }catch(e){ toast(e.message); } };
+$('#acFollow').addEventListener('click',e=>{ const b=e.target.closest('[data-profile]'); if(b) openProfile(+b.dataset.profile); });
+$('#acWatch').addEventListener('click',e=>{ const b=e.target.closest('[data-sym]'); if(b) openTrade(b.dataset.sym); });
+
+/* ---------- Depot im Detail ---------- */
+let PFO=null, pfoTab='ueberblick';
+async function openPortfolio(){ try{ PFO=await api('/api/portfolio'); }catch(e){ return toast(e.message); } pfoTab='ueberblick'; renderPortfolio(); openSheet('#pfolioSheet'); }
+function lineChart(series, bench){
+  const W=640,H=220,L=8,R=8,T=14,B=26, n=series.length; if(n<2) return '<div class="empty">Der Verlauf entsteht ab dem zweiten Tag.</div>';
+  const a=series.map(h=>h.eq/series[0].eq*100), b=bench&&bench.hist.length>1?bench.hist.slice(-n):null, bn=b?b.map(v=>v/b[0]*100):[];
+  const all=a.concat(bn), mn=Math.min(...all), mx=Math.max(...all), r=mx-mn||1;
+  const X=i=>L+i/(n-1)*(W-L-R), Y=v=>T+(1-(v-mn)/r)*(H-T-B);
+  const path=arr=>arr.map((v,i)=>`${i?'L':'M'}${X(i*(n-1)/(arr.length-1)).toFixed(1)},${Y(v).toFixed(1)}`).join('');
+  const lab=(i)=>{ const d=new Date(series[i].day+'T12:00:00'); return d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); };
+  return `<svg viewBox="0 0 ${W} ${H}" aria-label="Depotverlauf">${[0.25,0.5,0.75].map(f=>`<line x1="${L}" x2="${W-R}" y1="${(T+f*(H-T-B)).toFixed(1)}" y2="${(T+f*(H-T-B)).toFixed(1)}" stroke="rgba(255,255,255,.06)"/>`).join('')}
+    <line x1="${L}" x2="${W-R}" y1="${Y(100).toFixed(1)}" y2="${Y(100).toFixed(1)}" stroke="rgba(255,255,255,.18)" stroke-dasharray="3 4"/>
+    ${b?`<path d="${path(bn)}" fill="none" stroke="#8fa3c8" stroke-width="1.6"/>`:''}
+    <path d="${path(a)}" fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linejoin="round"/>
+    <circle cx="${X(n-1)}" cy="${Y(a.at(-1))}" r="4" fill="var(--gold)"/>
+    <text x="${L}" y="${H-8}" font-size="11" fill="#8a93ad">${lab(0)}</text><text x="${W-R}" y="${H-8}" font-size="11" fill="#8a93ad" text-anchor="end">${lab(n-1)}</text></svg>
+    <div class="legend" style="margin-top:4px"><span style="color:var(--gold)">— Mein Depot</span>${b?`<span style="color:#8fa3c8">— ${esc(bench.name)}, Start = 100</span>`:''}</div>`;
+}
+function monthChart(list){
+  if(!list.length) return '';
+  const W=640,H=180,L=8,R=8,T=26,B=28, n=list.length, mx=Math.max(...list.map(x=>Math.abs(x.r)),0.01), band=(W-L-R)/n, bw=Math.min(40,band*0.6);
+  const Y0=T+(H-T-B)/2, sc=(H-T-B)/2/mx, mn=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  return `<svg viewBox="0 0 ${W} ${H}" aria-label="Monatsrenditen"><line x1="${L}" x2="${W-R}" y1="${Y0}" y2="${Y0}" stroke="rgba(255,255,255,.18)"/>${list.map((x,i)=>{ const cx=L+band*(i+.5), h=Math.abs(x.r)*sc, up=x.r>=0; return `<rect x="${(cx-bw/2).toFixed(1)}" y="${(up?Y0-h:Y0).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${up?'#3ccf91':'#ff6b6b'}" fill-opacity=".85"/><text x="${cx.toFixed(1)}" y="${(up?Y0-h-6:Y0+h+14).toFixed(1)}" font-size="11" text-anchor="middle" fill="${up?'#7fe3b6':'#ff9a9a'}">${(x.r*100).toFixed(1).replace('.',',').replace('-','−')}</text><text x="${cx.toFixed(1)}" y="${H-8}" font-size="11" text-anchor="middle" fill="#8a93ad">${mn[+x.m.slice(5,7)-1]}</text>`; }).join('')}</svg>`;
+}
+function renderPortfolio(){
+  const P=PFO; if(!P) return;
+  $$('#pfoSeg [data-pfo]').forEach(b=>b.classList.toggle('on',b.dataset.pfo===pfoTab));
+  let h='';
+  if(pfoTab==='ueberblick'){
+    h=`<div class="big num ${cls(P.tot)}">${pct(P.tot,2)}</div><div class="sub num">Aus ${eur(P.start,0)} wurden ${eur(P.eq)}. ${P.series.length>1?`Verlauf über ${P.series.length} Tage.`:''}</div>
+      <div class="chartbox">${lineChart(P.series,P.benchmark)}</div>
+      <div class="kv"><div><small>Offene Positionen</small><b class="num">${P.openCount}</b></div><div><small>Realisiert</small><b class="num ${cls(P.realized)}">${sgn(P.realized)}</b></div><div><small>Größter Rückgang</small><b class="num ${P.dd<-0.0005?'down':''}">${pct(P.dd,1)}</b></div></div>`;
+  } else if(pfoTab==='aufteilung'){
+    h=`<div class="sub" style="margin-top:8px">Worin Ihr Kapital steckt, Anteil am Depotwert.</div><div style="margin-top:10px">${P.allocation.map(a=>`<div class="alloc"><span>${esc(a.k)}</span><span class="bar"><i style="width:${Math.min(100,a.w*100)}%"></i></span><b class="num">${nf(a.w*100,1)} %</b></div>`).join('')}</div>
+      ${P.monthly.length>1?`<h4 style="margin:22px 0 6px">Monatsrenditen in Prozent</h4><div class="chartbox">${monthChart(P.monthly.slice(-12))}</div>`:'<p class="fine" style="margin-top:18px">Monatsrenditen erscheinen ab dem zweiten Monat.</p>'}`;
+  } else {
+    const row=(l,sub,v)=>`<div class="krow"><span>${l}<small>${sub}</small></span><b class="num">${v}</b></div>`;
+    h=row('Rendite seit Start','Aus 100.000 € Spielgeld',`<span class="${cls(P.tot)}">${pct(P.tot,2)}</span>`)
+      +row('Größter Rückgang','Tiefster Punkt von einem Hoch aus',`<span class="${P.dd<-0.0005?'down':''}">${pct(P.dd,1)}</span>`)
+      +row('Trefferquote',P.closed?`${P.wins} von ${P.closed} geschlossenen Trades mit Gewinn`:'Noch kein Trade geschlossen',P.hit==null?'–':nf(P.hit*100,0)+' %')
+      +row('Sharpe Ratio','Rendite im Verhältnis zur Schwankung, ab 10 Tagen',P.sharpe==null?'–':nf(P.sharpe,2))
+      +row('Realisiertes Ergebnis','Summe aller geschlossenen Trades',`<span class="${cls(P.realized)}">${sgn(P.realized)}</span>`)
+      +(P.best?row('Bester Trade',esc(P.best.t),`<span class="up">${sgn(P.best.pl)}</span>`):'')
+      +(P.worst&&P.worst.pl<0?row('Schwächster Trade',esc(P.worst.t),`<span class="down">${sgn(P.worst.pl)}</span>`):'');
+  }
+  $('#pfoBody').innerHTML=h;
 }
 $('#acLogout').onclick=async()=>{ try{ await api('/api/auth/logout',{body:{}}); }catch(e){} location.reload(); };
 

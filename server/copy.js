@@ -145,4 +145,7 @@ function discover(meId) {
 }
 function statsOf(userId) { return discover(null).find(x => x.id === userId) || null; }
 
-module.exports = {baseline, periodStarts, start, stop, onOpen, onClose, view, snapshot, discover, statsOf, MIN};
+// Depotverlauf eines Mitglieds (Tageswerte aus den Momentaufnahmen)
+function series(userId, days = 200) { return qHist.all(userId, dayStr(days)); }
+
+module.exports = {baseline, periodStarts, start, stop, onOpen, onClose, view, snapshot, discover, statsOf, series, MIN};

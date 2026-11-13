@@ -471,3 +471,17 @@ test('Beliebteste Titel des Tages in der Kursübersicht', async () => {
   assert.ok(q.data.popular && typeof q.data.popular === 'object', 'Beliebtheit wird mitgeliefert');
   assert.ok(q.data.popular.QQQ >= 3, 'gehaltener ETF zählt');
 });
+
+test('Profiltext, Depot im Detail', async () => {
+  const c = client();
+  await c('/api/auth/register', {name: 'Profil', email: 'p@b.de', password: 'geheim1234'});
+  const me = await c('/api/me', {bio: '  Azubi, 20 · Krypto   & Tech  '}, 'PATCH');
+  assert.strictEqual(me.data.user.bio, 'Azubi, 20 · Krypto & Tech');
+  assert.ok((await c('/api/me')).data.user.bio.length <= 60);
+  await c('/api/orders', {sym: 'AAPL', dir: 1, amt: 5000});
+  const pf = await c('/api/portfolio');
+  assert.strictEqual(pf.data.start, 100000);
+  assert.ok(pf.data.series.length >= 1 && pf.data.allocation.some(a => a.k === 'Aktien') && pf.data.allocation.some(a => a.k === 'Bargeld'));
+  assert.ok(Math.abs(pf.data.allocation.reduce((a, x) => a + x.w, 0) - 1) < 0.01, 'Aufteilung ergibt 100 %');
+  assert.strictEqual(pf.data.openCount, 1);
+});

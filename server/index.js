@@ -44,7 +44,8 @@ function requireUser(req) {
   if (!u) throw Object.assign(new Error('Bitte anmelden'), {status: 401});
   return u;
 }
-const publicUser = u => u && {id: u.id, name: u.name, provider: u.provider, color: u.color, email: u.email || null, admin: trcm.isAdmin(u), member: trcm.isMember(u)};
+const publicUser = u => u && {id: u.id, name: u.name, provider: u.provider, color: u.color, email: u.email || null, bio: u.bio || '', admin: trcm.isAdmin(u), member: trcm.isMember(u)};
+const qSetBio = db.prepare('UPDATE users SET bio = ? WHERE id = ?');
 // Depot einer Anfrage: Hauptdepot oder eigenes Arena-Depot (?book=<Arena-ID>)
 function bookOf(u, url) { const b = Number(url.searchParams.get('book')) || 0; return b ? arenas.loadBook(u.id, b) : null; }
 const onlyMain = bk => { if (bk) throw Object.assign(new Error('Das geht nur im Hauptdepot. Bitte oben auf „Hauptdepot“ wechseln.'), {status: 400}); };
@@ -59,6 +60,31 @@ function limit(req, max = 40, bucket = '') {
 }
 
 /* ---------- Ansichten ---------- */
+// Kennzahlen des eigenen Depots für das Detailfenster
+function portfolioView(userId) {
+  const st = store.load(userId), q = market.get(), eq = game.equity(st, 'now', funds.navOf);
+  const today = new Date().toISOString().slice(0, 10);
+  const hist = copy.series(userId, 200).filter(h => h.day < today).concat([{day: today, eq}]);
+  const cls = p => p.kind === 'fund' ? 'Fonds' : ((market.INSTRUMENTS[p.sym] || {}).t === 'ETF' ? 'ETFs' : {Aktie: 'Aktien', Rohstoff: 'Rohstoffe', Index: 'Indizes', Krypto: 'Krypto'}[(market.INSTRUMENTS[p.sym] || {}).t] || 'Sonstige');
+  const alloc = {};
+  for (const p of st.pos) { const v = game.value(p, 'now', funds.navOf); alloc[cls(p)] = (alloc[cls(p)] || 0) + v; }
+  const copied = (st.copies || []).reduce((a, c) => a + c.cash, 0), open = (st.orders || []).reduce((a, o) => a + o.amt, 0);
+  alloc['Bargeld'] = st.cash + copied + open;
+  const allocation = Object.entries(alloc).filter(([, v]) => v > 0).map(([k, v]) => ({k, v, w: eq ? v / eq : 0})).sort((a, b) => b.v - a.v);
+  // Monatsrenditen aus den Tageswerten (letzter Stand je Monat)
+  const byMonth = new Map(); for (const h of hist) byMonth.set(h.day.slice(0, 7), h.eq);
+  const months = [...byMonth.keys()].sort(), monthly = [];
+  for (let i = 0; i < months.length; i++) { const prev = i ? byMonth.get(months[i - 1]) : config.startCash; monthly.push({m: months[i], r: prev ? byMonth.get(months[i]) / prev - 1 : 0}); }
+  let peak = config.startCash, dd = 0; for (const h of hist) { peak = Math.max(peak, h.eq); dd = Math.min(dd, h.eq / peak - 1); }
+  const rets = []; for (let i = 1; i < hist.length; i++) if (hist[i - 1].eq) rets.push(hist[i].eq / hist[i - 1].eq - 1);
+  const mean = rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : 0, sd = rets.length > 1 ? Math.sqrt(rets.reduce((a, r) => a + (r - mean) ** 2, 0) / (rets.length - 1)) : 0;
+  const closed = (st.hist || []).filter(h => h.pl != null), wins = closed.filter(h => h.pl > 0).length;
+  const best = closed.reduce((b, h) => !b || h.pl > b.pl ? h : b, null), worst = closed.reduce((b, h) => !b || h.pl < b.pl ? h : b, null);
+  const bm = q['URTH'] && q['URTH'].hist && q['URTH'].hist.length > 5 ? {name: 'MSCI World', hist: q['URTH'].hist} : q['^GSPC'] ? {name: 'S&P 500', hist: q['^GSPC'].hist || []} : null;
+  return {eq, start: config.startCash, tot: eq / config.startCash - 1, realized: st.realized || 0, series: hist, allocation, monthly, dd,
+    hit: closed.length ? wins / closed.length : null, closed: closed.length, wins, sharpe: rets.length >= 10 && sd ? mean / sd * Math.sqrt(252) : null,
+    best: best ? {t: best.t, pl: best.pl} : null, worst: worst ? {t: worst.t, pl: worst.pl} : null, benchmark: bm, openCount: st.pos.length};
+}
 function stateView(userId, bk) {
   const st = bk ? bk.st : store.load(userId), q = market.get();
   const positions = st.pos.map(p => {
@@ -117,7 +143,16 @@ async function api(req, res, url) {
   const m = req.method, p = url.pathname;
   try {
     if (p === '/api/config') return send(res, 200, {version: pkg.version, startCash: config.startCash, freehomes: config.freehomes.enabled, boersenbrief: config.boersenbriefUrl});
-    if (p === '/api/me') return send(res, 200, {user: publicUser(auth.currentUser(req))});
+    if (p === '/api/me' && m === 'GET') return send(res, 200, {user: publicUser(auth.currentUser(req))});
+    // Profil: kurze Beschreibung wie bei den Gründungsmitgliedern (z. B. „Studentin, 19 · Krypto & Tech“)
+    if (p === '/api/me' && m === 'PATCH') {
+      const u = requireUser(req), b = await body(req);
+      const bio = String(b.bio == null ? u.bio || '' : b.bio).replace(/\s+/g, ' ').trim().slice(0, 60);
+      qSetBio.run(bio, u.id);
+      return send(res, 200, {user: publicUser({...u, bio})});
+    }
+    // Depot im Detail: Verlauf, Aufteilung, Monatsrenditen, Kennzahlen (eigenes Depot)
+    if (p === '/api/portfolio') { const u = requireUser(req); return send(res, 200, portfolioView(u.id)); }
     if (p === '/api/auth/register' && m === 'POST') { auth.throttle('reg:' + req.socket.remoteAddress); const id = auth.register(await body(req)); auth.startSession(res, id); return send(res, 200, {user: publicUser(qUser.get(id))}); }
     if (p === '/api/auth/login' && m === 'POST') { const b = await body(req); auth.throttle('login:' + req.socket.remoteAddress); const id = auth.login(b); auth.startSession(res, id); return send(res, 200, {user: publicUser(qUser.get(id))}); }
     if (p === '/api/auth/demo' && m === 'POST') { auth.throttle('demo:' + req.socket.remoteAddress); const id = auth.demo(); auth.startSession(res, id); return send(res, 200, {user: publicUser(qUser.get(id))}); }
