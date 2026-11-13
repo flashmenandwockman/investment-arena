@@ -453,3 +453,15 @@ test('Aktuell: Nachrichten mit Marktwirkung, Kurse mit Rohstoffen und ETFs', asy
   assert.strictEqual(q.data.instruments['CL=F'].g, 'cmd');
   assert.strictEqual(q.data.instruments['QQQ'].g, 'etf');
 });
+
+test('Beliebteste Titel des Tages in der Kursübersicht', async () => {
+  const popular = require('../server/popular');
+  const c = client();
+  await c('/api/auth/demo', {});
+  await c('/api/orders', {sym: 'QQQ', dir: 1, amt: 1000});
+  await c('/api/state', {watch: ['CL=F']}, 'PATCH').catch(() => {});
+  popular.invalidate();
+  const q = await c('/api/quotes');
+  assert.ok(q.data.popular && typeof q.data.popular === 'object', 'Beliebtheit wird mitgeliefert');
+  assert.ok(q.data.popular.QQQ >= 3, 'gehaltener ETF zählt');
+});

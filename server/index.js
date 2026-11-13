@@ -14,6 +14,7 @@ const bots = require('./bots');
 const trcm = require('./trcm');
 const homm = require('./homm');
 const news = require('./news');
+const popular = require('./popular');
 const copy = require('./copy');
 const gurus = require('./gurus');
 const arenas = require('./arenas');
@@ -129,7 +130,7 @@ async function api(req, res, url) {
       catch (e) { res.writeHead(302, {Location: '/?login=fehler'}); }
       return res.end();
     }
-    if (p === '/api/quotes') return send(res, 200, {...market.visible(), ...market.status()});
+    if (p === '/api/quotes') return send(res, 200, {...market.visible(), ...market.status(), popular: popular.get()});
     if (p === '/api/search') { requireUser(req); limit(req, 150, ':s'); /* Suche läuft lokal, darf öfter */ return send(res, 200, {results: await market.search(url.searchParams.get('q'))}); }
     if (/^\/api\/instrument\/[A-Za-z]{1,5}(\.[A-Za-z])?$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
     if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { const u = requireUser(req); limit(req); const sym = p.split('/').pop().toUpperCase(); return send(res, 200, {sym, radar: await radar.one(sym), homm: homm.forSymbol(sym, u)}); }

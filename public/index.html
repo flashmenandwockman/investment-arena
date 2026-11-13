@@ -655,6 +655,9 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
     <div class="sec-h"><h2>Aktuell</h2><span class="muted" style="font-size:12px" id="newsAsof"></span></div>
     <div id="news"></div>
     <div class="sec-h"><h2>Kurse</h2><span class="muted" style="font-size:12px" id="asof"></span></div>
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q2" type="search" placeholder="Aktie, Rohstoff, ETF, Krypto suchen …" autocomplete="off" enterkeyhint="search" aria-label="Titel suchen">
+      <div class="sres" id="sres2" hidden></div></div>
     <div class="chips" id="filters"></div>
     <div class="list" id="market"></div>
     <div class="sec-h"><h2>Smart-Money-Radar</h2><button class="link" id="smOpen" style="font-size:12.5px;text-decoration:none">Alle Meldungen ›</button></div>
@@ -1301,7 +1304,7 @@ const avatar = (r,id) => `<div class="av"${id?` id="${id}"`:''} style="backgroun
 const esc = t => String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- Smart-Money-Radar ---------- */
-let RD = {}, HN = null, RDH = {}, HL = null;   // HN: Postings fürs Radar, RDH: je Titel, HL: vollständige Liste im Fenster
+let RD = {}, HN = null, RDH = {}, HL = null, POP = {};   // POP: Beliebtheit der Titel in der Arena heute   // HN: Postings fürs Radar, RDH: je Titel, HL: vollständige Liste im Fenster
 const usd = v => v>=1e9 ? nf(v/1e9,1)+NB+'Mrd.'+NB+'$' : v>=1e6 ? nf(v/1e6,0)+NB+'Mio.'+NB+'$' : nf(v/1e3,0)+NB+'Tsd.'+NB+'$';
 const dshort = d => { const x=new Date(d+'T12:00:00'); return x.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); };
 const daysTo = d => Math.round((new Date(d+'T12:00:00')-new Date())/864e5);
@@ -1432,21 +1435,24 @@ try{ RECENT = JSON.parse(localStorage.getItem('iaRecent')||'[]'); }catch(e){}
 const mine = s => RECENT.includes(s) || S.pos.some(p=>p.sym===s) || (S.watch||[]).includes(s);
 function remember(s){ RECENT=[s,...RECENT.filter(x=>x!==s)].slice(0,12); try{ localStorage.setItem('iaRecent',JSON.stringify(RECENT)); }catch(e){} }
 let sTimer, sSeq=0; const SC=new Map();   // Zwischenspeicher: gleiche Suche sofort anzeigen
-$('#q').addEventListener('input',e=>{ clearTimeout(sTimer); const v=e.target.value.trim(); if(!v){ $('#sres').hidden=true; return; } sTimer=setTimeout(()=>doSearch(v),SC.has(v.toLowerCase())?0:140); });
-$('#q').addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('#sres').hidden=true; e.target.blur(); } if(e.key==='Enter'){ const f=$('#sres [data-add]'); if(f) f.click(); } });
-document.addEventListener('click',e=>{ if(!e.target.closest('.search')) $('#sres').hidden=true; });
+let sBox='#sres';   // Ergebnisliste des zuletzt benutzten Suchfelds (oben oder über den Kursen)
+for(const [qi,ri] of [['#q','#sres'],['#q2','#sres2']]){
+  $(qi).addEventListener('input',e=>{ clearTimeout(sTimer); sBox=ri; const v=e.target.value.trim(); if(!v){ $(ri).hidden=true; return; } sTimer=setTimeout(()=>doSearch(v),SC.has(v.toLowerCase())?0:140); });
+  $(qi).addEventListener('keydown',e=>{ if(e.key==='Escape'){ $(ri).hidden=true; e.target.blur(); } if(e.key==='Enter'){ const f=$(ri+' [data-add]'); if(f) f.click(); } });
+}
+document.addEventListener('click',e=>{ if(!e.target.closest('.search')){ $('#sres').hidden=true; $('#sres2').hidden=true; } });
 async function doSearch(v){
-  const seq=++sSeq, key=v.toLowerCase(); $('#sres').hidden=false; if(!SC.has(key)) $('#sres').innerHTML='<div class="note">Suche läuft …</div>';
+  const seq=++sSeq, key=v.toLowerCase(); $(sBox).hidden=false; if(!SC.has(key)) $(sBox).innerHTML='<div class="note">Suche läuft …</div>';
   try{ const r=SC.get(key)||(await api('/api/search?q='+encodeURIComponent(v))).results; SC.set(key,r); if(seq!==sSeq) return;
-    $('#sres').innerHTML = r.length ? r.map(x=>`<button data-add="${esc(x.sym)}"><span class="logo">${esc(x.sym.replace(/[.^=].*|\/.*/,'').slice(0,5))}</span><span><b>${esc(x.name)}</b><br><small>${esc(x.type)} · ${esc(x.sym)}</small></span><span class="go">Öffnen →</span></button>`).join('')+'<div class="note">US-Aktien und ETFs mit Echtzeitkursen. Weitere deutsche Titel folgen mit dem lizenzierten Datenanbieter.</div>'
+    $(sBox).innerHTML = r.length ? r.map(x=>`<button data-add="${esc(x.sym)}"><span class="logo">${esc(x.sym.replace(/[.^=].*|\/.*/,'').slice(0,5))}</span><span><b>${esc(x.name)}</b><br><small>${esc(x.type)} · ${esc(x.sym)}</small></span><span class="go">Öffnen →</span></button>`).join('')+'<div class="note">US-Aktien und ETFs mit Echtzeitkursen. Weitere deutsche Titel folgen mit dem lizenzierten Datenanbieter.</div>'
       : '<div class="note">Kein passender US-Titel gefunden. Suchen Sie nach Firmenname oder Kürzel, z. B. „KO“ für Coca-Cola.</div>';
-  }catch(e){ if(seq===sSeq) $('#sres').innerHTML=`<div class="note">${esc(e.message)}</div>`; }
+  }catch(e){ if(seq===sSeq) $(sBox).innerHTML=`<div class="note">${esc(e.message)}</div>`; }
 }
 async function addInstrument(sym){
-  $('#sres').innerHTML='<div class="note">Kurs wird geladen …</div>';
+  $(sBox).innerHTML='<div class="note">Kurs wird geladen …</div>';
   try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym);
-    $('#sres').hidden=true; $('#q').value=''; $('#q').blur(); renderMarket(); openTrade(r.sym); }
-  catch(e){ $('#sres').innerHTML=`<div class="note">${esc(e.message)}</div>`; }
+    $('#sres').hidden=true; $('#sres2').hidden=true; $('#q').value=''; $('#q2').value=''; $('#q').blur(); $('#q2').blur(); renderMarket(); openTrade(r.sym); }
+  catch(e){ $(sBox).innerHTML=`<div class="note">${esc(e.message)}</div>`; }
 }
 const radarPending=new Set();
 function loadRadar(s){
@@ -1459,18 +1465,17 @@ function marketRow(s){
   const q=Q[s], m=META[s], c=chg(s), W=S.watch||[];
   return `<button class="row" data-sym="${s}"><span class="logo">${m.s}</span><span class="n"><b>${W.includes(s)?'<span class="wstar">★</span>':''}${m.n}</b><small>${m.t}${pro()?` · Vol. ${Math.round(q.vol*100)} %`:''}</small>${badges(s)}</span><span class="spk" data-chart="${s}">${spark(q.hist.slice(-40),70,30,c>=0?'#3ccf91':'#ff6b6b')}</span><span class="p num" data-chart="${s}"><b>${fmt(q.price,q.cur)}</b><small class="${cls(c)}">${pct(c)}</small></span></button>`;
 }
-// Übersicht: 3 Aktien (eigene Positionen und Watchlist zuerst, dann die größten Bewegungen), 2 Rohstoffe, 2 ETFs, 2 Kryptowerte
+// Übersicht: die heute beliebtesten Titel der Arena je Gruppe (Positionen, Orders, Watchlists, Aufrufe aller Mitglieder);
+// bei Gleichstand die größte Tagesbewegung. 3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte.
 function compactGroups(){
-  const W=S.watch||[], held=new Set(S.pos.map(p=>p.sym)), core=s=>Q[s]&&!META[s].x;
-  const stocks=Object.keys(META).filter(s=>core(s)&&(META[s].g==='us'||META[s].g==='de'))
-    .sort((a,b)=>((held.has(b)?2:0)+(W.includes(b)?1:0))-((held.has(a)?2:0)+(W.includes(a)?1:0)) || Math.abs(chg(b))-Math.abs(chg(a)));
-  const of=(g,n)=>Object.keys(META).filter(s=>core(s)&&META[s].g===g).slice(0,n);
-  return [['Aktien','us',stocks.slice(0,3)],['Rohstoffe','cmd',of('cmd',2)],['ETFs','etf',of('etf',2)],['Krypto','crypto',of('crypto',2)]];
+  const pop=s=>POP[s]||0, rank=(a,b)=>pop(b)-pop(a) || Math.abs(chg(b))-Math.abs(chg(a));
+  const of=(test,n)=>Object.keys(META).filter(s=>Q[s]&&test(META[s])).sort(rank).slice(0,n);
+  return [['Aktien','us',of(m=>m.t==='Aktie',3)],['Rohstoffe','cmd',of(m=>m.g==='cmd',2)],['ETFs','etf',of(m=>m.t==='ETF',2)],['Krypto','crypto',of(m=>m.g==='crypto',2)]];
 }
 function renderMarket(){
   if(!ui.allQuotes){
     $('#filters').innerHTML='';
-    $('#market').innerHTML=compactGroups().map(([l,g,syms])=>`<div class="grp"><span>${l}</span><button class="link" data-f="${g}">Mehr ›</button></div>`+syms.map(marketRow).join('')).join('')
+    $('#market').innerHTML=compactGroups().map(([l,g,syms])=>`<div class="grp"><span>${l} · heute beliebt</span><button class="link" data-f="${g}">Mehr ›</button></div>`+syms.map(marketRow).join('')).join('')
       +`<div class="grp" style="justify-content:center;padding-top:16px"><button class="link" data-f="all">Alle Kurse und Filter ›</button></div>`;
     return;
   }
@@ -2470,7 +2475,7 @@ function setFeed(live,t){
 async function refresh(manual){
   try{
     const [q, st] = await Promise.all([api('/api/quotes'), ME?api('/api/state'):null, ME&&ui.book?loadArenas():null]);
-    Object.assign(META, q.instruments||{}); RAW=q.quotes; initQuotes(q.quotes); setFeed(q.live, Math.max(...Object.values(q.quotes).map(x=>x.time||0)));
+    Object.assign(META, q.instruments||{}); RAW=q.quotes; POP=q.popular||{}; initQuotes(q.quotes); setFeed(q.live, Math.max(...Object.values(q.quotes).map(x=>x.time||0)));
     if(st){ const before=S.pos.length; setState(st); if(st.positions.length<before){ toast('Eine Position wurde automatisch geschlossen (Stop-Loss, Knock-out oder Verfall).'); coach('knock'); } }
     render();
     $('#lastUpd').textContent='Aktualisiert '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});

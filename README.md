@@ -11,7 +11,7 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | Bereich | Inhalt |
 |---|---|
 | **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
-| **Märkte** | Oben die Suche nach jeder US-Aktie und jedem US-ETF, darunter **Aktuell** (drei Einträge: zwei Nachrichten mit Wirkung auf Kurse und Wirtschaft, als dritter dezent der neueste Beitrag von Florian Homm aus Free Homes im selben Stil, der vierte Eintrag unscharf, „Mehr aktuelle News laden“ zeigt alle; alle 240 Minuten aktualisiert), dann die **Kurse** in der Übersicht (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte, auf Wunsch alle 22 Werte mit Filtern), darunter das Smart-Money-Radar. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
+| **Märkte** | Oben die Suche nach jeder US-Aktie und jedem US-ETF, darunter **Aktuell** (drei Einträge: zwei Nachrichten mit Wirkung auf Kurse und Wirtschaft, als dritter dezent der neueste Beitrag von Florian Homm aus Free Homes im selben Stil, der vierte Eintrag unscharf, „Mehr aktuelle News laden“ zeigt alle; alle 240 Minuten aktualisiert), dann ein zweiter Suchschlitz und die **Kurse** in der Übersicht: die heute beliebtesten Titel der Arena je Gruppe (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte, berechnet aus Positionen, Orders, Watchlists und Aufrufen aller Mitglieder, alle 10 Minuten), auf Wunsch alle 22 Werte mit Filtern, darunter das Smart-Money-Radar. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Aktuell** | Überschriften von tagesschau.de (RSS, `NEWS_FEEDS`) und Finnhub-Marktnachrichten, nach Stichworten (Notenbanken, Zinsen, Inflation, Zölle, Öl, Quartalszahlen, Indizes) gewichtet, nur Überschrift, Quelle, Zeit und Link; englische Meldungen mit Kennzeichnung |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
 | **Florian Homm aus Free Homes** | Die täglichen Postings und das Wochenvideo von Florian Homm aus Free Homes, untergemischt in die Radar-Karten und im Smart-Money-Feld je Titel. **Inhalt, Chart und Video nur für Free-Homes-Mitglieder**, alle anderen sehen eine unscharfe Karte mit Schloss. Jede Meldung verweist auf den Homm Long Short Börsenbrief |
@@ -220,7 +220,7 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | GET | `/api/config`, `/api/me` | Konfiguration, angemeldeter Nutzer |
 | POST | `/api/auth/register`, `/api/auth/login`, `/api/auth/demo`, `/api/auth/logout` | Anmeldung |
 | GET | `/api/auth/freehomes/start`, `/api/auth/freehomes/callback` | Login über Free Homes |
-| GET | `/api/quotes`, `/api/radar` | Kurse, Smart-Money-Radar (mit `homm`: Postings von Florian Homm, Inhalt nur für Mitglieder) |
+| GET | `/api/quotes`, `/api/radar` | Kurse (mit `popular`: Beliebtheit je Titel), Smart-Money-Radar (mit `homm`: Postings von Florian Homm, Inhalt nur für Mitglieder) |
 | GET | `/api/news` | Aktuell: Nachrichten mit Marktwirkung (alle 240 Minuten) |
 | GET | `/api/homm`, `/api/homm/:id/image` | Alle Postings von Florian Homm, Chart-Bild (nur Mitglieder) |
 | POST/PATCH/DELETE | `/api/admin/homm[/:id]`, `/api/admin/homm/sync` | Meldungen pflegen, Abgleich mit Free Homes anstoßen (nur Admins) |
@@ -252,6 +252,7 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   trcm.js      TRCM Portfolio (Admin-Pflege, Protokoll)
   homm.js      Postings von Florian Homm aus Free Homes (Import, Mitglieder-Sperre, Admin-Pflege)
   news.js      Aktuell: Nachrichten mit Marktwirkung aus RSS und Finnhub, alle 240 Minuten
+  popular.js   Beliebteste Titel des Tages für die Kursübersicht
   copy.js      Copy Trading und Kennzahlen (Rendite, Risiko, Kopierer)
   arenas.js    Private Arenen, Arena-Depots, Feed, Gruppen-Liga
   talents.js   Scouting & Talents (Score, Stufen, Vorstellungen, Scouting-Board)
