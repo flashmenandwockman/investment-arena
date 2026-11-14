@@ -142,7 +142,7 @@ function profile(id) {
 async function api(req, res, url) {
   const m = req.method, p = url.pathname;
   try {
-    if (p === '/api/config') return send(res, 200, {version: pkg.version, startCash: config.startCash, freehomes: config.freehomes.enabled, boersenbrief: config.boersenbriefUrl});
+    if (p === '/api/config') return send(res, 200, {version: pkg.version, startCash: config.startCash, freehomes: config.freehomes.enabled, boersenbrief: config.boersenbriefUrl, academy: config.academyUrl});
     if (p === '/api/me' && m === 'GET') return send(res, 200, {user: publicUser(auth.currentUser(req))});
     // Profil: kurze Beschreibung wie bei den Gründungsmitgliedern (z. B. „Studentin, 19 · Krypto & Tech“)
     if (p === '/api/me' && m === 'PATCH') {

@@ -26,6 +26,8 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | **Mein Konto** | Profiltext (wie bei den Gründungsmitgliedern, z. B. „Azubi, 20 · Krypto & Tech“), Liste „Ich folge“ mit Profilen, eigene Watchlist |
 | **Arena** | Ranglisten (Monat, Heute, Woche, Depotwert), Monatspreise (Short-Selling-Kurs, Börsenbrief-Abo, Free-Homes-Abo, Partnerpreise), Level, Abzeichen, Aktivitätsserie, Trader-Profile mit aufklappbarem Depot, Folgen |
 | **Florian als Coach** | Erklärtexte an jeder Stelle, Tonspuren als MP3 (Fallback: Browser-Stimme), 13 Lektionen |
+| **Lernen** | Jede Lektion öffnet ein Fenster mit Florians Erklärung, Tonspur, einer passenden Übung im Simulator (z. B. „Jetzt einen Short probieren: Tesla“) und der Vertiefung in der Free Homes Academy. Darunter die 9 Module der Academy mit allen Lektions-Einleitungen zum Aufklappen und Link zur Academy (`ACADEMY_URL`) |
+| **Desktop und Tablet** | Ab 760 px breitere Spalte, ab 1100 px Navigation links, Inhalt in der Mitte, Depotkasten und Coach rechts als feste Spalte; Fenster öffnen als Dialog in der Mitte |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
 
 Alle Orders, Stop-Loss, Knock-outs und Depotwerte werden **auf dem Server mit Server-Kursen** berechnet. Die Rangliste lässt sich dadurch nicht über den Browser manipulieren. Kursbewegungen gibt es nur durch den echten Markt, nicht durch Vorspulen.
@@ -62,6 +64,7 @@ Tests: `npm test`
 | `FREEHOMES_NEWS_URL` | Ersatzweise ein RSS-, Atom- oder JSON-Feed mit den Postings |
 | `BOERSENBRIEF_URL` | Standardlink zur Vertiefung an jeder Meldung (Standard: homm-longshort.com) |
 | `NEWS_FEEDS` | RSS-Feeds für „Aktuell“, kommagetrennt (Standard: tagesschau Wirtschaft) |
+| `ACADEMY_URL` | Link zur Free Homes Academy im Bereich Lernen |
 | `SEED_BOTS` | `0` = keine Beispiel-Community (Gründungsmitglieder) anlegen |
 | `SEC_USER_AGENT` | Kennung für Abrufe bei der SEC. Die SEC verlangt Name und Kontakt-E-Mail, z. B. `Investment Arena kontakt@ihre-domain.de` |
 | `GURUS` | `0` = Großinvestoren ausschalten |

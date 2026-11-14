@@ -33,6 +33,7 @@ module.exports = {
   freehomesNewsUrl: env('FREEHOMES_NEWS_URL', ''),                 // ersatzweise ein RSS/Atom/JSON-Feed
   // RSS-Feeds für „Aktuell“: nur Überschrift, Quelle und Link werden übernommen (kommagetrennt)
   newsFeeds: env('NEWS_FEEDS', 'https://www.tagesschau.de/wirtschaft/index~rss2.xml').split(',').map(u => u.trim()).filter(Boolean),
+  academyUrl: env('ACADEMY_URL', 'https://app.free-homes.de/module/fh-academy'),   // Vertiefung: Free Homes Academy
   boersenbriefUrl: env('BOERSENBRIEF_URL', 'https://homm-longshort.com/'),
   freehomes: {
     issuer: env('FREEHOMES_ISSUER', 'https://keycloak.free-homes.de/realms/freehomes'),
