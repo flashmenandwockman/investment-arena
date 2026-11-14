@@ -547,3 +547,13 @@ test('Discovery Engine: Bewertung, Texte, Kandidaten aus dem Fallback, Admin-Ein
   assert.ok(r.data.trends.length >= 3, 'Trends je Bereich');
   assert.strictEqual((await c('/api/admin/research/note', {cls: 'us', sym: 'X'})).status, 403, 'Einordnung nur für Admins');
 });
+
+test('Redaktionsschlüssel: Einordnung ohne Login, falscher Schlüssel abgelehnt', async () => {
+  const config = require('../server/config');
+  config.researchToken = 'test-token-123';
+  const r = await fetch(base + '/api/admin/research/note', {method: 'POST', headers: {'Content-Type': 'application/json', Authorization: 'Bearer test-token-123'}, body: JSON.stringify({cls: 'us', sym: 'NOPE', note: 'x', action: 'y'})});
+  assert.strictEqual(r.status, 404, 'richtiger Schlüssel, aber unbekannter Kandidat');
+  const bad = await fetch(base + '/api/admin/research/note', {method: 'POST', headers: {'Content-Type': 'application/json', Authorization: 'Bearer falsch'}, body: JSON.stringify({cls: 'us', sym: 'NOPE'})});
+  assert.strictEqual(bad.status, 401);
+  config.researchToken = '';
+});

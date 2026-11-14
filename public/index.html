@@ -69,7 +69,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:10p
 .pro .coach#coach{padding:10px 12px} .pro .coach#coach img{width:36px;height:36px} .pro .coach#coach p{font-size:13px} .pro .coach#coach .say{width:38px;height:38px}
 
 /* Sections */
-.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px}
 .sec-h h2{font-family:var(--serif);font-weight:400;font-size:21px;margin:0}
 .chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 12px;padding:0 16px 4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
@@ -83,7 +83,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:10p
 .row .p{text-align:right} .row .p b{display:block;font-size:14.5px} .row .p small{font-size:12px;font-weight:600}
 .spark{width:70px;height:30px;display:block} .spk{display:block;padding:6px 0}
 /* Smart-Money-Radar */
-.radar{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 6px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.radar{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 6px;scroll-snap-type:x mandatory;scroll-padding:0 16px;scrollbar-width:none}
 .radar::-webkit-scrollbar{display:none}
 .rc{flex:none;width:250px;scroll-snap-align:start;text-align:left;padding:14px;border-radius:18px;background:linear-gradient(160deg,#141f3d,#0c1329);border:1px solid var(--line-gold);display:flex;flex-direction:column;gap:6px}
 .rc .kick{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-l)}
@@ -287,7 +287,7 @@ textarea.inp{height:auto;padding:12px 14px;line-height:1.4;resize:vertical}
 /* Lesbarkeit: einheitliche, großzügige Abstände in allen Bereichen */
 .hero{margin-bottom:18px} .stats{gap:10px} .stat{padding:12px} .stat small{margin-bottom:3px} .rankline{margin-top:14px;padding:12px 14px}
 .coach{padding:16px;gap:14px;margin-bottom:18px} .coach p{margin-top:6px;line-height:1.5}
-.sec-h{margin:34px 2px 14px}
+.sec-h{margin:34px 0 14px}
 .chips{margin-bottom:16px} .search{margin-bottom:16px}
 .list{gap:12px} .lb{gap:10px}
 .row{padding:14px;gap:14px} .row .n small,.row .p small{display:block;margin-top:3px}
@@ -558,7 +558,7 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 /* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
 @media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spk{display:none} }
 /* Chancen des Tages: Slider je Anlageklasse */
-.rsg{margin:6px 0 4px} .rsg .grp{padding:10px 2px 8px}
+.rsg{margin:6px 0 4px} .rsg .grp{padding:10px 0 8px}
 .rc.rs{width:272px;gap:7px} .rc.rs b{font-size:15px} .rc .sc{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:7px;background:rgba(198,164,108,.14);color:var(--gold-l);margin-left:6px;vertical-align:1px}
 .rc .l2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .rc.tr{width:230px;background:linear-gradient(160deg,#121b33,#0b1024)} .rc.tr .big{font-size:22px;font-weight:600;font-family:var(--serif)}
@@ -601,7 +601,7 @@ details.lsn p b{color:var(--text);font-weight:600}
   .radar .rc{width:300px} .kpis{grid-template-columns:repeat(4,1fr)}
 }
 /* Seitentitel je Bereich, Einblendung beim Wechsel */
-.page-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:14px 2px 10px} .page-h h1{font-family:var(--serif);font-weight:400;font-size:28px;margin:0;line-height:1.1} .page-h{animation:pagein .28s ease-out} .page-h small{color:var(--muted);font-size:12.5px;text-align:right}
+.page-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:14px 0 10px} .page-h h1{font-family:var(--serif);font-weight:400;font-size:28px;margin:0;line-height:1.1} .page-h{animation:pagein .28s ease-out} .page-h small{color:var(--muted);font-size:12.5px;text-align:right}
 main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){main{animation:none}}
 .hero.tap{cursor:pointer} .hero .hint{position:absolute;right:16px;top:16px;font-size:12px;color:var(--gold-p);font-weight:600}
@@ -620,7 +620,7 @@ main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:
 .fhc{display:block;width:100%;text-align:left;padding:16px;border-radius:18px;background:linear-gradient(160deg,#1e2440,#0d1226);border:1px solid var(--gold);color:var(--text)}
 .fhc .kick{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-l)} .fhc b{display:block;font-size:16px;line-height:1.3;margin-top:6px}
 .fhc p{margin:6px 0 0;font-size:13px;line-height:1.5;color:var(--muted)} .fhc .foot{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:12.5px;font-weight:600;color:var(--gold-p)} .fhc .foot span:first-child{color:var(--muted);font-weight:500}
-.grp{display:flex;justify-content:space-between;align-items:baseline;padding:14px 2px 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)} .grp:first-child{padding-top:4px} .grp .link{font-size:12px;letter-spacing:0;text-transform:none;font-weight:600}
+.grp{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)} .grp:first-child{padding-top:4px} .grp .link{font-size:12px;letter-spacing:0;text-transform:none;font-weight:600}
 /* Play/Pause-Icon folgt dem Zustand */
 .say .pz{display:none} .speaking .say .pl,.say.speaking .pl{display:none} .speaking .say .pz,.say.speaking .pz{display:block}
 /* Postings von Florian Homm aus Free Homes */
@@ -710,7 +710,7 @@ main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:
     <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Aktie, Rohstoff, ETF, Krypto suchen …" autocomplete="off" enterkeyhint="search" aria-label="Aktie suchen">
       <div class="sres" id="sres" hidden></div></div>
-    <p class="muted" style="margin:8px 2px 0;font-size:13px">Aktien, Rohstoffe, ETFs und Krypto: <button class="link" id="toQuotes" style="font-size:13px">Märkte entdecken ›</button></p>
+    <p class="muted" style="margin:8px 0 0;font-size:13px">Aktien, Rohstoffe, ETFs und Krypto: <button class="link" id="toQuotes" style="font-size:13px">Märkte entdecken ›</button></p>
     <div class="sec-h"><h2>Aktuell</h2><span class="muted" style="font-size:12px" id="newsAsof"></span></div>
     <div id="news"></div>
     <div class="sec-h"><h2>Kurse</h2><span class="muted" style="font-size:12px" id="asof"></span></div>
@@ -720,7 +720,7 @@ main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:
     <div class="chips" id="filters"></div>
     <div class="list" id="market"></div>
     <div class="sec-h"><h2>Chancen des Tages</h2><button class="link" id="rsTrackBtn" style="font-size:12.5px;text-decoration:none">Bilanz ›</button></div>
-    <p class="muted" style="margin:0 2px 10px;font-size:13px;line-height:1.5" id="rsIntro"></p>
+    <p class="muted" style="margin:0 0 10px;font-size:13px;line-height:1.5" id="rsIntro"></p>
     <div id="research"></div>
     <div class="sec-h"><h2>Smart-Money-Radar</h2><button class="link" id="smOpen" style="font-size:12.5px;text-decoration:none">Alle Meldungen ›</button></div>
     <div class="radar" id="radar"></div>
@@ -1513,7 +1513,7 @@ const RSN={us:'US-Aktien',de:'Deutsche Aktien',etf:'ETFs',cmd:'Rohstoffe',fx:'De
 const pctS=(v,d=1)=>v==null?'–':(v>0?'+':v<0?'−':'')+nf(Math.abs(v),d)+NB+'%';
 function rsCard(x){
   const c=x.cls, d=x.metrics||{};
-  return `<button class="rc rs ${x.risk==='niedrig'?'green':x.risk==='spekulativ'?'red':''}" data-rs="${esc(c)}:${esc(x.sym)}"><span class="kick">${esc(RSN[c])}${x.isNew?' · neu':''}</span><b>${esc(x.name)}<span class="sc">${x.score} P.</span></b><small class="l2">${esc(x.why)}</small><small class="l2" style="color:var(--text)">${esc((x.noteAction||x.action).split(/(?<=\.)\s/)[0])}</small><span class="go">${d.d1!=null?`<span class="${cls(d.d1)}">${pctS(d.d1)}</span> heute · `:''}Einordnung ›</span></button>`;
+  return `<button class="rc rs ${x.risk==='niedrig'?'green':x.risk==='spekulativ'?'red':''}" data-rs="${esc(c)}:${esc(x.sym)}"><span class="kick">${esc(RSN[c])}${x.isNew?' · neu':''}</span><b>${esc(x.name)}<span class="sc">${x.score} P.</span></b><small class="l2">${esc(x.why)}</small><small class="l2" style="color:var(--text)">${esc((x.noteAction||x.action).split(/(?<=\.)\s/)[0])}</small><span class="go" style="display:flex;justify-content:space-between;gap:10px"><span>${d.d1!=null?`<span class="${cls(d.d1)}">${pctS(d.d1)}</span> heute · `:''}Einordnung ›</span>${x.tradable||META[x.sym]||x.cls==='us'||x.cls==='etf'?`<span data-rstrade="${esc(x.sym)}" style="white-space:nowrap">Handeln →</span>`:''}</span></button>`;
 }
 function renderResearch(){
   if(!RS||!RS.classes){ $('#research').innerHTML=''; return; }
@@ -1538,14 +1538,14 @@ function openResearch(key){
   const tradable=x.tradable||(!!META[x.sym])||(x.cls==='us'||x.cls==='etf');
   $('#rsBody').innerHTML=`<div class="rsd">
     <div class="score"><span class="n num">${x.score}</span><span class="t"><i style="width:${x.score}%"></i></span><span class="tagrisk ${esc(String(x.risk).split(' ')[0])}">${esc(x.risk)}</span></div>
-    <p class="fine" style="margin:0 0 6px">Punkte von 0 bis 100 als Rangfolge, keine Renditeprognose.${x.cls==='de'?' Für deutsche Titel nur Markttechnik, Fundamentaldaten folgen mit dem lizenzierten Datenanbieter (höchstens 60 Punkte).':x.fundamentals===false?' Ohne Fundamentaldaten.':''}</p>
+    <p class="fine" style="margin:0 0 6px">Punkte von 0 bis 100 als Rangfolge, keine Renditeprognose.${x.fundamentals===false?' Ohne Fundamentaldaten bewertet.':''}</p>
     ${Object.keys(parts).length?`<div class="parts">${Object.entries(parts).map(([k,v])=>`<div><span>${PN[k]||k}</span><span>${v} / ${PM[k]||''}</span></div>`).join('')}</div>`:''}
     <div class="kv" style="grid-template-columns:repeat(2,1fr)">${rows.map(([k,v])=>`<div><small>${esc(k)}</small><b class="num">${esc(String(v))}</b></div>`).join('')}</div>
     <div class="box"><h4>Warum auffällig</h4><p>${esc(x.why)}</p></div>
     <div class="box act"><h4>Was Sie daraus machen können</h4><p>${esc(x.action)}</p></div>
     ${x.note||x.noteAction?`<div class="box note"><h4>Einordnung der Redaktion${x.noteBy?' · '+esc(x.noteBy):''}</h4><p>${esc(x.note||'')}${x.noteAction?'<br><b>'+esc(x.noteAction)+'</b>':''}</p></div>`:''}
     ${x.related&&x.related.length?`<p class="fine" style="margin-top:12px">Betroffene Titel: ${x.related.map(r=>META[r]?`<button class="chip" data-sym="${esc(r)}" style="margin:2px 4px 2px 0">${esc(META[r].n)}</button>`:esc(r)).join(' ')}</p>`:''}
-    ${tradable?`<button class="cta" data-rstrade="${esc(x.sym)}" style="margin-top:16px">${META[x.sym]?'Ansehen und handeln →':'In die Arena holen und handeln →'}</button>`:'<p class="fine" style="margin-top:16px">Dieser Titel ist in der Arena noch nicht handelbar. Handel für deutsche Nebenwerte und Terminkontrakte folgt mit dem lizenzierten Datenanbieter.</p>'}
+    ${tradable?`<button class="cta" data-rstrade="${esc(x.sym)}" style="margin-top:16px">Ansehen und handeln →</button>`:'<p class="fine" style="margin-top:16px">Dieser Titel ist in der Arena noch nicht handelbar. Handel für deutsche Nebenwerte und Terminkontrakte folgt mit dem lizenzierten Datenanbieter.</p>'}
     <p class="fine" style="margin-top:10px">Quellen: Yahoo Finance (Kurse, Tagesverlierer-Screening), Finnhub (Fundamentaldaten US), Stand ${RS.at?new Date(RS.at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'–'}. Simulation zu Lernzwecken, keine Anlageberatung.</p>
   </div>`;
   openSheet('#rsSheet');
@@ -2648,6 +2648,7 @@ document.addEventListener('click',e=>{
   const sk=t.closest('[data-saykey]'); if(sk){ speakKey(sk.dataset.saykey, sk.closest('.coach')); return; }
   const rcs=t.closest('[data-radar="__smart"]'); if(rcs){ openSmart(); return; }
   const rch=t.closest('[data-radar^="__homm:"]'); if(rch){ openHomm(+rch.dataset.radar.slice(7)); return; }
+  const rtr=t.closest('[data-rstrade]'); if(rtr&&!t.closest('#rsBody')){ const sym=rtr.dataset.rstrade; if(META[sym]) openTrade(sym); else addInstrument(sym); return; }
   const rsc=t.closest('[data-rs]'); if(rsc){ openResearch(rsc.dataset.rs); return; }
   const rst=t.closest('[data-rstrend]'); if(rst){ ui.allQuotes=true; ui.filter='etf'; renderMarket(); $('#market').scrollIntoView({behavior:'smooth',block:'start'}); return; }
   const hr=t.closest('[data-homm]'); if(hr){ openHomm(+hr.dataset.homm); return; }

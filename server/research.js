@@ -63,6 +63,28 @@ async function chart(sym) {
   return {sym, name: m.longName || m.shortName || sym, cur: m.currency, price, d1: price / at(1) - 1, w1: price / at(5) - 1, m1: price / at(21) - 1, m3: price / at(63) - 1, y1: price / closes[0] - 1,
     fromHigh: price / hi - 1, fromLow: price / lo - 1, hi, lo, vol30: sd * Math.sqrt(252), avgVol, turnover: avgVol * price, hist: closes.slice(-60)};
 }
+// Yahoo quoteSummary braucht ein Sitzungs-Cookie und einen „Crumb“; beides wird eine Stunde zwischengespeichert
+let yc = {cookie: '', crumb: '', at: 0};
+async function yahooCrumb() {
+  if (yc.crumb && Date.now() - yc.at < 3600e3) return yc;
+  const r1 = await fetch('https://fc.yahoo.com', {headers: {'User-Agent': 'Mozilla/5.0'}, redirect: 'manual', signal: AbortSignal.timeout(15_000)});
+  const cookie = (r1.headers.getSetCookie ? r1.headers.getSetCookie() : [r1.headers.get('set-cookie') || '']).map(c => c.split(';')[0]).filter(Boolean).join('; ');
+  const r2 = await fetch('https://query1.finance.yahoo.com/v1/test/getcrumb', {headers: {'User-Agent': 'Mozilla/5.0', Cookie: cookie}, signal: AbortSignal.timeout(15_000)});
+  const crumb = (await r2.text()).trim();
+  if (!r2.ok || !crumb || crumb.includes('<')) throw new Error('Yahoo-Crumb nicht erhalten');
+  yc = {cookie, crumb, at: Date.now()};
+  return yc;
+}
+async function fundamentals(sym) {
+  const {cookie, crumb} = await yahooCrumb();
+  const r = await fetch(`https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(sym)}?modules=financialData,defaultKeyStatistics,summaryProfile&crumb=${encodeURIComponent(crumb)}`, {headers: {'User-Agent': 'Mozilla/5.0', Cookie: cookie}, signal: AbortSignal.timeout(15_000)});
+  if (!r.ok) throw new Error(`quoteSummary ${r.status}`);
+  const d = (((await r.json()).quoteSummary || {}).result || [])[0] || {}, f = d.financialData || {}, k = d.defaultKeyStatistics || {}, p = d.summaryProfile || {};
+  const g = o => o && o.raw != null ? o.raw : null;
+  const pct = v => v == null ? null : v * 100;
+  return {revGrowth: pct(g(f.revenueGrowth)), netMargin: pct(g(f.profitMargins)), roe: pct(g(f.returnOnEquity)), debtEq: g(f.debtToEquity) == null ? null : g(f.debtToEquity) / 100, curRatio: g(f.currentRatio),
+    fwdPE: g(k.forwardPE), pe: g(k.trailingPE), pb: g(k.priceToBook), industry: p.industry || '', rating: {strong_buy: 'Strong Buy', buy: 'Buy', hold: 'Hold', sell: 'Sell', strong_sell: 'Strong Sell', underperform: 'Underperform'}[f.recommendationKey] || null};
+}
 async function charts(syms, ms = 140) { const out = {}; for (const s of syms) { try { const c = await chart(s); if (c) out[s] = c; } catch (e) {} await sleep(ms); } return out; }
 
 /* ---------- Bewertung ---------- */
@@ -110,7 +132,6 @@ function textStock(c, f, cls) {
   else if (good && c.fromHigh <= -0.25) act.push('Qualität mit Rücksetzer: auf die Watchlist, Einstieg in zwei bis drei Schritten statt auf einmal.');
   else if (good) act.push('Solides Unternehmen nach einem schwachen Tag: beobachten, bei Stabilisierung über dem Tagestief einsteigen.');
   else if (f.netMargin != null && f.netMargin < 0 && c.fromHigh <= -0.4) act.push('Verlustbringer im Abwärtstrend: eher Short-Kandidat als Schnäppchen. Nur mit engem Stop.');
-  else if (cls === 'de') act.push('Deutscher Titel ohne freie Fundamentaldaten: Nachrichten zum Kursrutsch prüfen, erst dann entscheiden.');
   else act.push('Grund für den Kursrutsch prüfen (Zahlen, Prognose, Branche). Ohne klaren Grund: abwarten, nicht ins fallende Messer greifen.');
   act.push(PRAXIS);
   return {why: why.join(' · '), action: act.join(' ')};
@@ -178,12 +199,16 @@ async function screenDE(cache) {
   const liquid = Object.values(cs).filter(c => c.turnover >= 5e6);
   const losers = liquid.filter(c => c.d1 <= -0.02).sort((a, b) => a.d1 - b.d1).slice(0, 10);
   const fallen = liquid.filter(c => c.fromHigh <= -0.35 && !losers.includes(c)).sort((a, b) => a.fromHigh - b.fromHigh).slice(0, 4);
-  return [...losers, ...fallen].map(c => {
-    const f = {target: U.TARGET.test(c.name)};
+  const out = [];
+  for (const c of [...losers, ...fallen]) {
+    let f = {};
+    try { f = await fundamentals(c.sym); await sleep(200); } catch (e) {}
+    f.target = U.TARGET.test(`${f.industry || ''} ${c.name}`);
     const sc = scoreStock(c, f), t = textStock(c, f, 'de');
-    const score = Math.min(60, sc.score + (f.target ? 3 : 0) + (c.y1 > 0 ? 5 : 0));   // ohne Fundamentaldaten höchstens 60
-    return {cls: 'de', sym: c.sym, name: c.name, cur: c.cur, price: c.price, score, parts: sc.parts, risk: riskOf(c, f), fundamentals: false, metrics: {d1: pc(c.d1), w1: pc(c.w1), m1: pc(c.m1), y1: pc(c.y1), fromHigh: pc(c.fromHigh), vol30: pc(c.vol30), turnover: c.turnover}, ...t, tradable: !!market.INSTRUMENTS[c.sym]};
-  }).sort((a, b) => b.score - a.score).slice(0, 5);
+    out.push({cls: 'de', sym: c.sym, name: c.name, cur: c.cur, price: c.price, score: Math.min(100, sc.score + (f.target ? 3 : 0)), parts: sc.parts, risk: riskOf(c, f), fundamentals: sc.fundamentals,
+      metrics: {d1: pc(c.d1), w1: pc(c.w1), m1: pc(c.m1), y1: pc(c.y1), fromHigh: pc(c.fromHigh), vol30: pc(c.vol30), turnover: c.turnover, revGrowth: f.revGrowth, netMargin: f.netMargin, roe: f.roe, debtEq: f.debtEq, fwdPE: f.fwdPE, pe: f.pe, industry: f.industry, rating: f.rating}, ...t, tradable: !!market.INSTRUMENTS[c.sym]});
+  }
+  return out.sort((a, b) => b.score - a.score).slice(0, 5);
 }
 async function screenETF(cache) {
   const cs = await charts(Object.keys(U.ETF));
@@ -287,4 +312,4 @@ function addNote(u, day, cls, sym, note, action, score) {
   cache = null;
 }
 
-module.exports = {run, tick, load, addNote, scoreStock, scoreEtf, textStock, textFx, CLASSES, status: () => state};
+module.exports = {run, tick, load, addNote, scoreStock, scoreEtf, textStock, textFx, fundamentals, CLASSES, status: () => state};

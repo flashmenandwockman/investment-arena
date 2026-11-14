@@ -67,6 +67,7 @@ Tests: `npm test`
 | `BOERSENBRIEF_URL` | Standardlink zur Vertiefung an jeder Meldung (Standard: homm-longshort.com) |
 | `NEWS_FEEDS` | RSS-Feeds für „Aktuell“, kommagetrennt (Standard: tagesschau Wirtschaft) |
 | `ACADEMY_URL` | Link zur Free Homes Academy im Bereich Lernen |
+| `RESEARCH_TOKEN` | Bearer-Schlüssel für die redaktionelle Einordnung der Chancen des Tages |
 | `SMART_FEEDS` | Stimmen im Smart-Money-Radar als „Name|URL“, kommagetrennt (Standard: Fed, EZB, Hussman Funds, MarketWatch) |
 | `SEED_BOTS` | `0` = keine Beispiel-Community (Gründungsmitglieder) anlegen |
 | `SEC_USER_AGENT` | Kennung für Abrufe bei der SEC. Die SEC verlangt Name und Kontakt-E-Mail, z. B. `Investment Arena kontakt@ihre-domain.de` |
@@ -176,12 +177,12 @@ Umsetzung des Konzepts „Internationaler Börsen- und Investment-Simulator“ a
 | Klasse | Quelle | Auswahl | Bewertung |
 |---|---|---|---|
 | US-Aktien | Yahoo-Screening der 100 größten Tagesverlierer, Finnhub-Fundamentaldaten und Branche | mindestens 1 Mio. Stück und 50 Mio. $ Tagesumsatz, 300 Mio. $ Marktwert; 3 bis 5 Kandidaten | 25 % Wachstum, 25 % Bilanz, 20 % Bewertung, 15 % Marktposition, 15 % Rücksetzer; Zielbranchen (Halbleiter, Robotik, Verteidigung, Energie, Bergbau, Cybersecurity …) bekommen 3 Punkte extra |
-| Deutsche Aktien | 110 Titel (DAX bis Nebenwerte) über Yahoo-Kursverläufe | 5 Mio. € Tagesumsatz; 10 größte Verlierer plus Titel mehr als 35 % unter dem Hoch; 2 bis 5 Kandidaten | nur Markttechnik, höchstens 60 Punkte, bis ein lizenzierter Anbieter Fundamentaldaten liefert |
+| Deutsche Aktien | 110 Titel (DAX bis Nebenwerte) über Yahoo-Kursverläufe, Fundamentaldaten aus Yahoo quoteSummary (Umsatzwachstum, Marge, Eigenkapitalrendite, Verschuldung, KGV, Branche, Analystenurteil) | 5 Mio. € Tagesumsatz; 10 größte Verlierer plus Titel mehr als 35 % unter dem Hoch; 2 bis 5 Kandidaten | gleiche Gewichtung wie US-Aktien |
 | ETFs | 44 ETFs in 10 Kategorien | Rücksetzer ab 8 % vom Hoch, Monatsverlust ab 5 % oder starker Jahrestrend; 2 bis 4 | 40 % Rücksetzer, 20 % Jahrestrend, 20 % Schwankung, 20 % Stabilisierung |
 | Rohstoffe | 13 Terminkontrakte und 3 Rohstoff-ETFs | Tagesbewegung ab 2 %, Wochenbewegung ab 5 %, weit unter dem Hoch oder nahe am Hoch; 1 bis 4 | Stärke der Bewegung; betroffene Förderer und Zulieferer werden genannt |
 | Devisen | 12 Paare | Wochenbewegung ab 1 %, Monatsbewegung ab 2,5 % oder Jahresextrem; 1 bis 3 | Stärke der Bewegung; Einordnung zu Dollar, Franken, Yen und Exporteuren |
 
-Gibt es keine überzeugenden Kandidaten, bleibt die Gruppe leer. Jeder Kandidat erhält bei der ersten Entdeckung ein Datum; die Tracking Engine berechnet täglich die Entwicklung seit Entdeckung und je Klasse die Trefferquote („Bilanz“ im Bereich Märkte). Admins können je Kandidat eine Einordnung ergänzen (`POST /api/admin/research/note` mit `cls`, `sym`, `note`, `action`, optional `score`) und den Lauf von Hand anstoßen (`POST /api/admin/research/run`). Ohne Netz zeigt die App den mitgelieferten Lauf aus `server/fallback/research.json` (`npm run snapshot` aktualisiert ihn).
+Gibt es keine überzeugenden Kandidaten, bleibt die Gruppe leer. Jeder Kandidat erhält bei der ersten Entdeckung ein Datum; die Tracking Engine berechnet täglich die Entwicklung seit Entdeckung und je Klasse die Trefferquote („Bilanz“ im Bereich Märkte). Admins können je Kandidat eine Einordnung ergänzen (`POST /api/admin/research/note` mit `cls`, `sym`, `note`, `action`, optional `score`) und den Lauf von Hand anstoßen (`POST /api/admin/research/run`). Dieselben Routen akzeptieren den Redaktionsschlüssel `RESEARCH_TOKEN` als `Authorization: Bearer …`, damit eine tägliche redaktionelle Einordnung (z. B. durch eine geplante Claude-Sitzung) ohne Login schreiben kann; die Einordnung erscheint im Detailfenster als „Einordnung der Redaktion“. Ohne Netz zeigt die App den mitgelieferten Lauf aus `server/fallback/research.json` (`npm run snapshot` aktualisiert ihn).
 
 ## Copy Trading
 

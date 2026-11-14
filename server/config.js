@@ -36,6 +36,7 @@ module.exports = {
   // Stimmen aus Notenbanken und Research für das Smart-Money-Radar: „Name|URL“, kommagetrennt
   smartFeeds: env('SMART_FEEDS', 'Fed|https://www.federalreserve.gov/feeds/press_all.xml,EZB|https://www.ecb.europa.eu/rss/press.html,Hussman Funds|https://www.hussmanfunds.com/feed/,MarketWatch|https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines')
     .split(',').map(x => x.trim()).filter(Boolean).map(x => { const [name, url] = x.split('|'); return url ? {name: name.trim(), url: url.trim()} : {name: new URL(x).hostname, url: x}; }),
+  researchToken: env('RESEARCH_TOKEN', ''),   // Schlüssel für die tägliche redaktionelle Einordnung (Bearer)
   academyUrl: env('ACADEMY_URL', 'https://app.free-homes.de/module/fh-academy'),   // Vertiefung: Free Homes Academy
   boersenbriefUrl: env('BOERSENBRIEF_URL', 'https://homm-longshort.com/'),
   freehomes: {

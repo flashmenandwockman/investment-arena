@@ -181,7 +181,10 @@ async function api(req, res, url) {
     // Tägliche Recherche: Chancen je Anlageklasse, Trends, Entwicklung früherer Kandidaten
     if (p === '/api/research' && m === 'GET') return send(res, 200, research.load());
     if (p.startsWith('/api/admin/research')) {
-      const u = requireUser(req); if (!trcm.isAdmin(u)) throw Object.assign(new Error('Nur für Admins'), {status: 403});
+      // Zugang für Admins oder mit dem Redaktionsschlüssel (RESEARCH_TOKEN als Bearer)
+      const bearer = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+      const u = config.researchToken && bearer === config.researchToken ? {id: 0, name: 'Redaktion'} : requireUser(req);
+      if (u.id !== 0 && !trcm.isAdmin(u)) throw Object.assign(new Error('Nur für Admins'), {status: 403});
       const b = m === 'GET' ? {} : await body(req);
       if (p === '/api/admin/research/run' && m === 'POST') { limit(req, 3, 'research'); await research.run(true); }
       else if (p === '/api/admin/research/note' && m === 'POST') research.addNote(u, b.day, String(b.cls || ''), String(b.sym || '').toUpperCase(), b.note, b.action, b.score);
