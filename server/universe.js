@@ -11,9 +11,9 @@ const ETF = {
   'XLI':['US-Industrie','Industrie'], 'PAVE':['Infrastruktur','Industrie'], 'ITA':['Luftfahrt & Verteidigung','Industrie'],
   'XLE':['Energie (Öl & Gas)','Energie'], 'URA':['Uran','Energie'], 'HDRO':['Wasserstoff','Energie'], 'ICLN':['Erneuerbare Energien','Energie'], 'TAN':['Solar','Energie'],
   'GDX':['Goldminen','Rohstoffe & Minen'], 'COPX':['Kupferminen','Rohstoffe & Minen'], 'REMX':['Seltene Erden','Rohstoffe & Minen'], 'LIT':['Lithium & Batterie','Rohstoffe & Minen'], 'SIL':['Silberminen','Rohstoffe & Minen'],
-  'XLV':['Gesundheit','Branchen'], 'XLF':['Finanzen','Branchen'], 'XLU':['Versorger','Branchen'], 'XLP':['Basiskonsum','Branchen'], 'XBI':['Biotech','Branchen'],
+  'XLV':['Gesundheit','Branchen (USA)'], 'XLF':['Finanzen','Branchen (USA)'], 'XLU':['Versorger','Branchen (USA)'], 'XLP':['Basiskonsum','Branchen (USA)'], 'XBI':['Biotech','Branchen (USA)'],
   'TLT':['US-Staatsanleihen 20+','Anleihen'], 'IEF':['US-Staatsanleihen 7-10','Anleihen'], 'LQD':['Unternehmensanleihen','Anleihen'], 'HYG':['Hochzinsanleihen','Anleihen'], 'TIP':['Inflationsgeschützte Anleihen','Anleihen'],
-  'SCHD':['Dividendenwachstum','Dividenden & Qualität'], 'QUAL':['Qualität','Dividenden & Qualität'], 'VTV':['Value','Dividenden & Qualität'], 'VNQ':['Immobilien (REITs)','Branchen'],
+  'SCHD':['Dividendenwachstum','Dividenden & Qualität'], 'QUAL':['Qualität','Dividenden & Qualität'], 'VTV':['Value','Dividenden & Qualität'], 'VNQ':['Immobilien (REITs)','Branchen (USA)'],
 };
 const CMD = {
   'GC=F':['Gold','Edelmetalle',['GC=F','GDX']], 'SI=F':['Silber','Edelmetalle',['SIL']], 'PL=F':['Platin','Edelmetalle',[]], 'PA=F':['Palladium','Edelmetalle',[]],
@@ -22,5 +22,8 @@ const CMD = {
   'ZW=F':['Weizen','Agrar',['KWS.DE','DE']], 'ZC=F':['Mais','Agrar',['DE']], 'ZS=F':['Sojabohnen','Agrar',['ADM','BG']], 'KC=F':['Kaffee','Agrar',['SBUX']],
   'URA':['Uran (ETF)','Strategisch',['CCJ']], 'LIT':['Lithium (ETF)','Batterie',['ALB','SQM']], 'REMX':['Seltene Erden (ETF)','Strategisch',['MP']],
 };
+// Krypto: Yahoo-Kürzel für die Recherche, Arena-Kürzel (Kraken) zum Handeln
+const CRYPTO = {'BTC-EUR':['Bitcoin','BTC/EUR'], 'ETH-EUR':['Ethereum','ETH/EUR'], 'SOL-EUR':['Solana','SOL/EUR'], 'XRP-EUR':['XRP','XRP/EUR'], 'ADA-EUR':['Cardano','ADA/EUR'], 'DOGE-EUR':['Dogecoin','DOGE/EUR'],
+  'BNB-EUR':['BNB','BNB/EUR'], 'AVAX-EUR':['Avalanche','AVAX/EUR'], 'LINK-EUR':['Chainlink','LINK/EUR'], 'DOT-EUR':['Polkadot','DOT/EUR'], 'LTC-EUR':['Litecoin','LTC/EUR'], 'TRX-EUR':['Tron','TRX/EUR']};
 const FX = ['EURUSD=X','USDJPY=X','GBPUSD=X','USDCHF=X','EURCHF=X','EURGBP=X','AUDUSD=X','USDCAD=X','EURJPY=X','GBPCHF=X','CHFJPY=X','USDCNY=X'];
-module.exports = {DE, ETF, CMD, FX, TARGET};
+module.exports = {DE, ETF, CMD, FX, CRYPTO, TARGET};

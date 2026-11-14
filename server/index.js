@@ -171,7 +171,7 @@ async function api(req, res, url) {
     }
     if (p === '/api/quotes') return send(res, 200, {...market.visible(), ...market.status(), popular: popular.get()});
     if (p === '/api/search') { requireUser(req); limit(req, 150, ':s'); /* Suche läuft lokal, darf öfter */ return send(res, 200, {results: await market.search(url.searchParams.get('q'))}); }
-    if (/^\/api\/instrument\/[A-Za-z]{1,5}(\.[A-Za-z])?$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(p.split('/').pop())); }
+    if (/^\/api\/instrument\/[\w.^=%\/-]{1,24}$/.test(p)) { requireUser(req); limit(req); return send(res, 200, await market.add(decodeURIComponent(p.slice('/api/instrument/'.length)))); }
     if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { const u = requireUser(req); limit(req); const sym = p.split('/').pop().toUpperCase(); return send(res, 200, {sym, radar: await radar.one(sym), homm: homm.forSymbol(sym, u)}); }
     if (p === '/api/chart') { limit(req); return send(res, 200, await market.chart(url.searchParams.get('sym') || '', url.searchParams.get('r'))); }
     if (/^\/api\/sentiment\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, sentiment(decodeURIComponent(p.slice('/api/sentiment/'.length))));

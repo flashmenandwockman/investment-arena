@@ -34,8 +34,8 @@ const q = {
   latestOf: db.prepare('SELECT day FROM research_candidates WHERE cls = ? AND sym = ? ORDER BY day DESC LIMIT 1'),
 };
 
-const CLASSES = {us: 'US-Aktien', de: 'Deutsche Aktien', etf: 'ETFs', cmd: 'Rohstoffe', fx: 'Devisen'};
-const RUN_VERSION = 2;   // bei neuer Bewertungslogik erhöhen: der Tageslauf wird dann nach dem Deploy einmal neu gerechnet
+const CLASSES = {us: 'US-Aktien', de: 'Deutsche Aktien', etf: 'ETFs', cmd: 'Rohstoffe', fx: 'Devisen', crypto: 'Krypto'};
+const RUN_VERSION = 3;   // bei neuer Bewertungslogik erhöhen: der Tageslauf wird dann nach dem Deploy einmal neu gerechnet
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const berlinDay = (d = new Date()) => new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit'}).format(d);
 const berlinHour = () => { const p = new Intl.DateTimeFormat('de-DE', {timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit', hour12: false}).formatToParts(new Date()); return Number(p.find(x => x.type === 'hour').value) + Number(p.find(x => x.type === 'minute').value) / 60; };
@@ -169,6 +169,17 @@ function textFx(c, name) {
   return {why, action};
 }
 
+function textCrypto(c, name) {
+  const why = `${name}: ${fmtP(pc(c.d1))} am Tag, ${fmtP(pc(c.w1))} in der Woche, ${fmtP(pc(c.m1))} im Monat, ${fmtP(pc(c.fromHigh))} unter dem Jahreshoch, Schwankung ${Math.round(pc(c.vol30))} % p. a.`;
+  let action = c.d1 <= -0.05 ? 'Starker Tagesverlust. Krypto fällt meist mit dem Risikoappetit (Nasdaq, Hebelabbau): Nicht ins fallende Messer greifen, auf Stabilisierung über mehrere Tage warten.'
+    : c.d1 >= 0.05 ? 'Starker Tagesgewinn. Prüfen, ob eine Nachricht (ETF-Zuflüsse, Regulierung, Notenbank) dahintersteht; ohne Grund sind solche Sprünge oft Short-Squeezes und werden zurückgenommen.'
+    : c.fromHigh <= -0.4 ? 'Weit unter dem Hoch. Bitcoin hat jeden Zyklus 50 bis 80 Prozent verloren und sich erholt; Altcoins nicht immer. Nur Kapital einsetzen, dessen Totalverlust verkraftbar ist.'
+    : c.fromHigh >= -0.03 ? 'Nahe am Jahreshoch: Trendfolge möglich, aber die Volatilität ist drei- bis fünfmal so hoch wie bei Aktien. Positionsgröße klein, Stop weit genug.'
+    : 'Keine außergewöhnliche Bewegung. Im Auge behalten.';
+  action += ` Krypto handelt rund um die Uhr, auch am Wochenende: Stop-Loss setzen, Hebel vermeiden. ${PRAXIS}`;
+  return {why, action};
+}
+
 /* ---------- Screening je Anlageklasse ---------- */
 async function screenUS() {
   const j = await getJson('https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_losers&count=100');
@@ -239,6 +250,15 @@ async function screenFX(cache) {
     .filter(x => x.notable).sort((a, b) => Math.abs(b.metrics.w1) - Math.abs(a.metrics.w1)).slice(0, 3);
 }
 
+async function screenCrypto(cache) {
+  const cs = await charts(Object.keys(U.CRYPTO));
+  Object.assign(cache, cs);
+  return Object.values(cs).map(c => { const [name, arena] = U.CRYPTO[c.sym]; const t = textCrypto(c, name);
+    const score = Math.min(100, Math.round(25 + Math.min(40, Math.abs(c.w1) * 250) + Math.min(20, Math.abs(c.fromHigh) * 40) + (c.sym === 'BTC-EUR' || c.sym === 'ETH-EUR' ? 15 : 5)));
+    return {cls: 'crypto', sym: arena, ysym: c.sym, name, cur: c.cur, price: c.price, score, risk: c.vol30 > 0.8 ? 'spekulativ' : 'hoch', metrics: {d1: pc(c.d1), w1: pc(c.w1), m1: pc(c.m1), m3: pc(c.m3), y1: pc(c.y1), fromHigh: pc(c.fromHigh), vol30: pc(c.vol30)}, ...t, tradable: !!market.INSTRUMENTS[arena], notable: Math.abs(c.d1) >= 0.04 || Math.abs(c.w1) >= 0.08 || c.fromHigh <= -0.4 || c.fromHigh >= -0.03}; })
+    .filter(x => x.notable).sort((a, b) => Math.abs(b.metrics.w1) - Math.abs(a.metrics.w1)).slice(0, 4);
+}
+
 /* ---------- Tracking: Entwicklung früherer Kandidaten ---------- */
 async function track(cache, today) {
   const hist = q.history.all(berlinDay(new Date(Date.now() - 365 * 86400e3)));
@@ -246,8 +266,9 @@ async function track(cache, today) {
   for (const h of hist) {
     if (h.first_seen === today) continue;
     const first = q.firstPrice.get(h.cls, h.sym); if (!first || !first.price) continue;
-    let c = cache[h.sym];
-    if (!c && fetched < 60) { try { c = await chart(h.sym); fetched++; await sleep(140); } catch (e) {} }
+    const ysym = h.cls === 'crypto' ? h.sym.replace('/', '-') : h.sym;   // Krypto: Arena-Kürzel BTC/EUR, bei Yahoo BTC-EUR
+    let c = cache[ysym];
+    if (!c && fetched < 60) { try { c = await chart(ysym); fetched++; await sleep(140); } catch (e) {} }
     if (!c) continue;
     const days = Math.round((Date.parse(today) - Date.parse(h.first_seen)) / 86400e3);
     out.push({cls: h.cls, sym: h.sym, name: h.name, firstSeen: h.first_seen, days, p0: first.price, price: c.price, cur: h.cur, perf: c.price / first.price - 1, score: first.score, risk: first.risk});
@@ -268,9 +289,10 @@ async function run(force = false) {
   const us = (await safe(() => screenUS(), 'us')) || [];
   const de = (await safe(() => screenDE(cacheC), 'de')) || [];
   const etf = (await safe(() => screenETF(cacheC), 'etf')) || {cands: [], trends: []};
+  const crypto = (await safe(() => screenCrypto(cacheC), 'crypto')) || [];
   const cmd = (await safe(() => screenCMD(cacheC), 'cmd')) || [];
   const fx = (await safe(() => screenFX(cacheC), 'fx')) || [];
-  const classes = {us, de, etf: etf.cands, cmd, fx};
+  const classes = {us, de, etf: etf.cands, cmd, fx, crypto};
   for (const [cls, list] of Object.entries(classes)) for (const x of list) {
     const first = q.firstRow.get(cls, x.sym);
     x.firstSeen = first ? first.day : today; x.isNew = !first;
@@ -314,4 +336,4 @@ function addNote(u, day, cls, sym, note, action, score) {
   cache = null;
 }
 
-module.exports = {run, tick, load, addNote, scoreStock, scoreEtf, textStock, textFx, fundamentals, CLASSES, status: () => state};
+module.exports = {run, tick, load, addNote, scoreStock, scoreEtf, textStock, textFx, textCrypto, screenCrypto, fundamentals, CLASSES, status: () => state};

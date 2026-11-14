@@ -542,7 +542,7 @@ test('Discovery Engine: Bewertung, Texte, Kandidaten aus dem Fallback, Admin-Ein
   assert.match(fx.action, /Franken/);
   const c = client(); await c('/api/auth/demo', {});
   const r = await c('/api/research');
-  assert.ok(r.data.classes && ['us', 'de', 'etf', 'cmd', 'fx'].every(k => Array.isArray(r.data.classes[k])), 'fünf Anlageklassen');
+  assert.ok(r.data.classes && ['us', 'de', 'etf', 'cmd', 'fx', 'crypto'].every(k => Array.isArray(r.data.classes[k])), 'sechs Anlageklassen');
   assert.ok(r.data.classes.us.length >= 1 && r.data.classes.us[0].why && r.data.classes.us[0].action, 'Kandidaten mit Begründung und Empfehlung');
   assert.ok(r.data.trends.length >= 3, 'Trends je Bereich');
   assert.strictEqual((await c('/api/admin/research/note', {cls: 'us', sym: 'X'})).status, 403, 'Einordnung nur für Admins');

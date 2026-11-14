@@ -197,6 +197,7 @@ async function add(sym, {silent} = {}) {
   sym = String(sym || '').toUpperCase();
   if (!silent) touch(sym);
   if (INSTRUMENTS[sym] && quotes[sym]) return {sym, meta: INSTRUMENTS[sym], quote: quotes[sym]};
+  if (INSTRUMENTS[sym]) return {sym, meta: INSTRUMENTS[sym], quote: null};   // Kernwert, Kurs noch nicht geladen (z. B. kurz nach dem Start)
   if (!SYMBOL.test(sym)) throw new Error('Unbekanntes Kürzel');
   if (config.offline) throw new Error('Im Offline-Modus sind keine weiteren Titel verfügbar');
   // Name aus dem Verzeichnis, Kurs und Verlauf in einem Abruf von Yahoo; Finnhub nur als Ersatz

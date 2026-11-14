@@ -1509,7 +1509,7 @@ function smartPanel(s){
 /* ---------- Chancen des Tages (Discovery Engine) ---------- */
 let RS=null;
 async function loadResearch(){ try{ RS=await api('/api/research'); }catch(e){} }
-const RSN={us:'US-Aktien',de:'Deutsche Aktien',etf:'ETFs',cmd:'Rohstoffe',fx:'Devisen'};
+const RSN={us:'US-Aktien',de:'Deutsche Aktien',etf:'ETFs',cmd:'Rohstoffe',fx:'Devisen',crypto:'Krypto'};
 const pctS=(v,d=1)=>v==null?'–':(v>0?'+':v<0?'−':'')+nf(Math.abs(v),d)+NB+'%';
 function rsCard(x){
   const c=x.cls, d=x.metrics||{};
@@ -1520,8 +1520,8 @@ function renderResearch(){
   const dayTxt=RS.day?new Date(RS.day+'T12:00:00').toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'2-digit'}):'';
   $('#rsIntro').textContent=`Jeden Abend nach US-Börsenschluss: die auffälligsten Bewegungen in fünf Anlageklassen, bewertet von 0 bis 100 Punkten, mit Einordnung und dem, was Sie daraus machen können.${dayTxt?` Stand ${dayTxt}`:''}`;
   let h='';
-  if(RS.trends&&RS.trends.length) h+=`<div class="rsg"><div class="grp"><span>Trends · Monat</span><span class="muted" style="font-size:11px;text-transform:none;letter-spacing:0;font-weight:500">Durchschnitt der ETFs je Bereich</span></div><div class="radar">${RS.trends.slice(0,8).map(t=>`<button class="rc tr" data-rstrend="${esc(t.cat)}"><span class="kick">${esc(t.cat)}</span><span class="big ${cls(t.m1)}">${pctS(t.m1)}</span><small>${t.y1>=0?'im Jahr '+pctS(t.y1)+', ':''}${t.fromHigh<=-10?'deutlich unter dem Hoch ('+pctS(t.fromHigh)+')':'nahe am Hoch'}</small><span class="go">${t.m1<=-6&&t.y1>0?'Rücksetzer im Aufwärtstrend':t.m1<=-6?'Abwärtstrend':t.m1>=4?'Aufwärtstrend':'Seitwärts'} ›</span></button>`).join('')}</div></div>`;
-  for(const c of ['us','de','etf','cmd','fx']){ const l=(RS.classes[c]||[]); if(!l.length) continue;
+  if(RS.trends&&RS.trends.length) h+=`<div class="rsg"><div class="grp"><span>Trends · Monat</span><span class="muted" style="font-size:11px;text-transform:none;letter-spacing:0;font-weight:500">Welche Bereiche laufen: Monatsrendite im Schnitt aller ETFs eines Bereichs</span></div><div class="radar">${RS.trends.slice(0,8).map(t=>`<button class="rc tr" data-rstrend="${esc(t.cat)}"><span class="kick">${esc(t.cat)}</span><span class="big ${cls(t.m1)}">${pctS(t.m1)}</span><small>${t.y1>=0?'im Jahr '+pctS(t.y1)+', ':''}${t.fromHigh<=-10?'deutlich unter dem Hoch ('+pctS(t.fromHigh)+')':'nahe am Hoch'}</small><span class="go">${t.m1<=-6&&t.y1>0?'Rücksetzer im Aufwärtstrend':t.m1<=-6?'Abwärtstrend':t.m1>=4?'Aufwärtstrend':'Seitwärts'} ›</span></button>`).join('')}</div></div>`;
+  for(const c of ['us','de','etf','cmd','fx','crypto']){ const l=(RS.classes[c]||[]); if(!l.length) continue;
     h+=`<div class="rsg"><div class="grp"><span>${RSN[c]}</span><button class="link" data-f="${c==='us'||c==='de'?c:c}">Kurse ›</button></div><div class="radar">${l.map(rsCard).join('')}</div></div>`; }
   if(!h) h='<div class="empty">Die erste Recherche läuft heute Abend nach US-Börsenschluss.</div>';
   $('#research').innerHTML=h;
@@ -1643,7 +1643,7 @@ async function doSearch(v){
 }
 async function addInstrument(sym){
   $(sBox).innerHTML='<div class="note">Kurs wird geladen …</div>';
-  try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym);
+  try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; if(r.quote) RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym);
     $('#sres').hidden=true; $('#sres2').hidden=true; $('#q').value=''; $('#q2').value=''; $('#q').blur(); $('#q2').blur(); renderMarket(); openTrade(r.sym); }
   catch(e){ $(sBox).innerHTML=`<div class="note">${esc(e.message)}</div>`; }
 }
@@ -1846,7 +1846,7 @@ $('#smOpen').onclick=openSmart;
 $('#smSheet').addEventListener('click',async e=>{ const f=e.target.closest('[data-smf]'); if(f){ smF=f.dataset.smf; renderSmartList(); return; }
   const lk=e.target.closest('[data-smlink]'); if(lk){ window.open(lk.dataset.smlink,'_blank','noopener'); return; }
   const m=e.target.closest('[data-smsym]'); if(!m) return; const sym=m.dataset.smsym;
-  if(!META[sym]){ try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym); }catch(err){ return toast(err.message); } }
+  if(!META[sym]){ try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; if(r.quote) RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym); }catch(err){ return toast(err.message); } }
   openChart(sym); });
 function loadSmartSym(s){
   if(SMS[s]) return; SMS[s]={loading:true};
