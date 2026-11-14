@@ -186,7 +186,7 @@ async function api(req, res, url) {
       const u = config.researchToken && bearer === config.researchToken ? {id: 0, name: 'Redaktion'} : requireUser(req);
       if (u.id !== 0 && !trcm.isAdmin(u)) throw Object.assign(new Error('Nur für Admins'), {status: 403});
       const b = m === 'GET' ? {} : await body(req);
-      if (p === '/api/admin/research/run' && m === 'POST') { limit(req, 3, 'research'); await research.run(true); }
+      if (p === '/api/admin/research/run' && m === 'POST') { limit(req, 3, 'research'); research.run(true).catch(() => {}); return send(res, 202, {started: true, hint: 'Der Lauf dauert etwa eine Minute; danach /api/research abrufen.'}); }   // im Hintergrund, sonst läuft der Proxy in ein Zeitlimit
       else if (p === '/api/admin/research/note' && m === 'POST') research.addNote(u, b.day, String(b.cls || ''), String(b.sym || '').toUpperCase(), b.note, b.action, b.score);
       else return send(res, 404, {error: 'Unbekannte Route'});
       return send(res, 200, research.load());
