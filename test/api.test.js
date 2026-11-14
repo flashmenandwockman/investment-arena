@@ -507,3 +507,25 @@ test('Devisen: Hebel bis 200 im Profi-Modus, 30 im Start-Modus', async () => {
   const q = await c('/api/quotes');
   assert.strictEqual(q.data.instruments['USDJPY=X'].g, 'fx');
 });
+
+test('Smart Money: Insider aus SEC Form 4, Stimmen, 11 Devisenpaare', async () => {
+  const insiders = require('../server/insiders');
+  const xml = `<ownershipDocument><issuer><issuerName>Example Corp</issuerName><issuerTradingSymbol>exm</issuerTradingSymbol></issuer>
+    <reportingOwner><reportingOwnerId><rptOwnerName>Doe Jane</rptOwnerName></reportingOwnerId><reportingOwnerRelationship><isDirector>1</isDirector><isOfficer>1</isOfficer><officerTitle>CEO</officerTitle></reportingOwnerRelationship></reportingOwner>
+    <nonDerivativeTable><nonDerivativeTransaction><transactionDate><value>2026-11-12</value></transactionDate><transactionCoding><transactionCode>P</transactionCode></transactionCoding><transactionAmounts><transactionShares><value>1000</value></transactionShares><transactionPricePerShare><value>50</value></transactionPricePerShare></transactionAmounts></nonDerivativeTransaction>
+    <nonDerivativeTransaction><transactionDate><value>2026-11-13</value></transactionDate><transactionCoding><transactionCode>P</transactionCode></transactionCoding><transactionAmounts><transactionShares><value>500</value></transactionShares><transactionPricePerShare><value>52</value></transactionPricePerShare></transactionAmounts></nonDerivativeTransaction>
+    <nonDerivativeTransaction><transactionCoding><transactionCode>A</transactionCode></transactionCoding><transactionAmounts><transactionShares><value>9999</value></transactionShares><transactionPricePerShare><value>0</value></transactionPricePerShare></transactionAmounts></nonDerivativeTransaction></nonDerivativeTable></ownershipDocument>`;
+  const rows = insiders.parseForm4(xml);
+  assert.strictEqual(rows.length, 1);
+  assert.strictEqual(insiders.niceName('STERNLICHT BARRY S'), 'Barry S. Sternlicht');
+  assert.strictEqual(insiders.niceName('BERKSHIRE HATHAWAY INC'), 'BERKSHIRE HATHAWAY INC');
+  assert.strictEqual(rows[0].sym, 'EXM'); assert.strictEqual(rows[0].code, 'P'); assert.strictEqual(rows[0].shares, 1500); assert.strictEqual(rows[0].value, 76000); assert.strictEqual(rows[0].title, 'CEO'); assert.strictEqual(rows[0].tdate, '2026-11-13');
+  const c = client(); await c('/api/auth/demo', {});
+  const sm = await c('/api/smart');
+  assert.ok(Array.isArray(sm.data.insiders.buys) && sm.data.insiders.buys.length >= 1, 'Insiderkäufe aus dem Fallback');
+  assert.ok(sm.data.voices.items.length >= 3, 'Stimmen aus dem Fallback');
+  const q = await c('/api/quotes');
+  const fx = Object.keys(q.data.instruments).filter(s => q.data.instruments[s].g === 'fx');
+  assert.strictEqual(fx.length, 11);
+  assert.ok(['EURCHF=X', 'GBPCHF=X', 'CHFJPY=X', 'USDCHF=X'].every(s => q.data.quotes[s] && q.data.quotes[s].price > 0), 'CHF-Paare mit Kurs');
+});

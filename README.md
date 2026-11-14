@@ -13,7 +13,7 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
 | **Märkte** | Oben die Suche nach jeder US-Aktie und jedem US-ETF, darunter **Aktuell** (drei Einträge: zwei Nachrichten mit Wirkung auf Kurse und Wirtschaft, als dritter dezent der neueste Beitrag von Florian Homm aus Free Homes im selben Stil, der vierte Eintrag unscharf, „Mehr aktuelle News laden“ zeigt alle; alle 240 Minuten aktualisiert), dann ein zweiter Suchschlitz und die **Kurse** in der Übersicht: die heute beliebtesten Titel der Arena je Gruppe (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte, berechnet aus Positionen, Orders, Watchlists und Aufrufen aller Mitglieder, alle 10 Minuten), auf Wunsch alle 22 Werte mit Filtern, darunter das Smart-Money-Radar. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Aktuell** | Überschriften von tagesschau.de (RSS, `NEWS_FEEDS`) und Finnhub-Marktnachrichten, nach Stichworten (Notenbanken, Zinsen, Inflation, Zölle, Öl, Quartalszahlen, Indizes) gewichtet, nur Überschrift, Quelle, Zeit und Link; englische Meldungen mit Kennzeichnung |
-| **Smart-Money-Radar** | Insider-Käufe/-Verkäufe (SEC), Analystenkonsens, Quartalstermine und -überraschungen, ungewöhnliches Volumen, News |
+| **Smart-Money-Radar** | Insider-Käufe/-Verkäufe je Titel (Finnhub) und **marktweit aus den Form-4-Originalmeldungen der SEC** (alle 30 Minuten: Käufer, Titel, Stück, Preis, Summe), Großinvestoren aus 13F, Analystenkonsens, Quartalstermine, ungewöhnliches Volumen, News, dazu **Stimmen aus Notenbanken und Research** (Fed, EZB, Hussman Funds, MarketWatch per RSS, stündlich, `SMART_FEEDS`) |
 | **Florian Homm aus Free Homes** | Die täglichen Postings und das Wochenvideo von Florian Homm aus Free Homes, untergemischt in die Radar-Karten und im Smart-Money-Feld je Titel. **Inhalt, Chart und Video nur für Free-Homes-Mitglieder**, alle anderen sehen eine unscharfe Karte mit Schloss. Jede Meldung verweist auf den Homm Long Short Börsenbrief |
 | **Kurs-Charts** | Zeiträume 24h, Woche, Monat, Jahr und Max (5 Jahre); beim Darüberfahren oder Tippen erscheinen Kurs, Veränderung und Zeitpunkt |
 | **Anleger kopieren** | Copy Trading wie bei Social-Trading-Plattformen: Trader der Arena mit Rendite (Woche, Monat, gesamt), Risikowert 1–7 und Zahl der Kopierer. Beim Kopieren werden die offenen Positionen anteilig übernommen und jeder neue Trade sowie jedes Schließen automatisch nachgebildet |
@@ -29,7 +29,7 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | **Lernen** | Jede Lektion öffnet ein Fenster mit Florians Erklärung, Tonspur, einer passenden Übung im Simulator (z. B. „Jetzt einen Short probieren: Tesla“) und der Vertiefung in der Free Homes Academy. Darunter die 9 Module der Academy mit allen Lektions-Einleitungen zum Aufklappen und Link zur Academy (`ACADEMY_URL`) |
 | **Desktop und Tablet** | Ab 760 px breitere Spalte, ab 1100 px Navigation links, Inhalt in der Mitte, Depotkasten und Coach rechts als feste Spalte; Fenster öffnen als Dialog in der Mitte |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
-| **Devisen** | EUR/USD, GBP/USD, USD/JPY, USD/CHF mit Hebeln wie im Forex-Handel: Start-Modus 10×, 20×, 30×, Profi-Modus 30×, 50×, 100×, 200× (Knock-out bei 200× nach 0,5 % gegen die Position), Finanzierung 0,005 % pro Tag. Eigene Lektion „Devisen: der größte Markt der Welt“ |
+| **Devisen** | 11 Paare: EUR/USD, GBP/USD, USD/JPY, USD/CHF, EUR/CHF, GBP/CHF, CHF/JPY, EUR/GBP, EUR/JPY, AUD/USD, USD/CAD mit Hebeln wie im Forex-Handel: Start-Modus 10×, 20×, 30×, Profi-Modus 30×, 50×, 100×, 200× (Knock-out bei 200× nach 0,5 % gegen die Position), Finanzierung 0,005 % pro Tag. Eigene Lektion „Devisen: der größte Markt der Welt“ |
 
 Alle Orders, Stop-Loss, Knock-outs und Depotwerte werden **auf dem Server mit Server-Kursen** berechnet. Die Rangliste lässt sich dadurch nicht über den Browser manipulieren. Kursbewegungen gibt es nur durch den echten Markt, nicht durch Vorspulen.
 
@@ -66,6 +66,7 @@ Tests: `npm test`
 | `BOERSENBRIEF_URL` | Standardlink zur Vertiefung an jeder Meldung (Standard: homm-longshort.com) |
 | `NEWS_FEEDS` | RSS-Feeds für „Aktuell“, kommagetrennt (Standard: tagesschau Wirtschaft) |
 | `ACADEMY_URL` | Link zur Free Homes Academy im Bereich Lernen |
+| `SMART_FEEDS` | Stimmen im Smart-Money-Radar als „Name|URL“, kommagetrennt (Standard: Fed, EZB, Hussman Funds, MarketWatch) |
 | `SEED_BOTS` | `0` = keine Beispiel-Community (Gründungsmitglieder) anlegen |
 | `SEC_USER_AGENT` | Kennung für Abrufe bei der SEC. Die SEC verlangt Name und Kontakt-E-Mail, z. B. `Investment Arena kontakt@ihre-domain.de` |
 | `GURUS` | `0` = Großinvestoren ausschalten |
@@ -215,6 +216,8 @@ MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUF
 | Quelle | Daten | Hinweis |
 |---|---|---|
 | Finnhub (Free) | US-Kurse in Echtzeit, Insider-Trades, Insider-Stimmung, Analystenkonsens, Quartalstermine, News | Anzeigerecht in einer öffentlichen App vor dem Launch mit Finnhub klären |
+| SEC EDGAR, Formular 4 | Insiderkäufe und -verkäufe marktweit, alle 30 Minuten | Kostenlos, kein Schlüssel; User-Agent mit Kontakt, höchstens 10 Abrufe pro Sekunde |
+| RSS: Fed, EZB, Hussman Funds, MarketWatch | Stimmen aus Notenbanken und Research, nur Überschrift und Link | Öffentliche Feeds; große Häuser wie a16z, Oaktree, Bridgewater, Baupost bieten keinen RSS-Feed, nur Newsletter |
 | Yahoo Finance | DAX-Werte, Indizes, Gold, Tagesvolumen | Inoffizielle Schnittstelle, **vor dem öffentlichen Start durch lizenzierten Anbieter ersetzen** (15 Minuten Verzögerung genügt) |
 | ccxt / Kraken | Krypto in Echtzeit | Öffentliche Börsendaten |
 | Unusual Whales | Kongress-Trades, Options-Flow, Dark Pool | Nicht eingebunden: braucht Enterprise-Lizenz |
@@ -244,6 +247,7 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | PATCH/POST/DELETE | `/api/admin/trcm`, `/api/admin/trcm/holdings[/:id[/close]]` | Pflege des TRCM Portfolios (nur Admins) |
 | GET | `/api/chart?sym=…&r=1d\|5d\|1mo\|1y\|5y` | Kursverlauf für den Chart |
 | GET | `/api/discover` | Trader zum Kopieren mit Kennzahlen, Großinvestoren |
+| GET | `/api/smart`, `/api/smart/:sym` | Smart Money: 13F-Bewegungen, Insider aus SEC Form 4 (`insiders`), Stimmen (`voices`); je Titel Halter und aktuelle Insider-Meldungen |
 | POST | `/api/copy`, `/api/copy/:id/stop` | Kopieren starten, beenden |
 | POST | `/api/state/reset` | Neustart, nur mit `{"confirm": true}` |
 | GET/POST | `/api/arenas`, `/api/arenas/by/:name`, `/api/arenas/by/:name/join`, `/api/arenas/league` | Private Arenen, Beitreten, Gruppen-Liga |
@@ -265,6 +269,8 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   homm.js      Postings von Florian Homm aus Free Homes (Import, Mitglieder-Sperre, Admin-Pflege)
   news.js      Aktuell: Nachrichten mit Marktwirkung aus RSS und Finnhub, alle 240 Minuten
   popular.js   Beliebteste Titel des Tages für die Kursübersicht (ohne Daten: Top des Quartals)
+  insiders.js  Insiderkäufe und -verkäufe marktweit aus SEC Form 4, alle 30 Minuten
+  voices.js    Stimmen aus Notenbanken und Research (RSS), stündlich
   copy.js      Copy Trading und Kennzahlen (Rendite, Risiko, Kopierer)
   arenas.js    Private Arenen, Arena-Depots, Feed, Gruppen-Liga
   talents.js   Scouting & Talents (Score, Stufen, Vorstellungen, Scouting-Board)

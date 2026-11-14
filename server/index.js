@@ -16,6 +16,8 @@ const trcm = require('./trcm');
 const homm = require('./homm');
 const news = require('./news');
 const popular = require('./popular');
+const insiders = require('./insiders');
+const voices = require('./voices');
 const copy = require('./copy');
 const gurus = require('./gurus');
 const arenas = require('./arenas');
@@ -172,8 +174,8 @@ async function api(req, res, url) {
     if (/^\/api\/radar\/[A-Za-z]{1,5}$/.test(p)) { const u = requireUser(req); limit(req); const sym = p.split('/').pop().toUpperCase(); return send(res, 200, {sym, radar: await radar.one(sym), homm: homm.forSymbol(sym, u)}); }
     if (p === '/api/chart') { limit(req); return send(res, 200, await market.chart(url.searchParams.get('sym') || '', url.searchParams.get('r'))); }
     if (/^\/api\/sentiment\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, sentiment(decodeURIComponent(p.slice('/api/sentiment/'.length))));
-    if (p === '/api/smart') return send(res, 200, smart.overview());
-    if (/^\/api\/smart\/[\w.^=\/-]{1,20}$/.test(p)) return send(res, 200, smart.forSymbol(decodeURIComponent(p.slice('/api/smart/'.length))));
+    if (p === '/api/smart') return send(res, 200, {...smart.overview(), insiders: insiders.latest(), voices: voices.get()});
+    if (/^\/api\/smart\/[\w.^=\/-]{1,20}$/.test(p)) { const sym = decodeURIComponent(p.slice('/api/smart/'.length)); return send(res, 200, {...smart.forSymbol(sym), insiders: insiders.forSymbol(sym)}); }
     if (p === '/api/news') return send(res, 200, news.get());
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status(), homm: homm.view(auth.currentUser(req))});
     // Postings von Florian Homm aus Free Homes: für alle sichtbar, dass es sie gibt; Inhalt nur für Mitglieder
@@ -403,6 +405,8 @@ async function start() {
     setInterval(() => radar.refresh().catch(() => {}), 30 * 60_000);
     homm.sync().catch(() => {}); setInterval(() => homm.sync().catch(() => {}), 30 * 60_000);
     news.refresh().catch(() => {}); setInterval(() => news.refresh().catch(() => {}), 240 * 60_000);
+    voices.refresh().catch(() => {}); setInterval(() => voices.refresh().catch(() => {}), 60 * 60_000);
+    setTimeout(() => insiders.sync().catch(() => {}), 20_000); setInterval(() => insiders.sync().catch(() => {}), 30 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
     setInterval(() => { try { daybot.ensure(); } catch (e) {} }, 30 * 60_000);
     market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);

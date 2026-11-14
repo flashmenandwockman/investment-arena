@@ -19,6 +19,8 @@ const CORE = {
   'GC=F':{n:'Gold',t:'Rohstoff',g:'cmd',s:'XAU'}, 'CL=F':{n:'Öl (WTI)',t:'Rohstoff',g:'cmd',s:'OIL'},
   'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'}, 'URTH':{n:'MSCI World ETF',t:'ETF',g:'etf',s:'URTH'},
   'EURUSD=X':{n:'EUR/USD',t:'Devisen',g:'fx',s:'EURUSD'}, 'GBPUSD=X':{n:'GBP/USD',t:'Devisen',g:'fx',s:'GBPUSD'}, 'USDJPY=X':{n:'USD/JPY',t:'Devisen',g:'fx',s:'USDJPY'}, 'USDCHF=X':{n:'USD/CHF',t:'Devisen',g:'fx',s:'USDCHF'},
+  'EURCHF=X':{n:'EUR/CHF',t:'Devisen',g:'fx',s:'EURCHF'}, 'GBPCHF=X':{n:'GBP/CHF',t:'Devisen',g:'fx',s:'GBPCHF'}, 'CHFJPY=X':{n:'CHF/JPY',t:'Devisen',g:'fx',s:'CHFJPY'},
+  'EURGBP=X':{n:'EUR/GBP',t:'Devisen',g:'fx',s:'EURGBP'}, 'EURJPY=X':{n:'EUR/JPY',t:'Devisen',g:'fx',s:'EURJPY'}, 'AUDUSD=X':{n:'AUD/USD',t:'Devisen',g:'fx',s:'AUDUSD'}, 'USDCAD=X':{n:'USD/CAD',t:'Devisen',g:'fx',s:'USDCAD'},
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'},
 };

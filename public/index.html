@@ -976,9 +976,15 @@ main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:
     <div class="smhead"><p id="smIntro"></p></div>
     <div class="sec-h" style="margin-top:26px"><h2 style="font-size:19px">Nettozuflüsse</h2><span class="muted num" style="font-size:12px" id="smUnit"></span></div>
     <div class="flows num" id="smFlows"></div>
-    <div class="chips" id="smChips" style="margin-top:20px"><button class="chip on" data-smf="all">Alle</button><button class="chip" data-smf="buy">Käufe</button><button class="chip" data-smf="sell">Verkäufe</button></div>
+    <div class="sec-h" style="margin-top:26px"><h2 style="font-size:19px">Insider: Käufe und Verkäufe</h2><span class="muted" style="font-size:12px" id="smInsAsof"></span></div>
+    <p class="muted" style="margin:0 2px 6px;font-size:13px;line-height:1.5">Was Vorstände, Direktoren und Großaktionäre zuletzt mit eigenem Geld getan haben, marktweit aus den Form-4-Meldungen an die SEC, alle 30 Minuten.</p>
+    <div id="smIns"></div>
+    <div class="sec-h" style="margin-top:26px"><h2 style="font-size:19px">Stimmen: Notenbanken und Research</h2><span class="muted" style="font-size:12px" id="smVoxAsof"></span></div>
+    <div class="newsbox" id="smVox"></div>
+    <div class="sec-h" style="margin-top:26px"><h2 style="font-size:19px">Großinvestoren: Bewegungen</h2></div>
+    <div class="chips" id="smChips" style="margin-top:6px"><button class="chip on" data-smf="all">Alle</button><button class="chip" data-smf="buy">Käufe</button><button class="chip" data-smf="sell">Verkäufe</button></div>
     <div id="smList"></div>
-    <p class="fine" style="text-align:left;margin-top:18px">Quelle: Pflichtmeldungen (Formular 13F) an die US-Börsenaufsicht SEC, Vergleich mit dem Vorquartal. Erfasst sind US-Aktienpositionen ohne Optionen und Leerverkäufe. Nettozufluss = Veränderung der Stückzahl × Kurs zum Stichtag. Keine Verbindung zu den genannten Personen, keine Anlageberatung.</p>
+    <p class="fine" style="text-align:left;margin-top:18px">Quellen: Formular 4 (Insider) und Formular 13F (Großinvestoren) der US-Börsenaufsicht SEC, Vergleich mit dem Vorquartal; Stimmen aus öffentlichen Feeds von Fed, EZB, Hussman Funds und MarketWatch. Erfasst sind US-Aktienpositionen ohne Optionen und Leerverkäufe. Nettozufluss = Veränderung der Stückzahl × Kurs zum Stichtag. Keine Verbindung zu den genannten Personen, keine Anlageberatung.</p>
   </div>
 </section>
 
@@ -1257,6 +1263,8 @@ const META = {
   'GC=F':{n:'Gold',t:'Rohstoff',g:'cmd',s:'XAU'}, 'CL=F':{n:'Öl (WTI)',t:'Rohstoff',g:'cmd',s:'OIL'},
   'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'}, 'URTH':{n:'MSCI World ETF',t:'ETF',g:'etf',s:'URTH'},
   'EURUSD=X':{n:'EUR/USD',t:'Devisen',g:'fx',s:'EURUSD'}, 'GBPUSD=X':{n:'GBP/USD',t:'Devisen',g:'fx',s:'GBPUSD'}, 'USDJPY=X':{n:'USD/JPY',t:'Devisen',g:'fx',s:'USDJPY'}, 'USDCHF=X':{n:'USD/CHF',t:'Devisen',g:'fx',s:'USDCHF'},
+  'EURCHF=X':{n:'EUR/CHF',t:'Devisen',g:'fx',s:'EURCHF'}, 'GBPCHF=X':{n:'GBP/CHF',t:'Devisen',g:'fx',s:'GBPCHF'}, 'CHFJPY=X':{n:'CHF/JPY',t:'Devisen',g:'fx',s:'CHFJPY'},
+  'EURGBP=X':{n:'EUR/GBP',t:'Devisen',g:'fx',s:'EURGBP'}, 'EURJPY=X':{n:'EUR/JPY',t:'Devisen',g:'fx',s:'EURJPY'}, 'AUDUSD=X':{n:'AUD/USD',t:'Devisen',g:'fx',s:'AUDUSD'}, 'USDCAD=X':{n:'USD/CAD',t:'Devisen',g:'fx',s:'USDCAD'},
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'}
 };
@@ -1338,7 +1346,7 @@ const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s)
 const nf = (v,d) => Math.abs(v).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
 const NB='\u00a0';   // geschütztes Leerzeichen: Zahl und Einheit bleiben zusammen
 const eur = (v,d=2) => (v<0?'−':'') + nf(v,d) + NB+'€';
-const fmt = (v,cur) => { if(cur==='JPY'||cur==='CHF') return nf(v,cur==='JPY'?2:4) + NB + cur; const d = v>=1?2:v>=.1?4:5; return nf(v,d) + NB + (cur==='USD'?'$':'€'); };
+const fmt = (v,cur) => { if(cur&&cur!=='USD'&&cur!=='EUR'&&cur!=='NAV') return nf(v,cur==='JPY'?2:4) + NB + cur; const d = v>=1?2:v>=.1?4:5; return nf(v,d) + NB + (cur==='USD'?'$':'€'); };
 const z = (v,d) => Math.abs(v) < .5*10**-d ? 0 : v;
 const pct = (v,d=2) => { v=z(v*100,d)/100; return (v>0?'+':v<0?'−':'±') + nf(v*100,d) + NB+'%'; };
 const sgn = v => { v=z(v,2); return (v>0?'+':v<0?'−':'±') + nf(v,2) + NB+'€'; };
@@ -1428,6 +1436,10 @@ function radarCards(){
   if(vols[0] && volRatio(vols[0])>=1.4){ const s=vols[0]; cards.push({c:'',k:'Ungewöhnliches Volumen',s,t:`${META[s].n}: ${nf(volRatio(s),1)}-mal so viel Handel wie üblich`,d:'Verglichen mit dem Schnitt der letzten 20 Handelstage',tip:'volume'}); }
   const fav=syms.filter(s=>recInfo(RD[s].rec)&&recInfo(RD[s].rec).n>=15).sort((a,b)=>recInfo(RD[b].rec).share-recInfo(RD[a].rec).share);
   if(fav[0]){ const s=fav[0], r=recInfo(RD[s].rec); cards.push({c:'',k:'Liebling der Analysten',s,t:`${META[s].n}: ${r.buy} von ${r.n} Analysten sagen Kaufen`,d:'Florian fragt: Wer soll da eigentlich noch kaufen?',tip:'analyst'}); }
+  if(SM && SM.insiders && SM.insiders.buys && SM.insiders.buys[0]){ const b=SM.insiders.buys[0];
+    cards.splice(Math.min(1,cards.length),0,{c:'green',k:'Insider kaufen · SEC, aktuell',s:b.known?b.sym:'__smart',t:`${esc(b.owner)} kauft ${esc(b.issuer)} für ${usd(b.value)}`,d:`${esc(b.title)} · ${nf(b.shares,0)} Stück à ${nf(b.price,2)} $ · Formular 4 vom ${dshort(b.date)}`,tip:'insider',go:b.known?'Ansehen und handeln →':'Alle Insider-Meldungen →'}); }
+  if(SM && SM.voices && SM.voices.items && SM.voices.items[0]){ const v=SM.voices.items.find(x=>/^(Fed|EZB)$/.test(x.src))||SM.voices.items[0];
+    cards.push({c:'',k:`${esc(v.src)} · Notenbank & Research`,s:'__smart',t:esc(v.h),d:`${agoNews(v.t)} · Original lesen auf der Smart-Money-Seite`,tip:'radar',go:'Stimmen ansehen →'}); }
   if(SM && SM.flows && SM.flows.length){ const top=SM.flows[0], low=SM.flows.at(-1), mv=SM.moves[0];
     cards.unshift({c:'gold',k:`Großinvestoren · ${SM.report?quarter(SM.report):'13F'}`,s:'__smart',t:`Die Großen kaufen ${top.sector}${low&&low.net<0?`, verkaufen ${low.sector}`:''}`,d:mv?`Größte Bewegung: ${mv.person}, ${mvText(mv)}`:'SEC-Pflichtmeldungen',tip:'insider'}); }
   $('#radar').innerHTML = cards.map(c=>`<button class="rc ${c.c}" data-radar="${c.s}" data-tip="${c.tip}"><span class="kick">${c.k}</span><b>${c.t}</b><small>${c.d}</small><span class="go">${c.go||'Ansehen und handeln →'}</span></button>`).join('') || '<div class="empty" style="width:100%">Radar-Daten werden geladen …</div>';
@@ -1443,6 +1455,7 @@ function smartPanel(s){
       ${g.sold.length?`<div class="hint">Komplett verkauft: ${g.sold.map(x=>esc(x.person)).join(', ')}</div>`:''}
       <div class="src">SEC 13F${q?' · Stichtag '+q:''} · Veränderung zum Vorquartal</div></div>`);
   }
+  if(g && !g.loading && g.insiders && g.insiders.length){ rows.push(`<div class="sm-row"><div class="l"><span>Insider aktuell (SEC Form 4)</span><b class="${g.insiders.some(x=>x.code==='P')?'up':'down'}">${g.insiders.filter(x=>x.code==='P').length} Käufe · ${g.insiders.filter(x=>x.code==='S').length} Verkäufe</b></div>${g.insiders.slice(0,4).map(x=>`<div class="tx"><span>${esc(x.owner)} <span class="muted">· ${esc(x.title)}</span></span><b class="${x.code==='P'?'up':'down'}">${x.code==='P'?'Kauf':'Verkauf'}</b><small class="muted">${dshort(x.date)} · ${nf(x.shares,0)} Stück à ${nf(x.price,2)} $</small><small class="muted">${usd(x.value)}</small></div>`).join('')}<div class="src">Meldungen der letzten 14 Tage, alle 30 Minuten aus der SEC</div></div>`); }
   if(ri) rows.push(`<div class="sm-row"><div class="l"><span>Analysten (${ri.n})</span><b>${Math.round(ri.share*100)} % Kaufen</b></div>
     <div class="stack"><i style="width:${ri.buy/ri.n*100}%;background:var(--up)"></i><i style="width:${ri.hold/ri.n*100}%;background:var(--gold)"></i><i style="width:${ri.sell/ri.n*100}%;background:var(--down)"></i></div>
     <div class="legend"><span>Kaufen ${ri.buy}</span><span>Halten ${ri.hold}</span><span>Verkaufen ${ri.sell}</span></div>
@@ -1723,7 +1736,17 @@ async function openSmart(){
   $('#smUnit').textContent=`${unit} · letztes Quartal`;
   $('#smFlows').innerHTML=SM.flows.length?SM.flows.map(f=>`<div class="flow"><span>${esc(f.sector)}</span><span class="track"><i style="${f.net>=0?`left:50%;width:${Math.abs(f.net)/mx*50}%;background:var(--up)`:`right:50%;width:${Math.abs(f.net)/mx*50}%;background:var(--down)`}"></i></span><b class="${cls(f.net)}">${f.net>=0?'+':'−'}${nf(Math.abs(f.net)/div,1)}</b></div>`).join('')
     :'<p class="muted" style="font-size:13.5px">Die Branchen werden noch zugeordnet.</p>';
-  smF='all'; renderSmartList(); openSheet('#smSheet');
+  smF='all'; renderSmartList(); renderSmartExtras(); openSheet('#smSheet');
+}
+function insRow(x){ const buy=x.code==='P';
+  return `<button class="mv" ${x.known?`data-smsym="${esc(x.sym)}"`:`data-smlink="${esc(x.url)}"`}><span class="mono">${esc(x.sym.slice(0,5))}</span><span style="min-width:0"><b>${esc(x.owner)}</b><small>${esc(x.title)} · ${esc(x.issuer)} · ${nf(x.shares,0)} Stück à ${nf(x.price,2)} $ · ${dshort(x.date)}</small></span><span class="r"><span class="act ${buy?'buy':'sell'}">${buy?'Kauf':'Verkauf'}</span><small class="num">${usd(x.value)}</small></span></button>`; }
+function renderSmartExtras(){
+  const I=SM.insiders||{buys:[],sells:[]}, list=[...I.buys.slice(0,12),...I.sells.slice(0,4)];
+  $('#smInsAsof').textContent=I.live?`SEC Form 4 · Stand ${new Date(I.at||Date.now()).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`:'SEC Form 4 · mitgelieferter Stand';
+  $('#smIns').innerHTML=list.length?list.map(insRow).join(''):'<div class="empty">Noch keine Meldungen der letzten Tage.</div>';
+  const V=(SM.voices&&SM.voices.items)||[];
+  $('#smVoxAsof').textContent=SM.voices&&SM.voices.updatedAt?`stündlich · Stand ${new Date(SM.voices.updatedAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`:'';
+  $('#smVox').innerHTML=V.length?V.slice(0,12).map(x=>`<a class="nw" href="${esc(x.url)}" target="_blank" rel="noopener"><small>${esc(x.src)} · ${agoNews(x.t)}${x.lang==='en'?'<span class="enb">EN</span>':''}</small><b>${esc(x.h)}</b></a>`).join(''):'<div class="empty">Keine Stimmen geladen.</div>';
 }
 function renderSmartList(){
   $$('[data-smf]').forEach(b=>b.classList.toggle('on',b.dataset.smf===smF));
@@ -1735,6 +1758,7 @@ function renderSmartList(){
 }
 $('#smOpen').onclick=openSmart;
 $('#smSheet').addEventListener('click',async e=>{ const f=e.target.closest('[data-smf]'); if(f){ smF=f.dataset.smf; renderSmartList(); return; }
+  const lk=e.target.closest('[data-smlink]'); if(lk){ window.open(lk.dataset.smlink,'_blank','noopener'); return; }
   const m=e.target.closest('[data-smsym]'); if(!m) return; const sym=m.dataset.smsym;
   if(!META[sym]){ try{ const r=await api('/api/instrument/'+encodeURIComponent(sym)); META[r.sym]=r.meta; RAW={...RAW,[r.sym]:r.quote}; initQuotes(RAW); remember(r.sym); }catch(err){ return toast(err.message); } }
   openChart(sym); });

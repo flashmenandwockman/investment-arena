@@ -81,6 +81,8 @@ Die App hat fünf Bereiche im Menü unten:
 - **Bewegungen** mit Filter Käufe/Verkäufe: neu gekauft, aufgestockt, reduziert, komplett verkauft (z. B. „Warren Buffett · Alphabet um 45 % aufgestockt“)
 - Tippen auf eine Bewegung öffnet den Kerzen-Chart des Titels.
 
+**Marktweit aus der SEC (Formular 4), alle 30 Minuten:** die größten Insiderkäufe und -verkäufe der letzten Tage mit Käufer, Funktion, Stückzahl, Preis und Summe; der größte Kauf des Tages als Radar-Karte. **Stimmen:** Überschriften aus den öffentlichen Feeds von Fed, EZB, Hussman Funds und MarketWatch, stündlich, mit Link zum Original.
+
 **Smart-Money-Feld je Titel**, mit Einordnung und Quelle in jeder Zeile:
 - **Großinvestoren:** wer den Titel hält, mit Anteil am Depot und Veränderung zum Vorquartal
 - **Insider-Käufe und -Verkäufe** (SEC Form 4, nur Börsenkäufe und -verkäufe) mit Einordnung: Käufe mit eigenem Geld sind ein starkes Signal, Verkäufe oft Gehalt oder Steuern
@@ -108,7 +110,7 @@ Die auffälligsten Signale des Tages als Karten, vorne die größte Bewegung der
 |---|---|
 | **Aktie / Direkt** | Long (Kurs steigt) oder Short (Kurs fällt). Short kostet 0,01 % pro Tag Leihgebühr |
 | **Hebel** | Start: 2×, 3×, 5× · Profi: 2×, 5×, 10×, 20×. Mit Knock-out-Schwelle; Finanzierung 0,02 % pro Tag auf das Positionsvolumen |
-| **Devisen** | EUR/USD, GBP/USD, USD/JPY, USD/CHF. Hebel wie im Forex-Handel: Start 10×, 20×, 30× · Profi 30×, 50×, 100×, 200×; Finanzierung 0,005 % pro Tag. Florian erklärt in der Lektion, warum Profis hier klein und mit engem Stop handeln |
+| **Devisen** | 11 Paare, darunter EUR/USD, GBP/USD, USD/JPY, USD/CHF, EUR/CHF, GBP/CHF, CHF/JPY. Hebel wie im Forex-Handel: Start 10×, 20×, 30× · Profi 30×, 50×, 100×, 200×; Finanzierung 0,005 % pro Tag. Florian erklärt in der Lektion, warum Profis hier klein und mit engem Stop handeln |
 | **Option** (Profi) | Call oder Put, Laufzeit rund 1, 3 oder 6 Monate, Basispreis am Geld oder 5 bzw. 10 % aus dem Geld. Bewertung nach Black-Scholes |
 
 - **Ausführung:** **Sofort** zum aktuellen Kurs oder **Limit** zum Wunschkurs (Eingabe oder Schnellwahl 1/2/5/10 % unter bzw. über dem Kurs, gültig 1 Tag, 1 Woche oder 1 Monat). Der Betrag wird vorgemerkt; der Server führt aus, sobald der Kurs das Limit erreicht. Offene Limit-Orders stehen im Depot und lassen sich löschen.
@@ -282,11 +284,12 @@ Das Besondere der Arena: Die besten Investoren und Gruppen können sich beim **A
 | Finnhub | US-Kurse in Echtzeit, Insider-Trades, Analystenkonsens, Quartalstermine, Nachrichten, Verzeichnis aller US-Titel |
 | Yahoo Finance | DAX-Werte, Indizes, Gold, Kursverläufe bis 5 Jahre, Volumen |
 | Kraken (über ccxt) | Kryptowährungen in Echtzeit |
-| SEC EDGAR und OpenFIGI | 13F-Meldungen der Großinvestoren und Zuordnung zu Börsenkürzeln |
+| SEC EDGAR und OpenFIGI | 13F-Meldungen der Großinvestoren und Zuordnung zu Börsenkürzeln; Formular-4-Meldungen für Insiderkäufe marktweit |
+| RSS Fed, EZB, Hussman Funds, MarketWatch | Stimmen aus Notenbanken und Research |
 
 - Server ohne Framework auf Node.js mit eingebauter SQLite-Datenbank, Betrieb in Docker mit automatischem HTTPS (Caddy) auf einem eigenen Server bei Hetzner.
 - Alle Berechnungen (Orders, Bewertung, Ranglisten, Kopien, Scores) laufen auf dem Server.
-- Kurse alle 30 Sekunden, Radar alle 30 Minuten, Großinvestoren alle 12 Stunden, Depotwert-Verlauf alle 10 Minuten.
+- Kurse alle 30 Sekunden, Radar und Insider (SEC) alle 30 Minuten, Stimmen stündlich, Aktuell alle 4 Stunden, Großinvestoren alle 12 Stunden, Depotwert-Verlauf alle 10 Minuten.
 - Ohne Live-Daten läuft die App mit mitgelieferten Daten weiter.
 - Automatische Tests für alle Kernfunktionen.
 
