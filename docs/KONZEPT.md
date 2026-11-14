@@ -41,7 +41,7 @@ Die App hat fünf Bereiche im Menü unten:
 | **Depot** | Kopierte Anleger, offene Positionen, Verlauf, Zurücksetzen |
 | **Entdecken** | TRCM Portfolio, Anleger kopieren, Großinvestoren, Community-Fonds |
 | **Arena** | Drei Reiter: Global (Preise, Profil, Rangliste), Meine Arenen (private Arenen, Gruppen-Liga), Talente (Scouting & Talents) |
-| **Lernen** | 13 Lektionen von Florian Homm |
+| **Lernen** | 14 Lektionen von Florian Homm |
 
 ---
 
@@ -61,8 +61,8 @@ Die App hat fünf Bereiche im Menü unten:
 
 ### Kurse und Auswahl
 - **Aktuell:** Überschriften mit Wirkung auf Kurse und Wirtschaft (tagesschau Wirtschaft per RSS, Finnhub-Marktnachrichten), nach Stichworten wie Notenbank, Zinsen, Inflation, Zölle, Öl, Quartalszahlen gewichtet, alle 240 Minuten aktualisiert. Ganz oben immer der neueste Beitrag von Florian Homm aus Free Homes mit Teaser, der Rest hinter dem Free-Homes-Login.
-- **Kurse in der Übersicht:** die heute beliebtesten Titel der Arena je Gruppe, berechnet aus Positionen, Orders, Watchlists und Aufrufen aller Mitglieder, ohne solche Daten die Top-Titel des Quartals: 3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte. Darüber ein zweiter Suchschlitz. „Mehr“ öffnet die volle Liste mit Filtern.
-- **23 Werte als feste Auswahl:** Apple, NVIDIA, Microsoft, Amazon, Tesla, SAP, Siemens, Rheinmetall, Allianz, Deutsche Bank, DAX, S&P 500, Gold, Öl (WTI), S&P 500 ETF, Nasdaq 100 ETF, MSCI World ETF, Bitcoin, Ethereum, Solana, XRP, Cardano, Dogecoin.
+- **Kurse in der Übersicht:** die heute beliebtesten Titel der Arena je Gruppe, berechnet aus Positionen, Orders, Watchlists und Aufrufen aller Mitglieder, ohne solche Daten die Top-Titel des Quartals: 3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Devisenpaare, 2 Kryptowerte. Darüber ein zweiter Suchschlitz. „Mehr“ öffnet die volle Liste mit Filtern.
+- **27 Werte als feste Auswahl:** Apple, NVIDIA, Microsoft, Amazon, Tesla, SAP, Siemens, Rheinmetall, Allianz, Deutsche Bank, DAX, S&P 500, Gold, Öl (WTI), S&P 500 ETF, Nasdaq 100 ETF, MSCI World ETF, EUR/USD, GBP/USD, USD/JPY, USD/CHF, Bitcoin, Ethereum, Solana, XRP, Cardano, Dogecoin.
 - **Suche nach jeder US-Aktie, jedem US-ETF und ADR** (rund 27.000 Titel, auch Aktienklassen wie Berkshire Hathaway BRK.B). Treffer erscheinen nach rund 0,2 Sekunden, ein neuer Titel öffnet in etwa 0,1 Sekunden.
 - **Filter:** Übersicht, Alle, Watchlist, USA, Deutschland, Rohstoffe, ETFs, Krypto, Indizes.
 - Jede Zeile zeigt Kurs, Tagesveränderung, Mini-Chart, Volatilität und Hinweise wie „Zahlen am 17.11.“, „Insider kauft“ oder „Volumen 2,3×“.
@@ -108,6 +108,7 @@ Die auffälligsten Signale des Tages als Karten, vorne die größte Bewegung der
 |---|---|
 | **Aktie / Direkt** | Long (Kurs steigt) oder Short (Kurs fällt). Short kostet 0,01 % pro Tag Leihgebühr |
 | **Hebel** | Start: 2×, 3×, 5× · Profi: 2×, 5×, 10×, 20×. Mit Knock-out-Schwelle; Finanzierung 0,02 % pro Tag auf das Positionsvolumen |
+| **Devisen** | EUR/USD, GBP/USD, USD/JPY, USD/CHF. Hebel wie im Forex-Handel: Start 10×, 20×, 30× · Profi 30×, 50×, 100×, 200×; Finanzierung 0,005 % pro Tag. Florian erklärt in der Lektion, warum Profis hier klein und mit engem Stop handeln |
 | **Option** (Profi) | Call oder Put, Laufzeit rund 1, 3 oder 6 Monate, Basispreis am Geld oder 5 bzw. 10 % aus dem Geld. Bewertung nach Black-Scholes |
 
 - **Ausführung:** **Sofort** zum aktuellen Kurs oder **Limit** zum Wunschkurs (Eingabe oder Schnellwahl 1/2/5/10 % unter bzw. über dem Kurs, gültig 1 Tag, 1 Woche oder 1 Monat). Der Betrag wird vorgemerkt; der Server führt aus, sobald der Kurs das Limit erreicht. Offene Limit-Orders stehen im Depot und lassen sich löschen.
@@ -230,7 +231,7 @@ Das Besondere der Arena: Die besten Investoren und Gruppen können sich beim **A
 - **Tonspuren:** Jeder Text kann als MP3 von Florian eingesprochen werden; bis dahin liest die Browser-Stimme vor. Die Liste aller Texte steht in `public/audio/AUFNAHMELISTE.md`.
 - **Florians Tipps** im Handelsfenster, bei Fonds und beim Kopieren.
 - **Lernfortschritt:** gehörte Lektionen werden markiert.
-- **13 Lektionen:** Long, Short, Hebel, Call-Option, Put-Option, Stop-Loss, Positionsgröße, Krypto, Insider-Trades lesen, Analysten-Konsens, Quartalszahlen, ungewöhnliches Volumen, eigenen Fonds bauen.
+- **14 Lektionen:** Long, Short, Hebel, Call-Option, Put-Option, Stop-Loss, Positionsgröße, Krypto, Insider-Trades lesen, Analysten-Konsens, Quartalszahlen, ungewöhnliches Volumen, Devisen mit hohem Hebel, eigenen Fonds bauen.
 
 ---
 

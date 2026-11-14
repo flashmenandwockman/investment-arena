@@ -29,6 +29,7 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | **Lernen** | Jede Lektion öffnet ein Fenster mit Florians Erklärung, Tonspur, einer passenden Übung im Simulator (z. B. „Jetzt einen Short probieren: Tesla“) und der Vertiefung in der Free Homes Academy. Darunter die 9 Module der Academy mit allen Lektions-Einleitungen zum Aufklappen und Link zur Academy (`ACADEMY_URL`) |
 | **Desktop und Tablet** | Ab 760 px breitere Spalte, ab 1100 px Navigation links, Inhalt in der Mitte, Depotkasten und Coach rechts als feste Spalte; Fenster öffnen als Dialog in der Mitte |
 | **Zwei Modi** | Einsteiger (einfach, Hebel bis 5×) und Profi (Optionen, Hebel bis 20×, Volatilität, Delta, Gebühren) |
+| **Devisen** | EUR/USD, GBP/USD, USD/JPY, USD/CHF mit Hebeln wie im Forex-Handel: Start-Modus 10×, 20×, 30×, Profi-Modus 30×, 50×, 100×, 200× (Knock-out bei 200× nach 0,5 % gegen die Position), Finanzierung 0,005 % pro Tag. Eigene Lektion „Devisen: der größte Markt der Welt“ |
 
 Alle Orders, Stop-Loss, Knock-outs und Depotwerte werden **auf dem Server mit Server-Kursen** berechnet. Die Rangliste lässt sich dadurch nicht über den Browser manipulieren. Kursbewegungen gibt es nur durch den echten Markt, nicht durch Vorspulen.
 

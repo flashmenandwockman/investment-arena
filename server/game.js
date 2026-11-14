@@ -3,8 +3,12 @@
 const config = require('./config');
 const market = require('./market');
 
-const DAY = 864e5, FEE_LEV = 0.0002, FEE_SHORT = 0.0001;
+const DAY = 864e5, FEE_LEV = 0.0002, FEE_LEV_FX = 0.00005, FEE_SHORT = 0.0001;
 const LEVS = {easy: [2, 3, 5], pro: [2, 5, 10, 20]};
+// Devisen: hohe Hebel wie im echten Forex-Handel (EU-Privatanleger 30×, Profis 100× und mehr), geringere Finanzierungskosten
+const LEVS_FX = {easy: [10, 20, 30], pro: [30, 50, 100, 200]};
+const isFx = sym => (market.INSTRUMENTS[sym] || {}).g === 'fx';
+const levsFor = (mode, sym) => (isFx(sym) ? LEVS_FX : LEVS)[mode === 'pro' ? 'pro' : 'easy'];
 const TENORS = [21, 63, 126];
 const BADGES = ['first', 'short', 'stop', 'lev', 'opt', 'crypto', 'profit', 'streak', 'fund', 'manager'];
 
@@ -35,7 +39,7 @@ const toEur = (v, sym) => { const q = market.get()[sym]; return q && q.cur === '
 /* ---------- Bewertung ---------- */
 const feesOf = p => {
   const d = Math.max(0, (Date.now() - p.openedTs) / DAY);
-  if (p.kind === 'lev') return p.stake * p.lev * FEE_LEV * d;
+  if (p.kind === 'lev') return p.stake * p.lev * (isFx(p.sym) ? FEE_LEV_FX : FEE_LEV) * d;
   if (p.kind === 'stock' && p.dir < 0) return p.stake * FEE_SHORT * d;
   return 0;
 };
@@ -74,7 +78,7 @@ function open(st, o, navOf, opts = {}) {
   if (kind === 'option' && mode !== 'pro') throw new Error('Optionen gibt es im Profi-Modus');
   const p = {id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sym, dir, kind, stake: amt, entry: P, openedTs: Date.now()};
   if (kind === 'lev') {
-    const lev = Number(o.lev); if (!LEVS[mode].includes(lev)) throw new Error('Ungültiger Hebel');
+    const lev = Number(o.lev); if (!levsFor(mode, sym).includes(lev)) throw new Error('Ungültiger Hebel');
     p.lev = lev; p.units = amt * lev / toEur(P, sym); p.ko = P * (1 - dir / lev); award(st, 'lev', 20, events);
   } else if (kind === 'option') {
     const tenor = TENORS.includes(Number(o.tenor)) ? Number(o.tenor) : 63, mny = [0, .05, .1].includes(Number(o.mny)) ? Number(o.mny) : 0;
@@ -124,7 +128,7 @@ function placeLimit(st, o, navOf) {
   const days = VALID[Number(o.valid)] || 7;
   const ord = {id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), sym, dir, kind, lev: o.lev, sl: o.sl, tp: o.tp, note: o.note, amt, limit,
     createdTs: Date.now(), expiresTs: Date.now() + days * DAY};
-  if (kind === 'lev' && !(st.mode === 'pro' ? LEVS.pro : LEVS.easy).includes(Number(o.lev))) throw new Error('Ungültiger Hebel');
+  if (kind === 'lev' && !levsFor(st.mode, sym).includes(Number(o.lev))) throw new Error('Ungültiger Hebel');
   // Limit schon erreicht? Dann sofort zum aktuellen Kurs ausführen
   if (reached(ord, P)) { const r = open(st, ord, navOf); r.position.limit = limit; return {executed: true, ...r}; }
   st.cash -= amt; st.orders = st.orders || []; st.orders.push(ord);
@@ -187,4 +191,4 @@ function check(st, navOf) {
   return events;
 }
 
-module.exports = {placeLimit, cancelLimit, checkOrders, fresh, copyOf, open, close, check, value, equity, label, vol, bs, roundK, feesOf, BADGES, LEVS, DAY};
+module.exports = {placeLimit, cancelLimit, checkOrders, fresh, copyOf, open, close, check, value, equity, label, vol, bs, roundK, feesOf, BADGES, LEVS, LEVS_FX, levsFor, DAY};

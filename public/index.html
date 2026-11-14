@@ -1256,10 +1256,11 @@ const META = {
   '^GDAXI':{n:'DAX',t:'Index',g:'idx',s:'DAX'}, '^GSPC':{n:'S&P 500',t:'Index',g:'idx',s:'SPX'},
   'GC=F':{n:'Gold',t:'Rohstoff',g:'cmd',s:'XAU'}, 'CL=F':{n:'Öl (WTI)',t:'Rohstoff',g:'cmd',s:'OIL'},
   'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'}, 'URTH':{n:'MSCI World ETF',t:'ETF',g:'etf',s:'URTH'},
+  'EURUSD=X':{n:'EUR/USD',t:'Devisen',g:'fx',s:'EURUSD'}, 'GBPUSD=X':{n:'GBP/USD',t:'Devisen',g:'fx',s:'GBPUSD'}, 'USDJPY=X':{n:'USD/JPY',t:'Devisen',g:'fx',s:'USDJPY'}, 'USDCHF=X':{n:'USD/CHF',t:'Devisen',g:'fx',s:'USDCHF'},
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'}
 };
-const FILTERS = [['compact','‹ Übersicht'],['all','Alle'],['watch','★ Watchlist'],['us','USA'],['de','Deutschland'],['cmd','Rohstoffe'],['etf','ETFs'],['crypto','Krypto'],['idx','Indizes']];
+const FILTERS = [['compact','‹ Übersicht'],['all','Alle'],['watch','★ Watchlist'],['us','USA'],['de','Deutschland'],['cmd','Rohstoffe'],['etf','ETFs'],['fx','Devisen'],['crypto','Krypto'],['idx','Indizes']];
 const START = 100000, FEE_LEV = 0.0002, FEE_SHORT = 0.0001;
 
 const TIPS = {
@@ -1274,6 +1275,7 @@ const TIPS = {
   put:'Ein Put ist das Recht, zu einem festen Preis zu verkaufen. Er gewinnt, wenn der Kurs fällt. Profis nutzen Puts vor allem als Versicherung für ihr Depot. Ihr maximaler Verlust ist die gezahlte Prämie.',
   otm:'Je weiter aus dem Geld, desto billiger die Option – und desto unwahrscheinlicher, dass sie sich lohnt. Billig ist nicht dasselbe wie günstig.',
   size:'Setzen Sie nie mehr als fünf bis zehn Prozent Ihres Depots auf eine einzige Idee. Viele, die pleitegegangen sind, lagen gar nicht falsch. Sie waren nur zu groß positioniert.',
+  forex:'Devisen sind der größte Markt der Welt: Jeden Tag werden Billionen gehandelt, rund um die Uhr. Die Kurse bewegen sich oft nur um Zehntelprozent, deshalb gibt es hier Hebel von dreißig bis zweihundert. Bei Hebel zweihundert reicht ein halbes Prozent gegen Sie, und der Einsatz ist weg. Profis handeln Devisen mit kleinen Positionen, engem Stop und einer klaren Meinung zu Zinsen und Notenbanken. Für Privatanleger in der EU sind dreißig erlaubt, mehr bekommen nur Profis. Üben Sie hier, was Sie dort nie ohne Plan tun sollten.',
   stop:'Ein Stop-Loss ist Ihre Notbremse. Legen Sie fest, wie viel Sie verlieren wollen, bevor Sie kaufen – nicht danach, wenn die Gefühle mitreden.',
   live:'Ihre Position läuft jetzt mit dem echten Markt. Alle in der Arena sehen dieselben Kurse. Schauen Sie morgen wieder rein – und bei Optionen denken Sie daran: Die Zeit frisst jeden Tag ein Stück vom Wert.',
   margin:'Nachschussalarm! Eine Hebelposition hat drei Viertel ihres Einsatzes verloren. Merken Sie sich dieses Gefühl. Genau hier treffen die meisten ihre schlechtesten Entscheidungen.',
@@ -1296,7 +1298,7 @@ const TIPS = {
   arena:'Hier treten Sie gegen die Community an. Wichtig: Gewinnen kann man long wie short. Der Markt muss nicht steigen, damit Sie vorne liegen.',
   profile:'Schauen Sie ruhig, was die Besten halten. Aber kopieren Sie nie blind. Verstehen Sie zuerst, warum jemand eine Position hat.'
 };
-const LESSONS = [['long','Long: auf steigende Kurse setzen'],['short','Short: auf fallende Kurse setzen'],['lev','Hebel: Turbo oder Messer?'],['call','Call-Option: das Recht zu kaufen'],['put','Put-Option: die Versicherung'],['stop','Stop-Loss: die Notbremse'],['size','Positionsgröße: der unterschätzte Hebel'],['crypto','Krypto: 24 Stunden, 7 Tage'],['insider','Insider-Trades richtig lesen'],['analyst','Analysten-Konsens: Warum Einigkeit gefährlich ist'],['earnings','Quartalszahlen: der Moment der Wahrheit'],['volume','Ungewöhnliches Volumen erkennen'],['fundCreate','Eigenen Fonds bauen: Streuung und Gewichtung']];
+const LESSONS = [['long','Long: auf steigende Kurse setzen'],['short','Short: auf fallende Kurse setzen'],['lev','Hebel: Turbo oder Messer?'],['call','Call-Option: das Recht zu kaufen'],['put','Put-Option: die Versicherung'],['stop','Stop-Loss: die Notbremse'],['size','Positionsgröße: der unterschätzte Hebel'],['crypto','Krypto: 24 Stunden, 7 Tage'],['insider','Insider-Trades richtig lesen'],['analyst','Analysten-Konsens: Warum Einigkeit gefährlich ist'],['earnings','Quartalszahlen: der Moment der Wahrheit'],['volume','Ungewöhnliches Volumen erkennen'],['forex','Devisen: der größte Markt der Welt, Hebel bis 200×'],['fundCreate','Eigenen Fonds bauen: Streuung und Gewichtung']];
 
 // Free Homes Academy: 9 Module mit den Lektions-Einleitungen („Was Sie in dieser Lektion erwartet“)
 const ACADEMY = [
@@ -1311,8 +1313,8 @@ const ACADEMY = [
  ['Masterprojekt',[['9.1','Analyseauftrag','Ein vollständiger Analyseauftrag, wie in professionellen Investmenthäusern üblich, mit einem realen Investmentcase.'],['9.2','These formulieren','Erkenntnisse zu einer klaren Investmentthese verdichten: Long oder Short, mit Treibern und Risikofaktoren.'],['9.3','Portfolioentscheidung','Positionsgröße, Risiko, Absicherung und Rolle im Gesamtportfolio.'],['9.4','Finales Reporting','Ergebnisse in einem strukturierten Report aufbereiten, präsentieren und das Programm mit einem Zertifikat abschließen.']]],
 ];
 // Vertiefung je Arena-Lektion: passende Academy-Lektionen, und was man direkt in der Arena üben kann
-const LESSON_DEEP = {long:['2.1','2.5','8.2'], short:['3.6','7.1','7.3'], lev:['2.4','6.3'], call:['2.4','6.4'], put:['6.4','2.4'], stop:['6.3','7.3'], size:['6.3','8.3'], crypto:['1.2','2.3'], insider:['5.5','5.4'], analyst:['6.1','6.2'], earnings:['5.2','5.4'], volume:['3.2','1.1'], fundCreate:['8.1','8.3','8.4']};
-const LESSON_TRY = {long:['Jetzt long gehen: Apple','AAPL'], short:['Jetzt einen Short probieren: Tesla','TSLA'], lev:['Hebel ausprobieren: NVIDIA','NVDA'], call:['Call im Profi-Modus: SAP','SAP.DE'], put:['Put im Profi-Modus: DAX','^GDAXI'], stop:['Mit Stop-Loss handeln: Microsoft','MSFT'], size:['Positionsgröße wählen: Amazon','AMZN'], crypto:['Krypto handeln: Bitcoin','BTC/EUR'], insider:['Insider-Daten ansehen: NVIDIA','NVDA'], analyst:['Analysten-Konsens ansehen: Apple','AAPL'], earnings:['Quartalstermin ansehen: Microsoft','MSFT'], volume:['Volumen ansehen: Tesla','TSLA'], fundCreate:['Eigenen Fonds gründen','__fund']};
+const LESSON_DEEP = {forex:['1.2','3.2','3.1'], long:['2.1','2.5','8.2'], short:['3.6','7.1','7.3'], lev:['2.4','6.3'], call:['2.4','6.4'], put:['6.4','2.4'], stop:['6.3','7.3'], size:['6.3','8.3'], crypto:['1.2','2.3'], insider:['5.5','5.4'], analyst:['6.1','6.2'], earnings:['5.2','5.4'], volume:['3.2','1.1'], fundCreate:['8.1','8.3','8.4']};
+const LESSON_TRY = {forex:['Devisen handeln: EUR/USD','EURUSD=X'], long:['Jetzt long gehen: Apple','AAPL'], short:['Jetzt einen Short probieren: Tesla','TSLA'], lev:['Hebel ausprobieren: NVIDIA','NVDA'], call:['Call im Profi-Modus: SAP','SAP.DE'], put:['Put im Profi-Modus: DAX','^GDAXI'], stop:['Mit Stop-Loss handeln: Microsoft','MSFT'], size:['Positionsgröße wählen: Amazon','AMZN'], crypto:['Krypto handeln: Bitcoin','BTC/EUR'], insider:['Insider-Daten ansehen: NVIDIA','NVDA'], analyst:['Analysten-Konsens ansehen: Apple','AAPL'], earnings:['Quartalstermin ansehen: Microsoft','MSFT'], volume:['Volumen ansehen: Tesla','TSLA'], fundCreate:['Eigenen Fonds gründen','__fund']};
 const BADGES = [['first','🥇 Erster Trade'],['short','📉 Erster Short'],['stop','🎯 Stop-Loss gesetzt'],['lev','⚡ Hebel probiert'],['opt','🧩 Option gekauft'],['crypto','🪙 Krypto gehandelt'],['profit','💰 Gewinn realisiert'],['streak','🔥 5 Tage aktiv'],['fund','💼 In Fonds investiert'],['manager','👔 Fondsmanager']];
 
 /* ---------- Zustand (kommt vom Server) ---------- */
@@ -1336,7 +1338,7 @@ const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s)
 const nf = (v,d) => Math.abs(v).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
 const NB='\u00a0';   // geschütztes Leerzeichen: Zahl und Einheit bleiben zusammen
 const eur = (v,d=2) => (v<0?'−':'') + nf(v,d) + NB+'€';
-const fmt = (v,cur) => { const d = v>=1?2:v>=.1?4:5; return nf(v,d) + NB + (cur==='USD'?'$':'€'); };
+const fmt = (v,cur) => { if(cur==='JPY'||cur==='CHF') return nf(v,cur==='JPY'?2:4) + NB + cur; const d = v>=1?2:v>=.1?4:5; return nf(v,d) + NB + (cur==='USD'?'$':'€'); };
 const z = (v,d) => Math.abs(v) < .5*10**-d ? 0 : v;
 const pct = (v,d=2) => { v=z(v*100,d)/100; return (v>0?'+':v<0?'−':'±') + nf(v*100,d) + NB+'%'; };
 const sgn = v => { v=z(v,2); return (v>0?'+':v<0?'−':'±') + nf(v,2) + NB+'€'; };
@@ -1563,7 +1565,7 @@ const qtr = s => { const h=(Q[s]&&Q[s].hist)||[]; return h.length>5 ? h.at(-1)/h
 function compactGroups(){
   const pop=s=>POP[s]||0, rank=(a,b)=>pop(b)-pop(a) || qtr(b)-qtr(a);
   const of=(test,n)=>{ const l=Object.keys(META).filter(s=>Q[s]&&test(META[s])).sort(rank).slice(0,n); return [l, l.some(pop)?'heute beliebt':'Top im Quartal']; };
-  return [['Aktien','us',...of(m=>m.t==='Aktie',3)],['Rohstoffe','cmd',...of(m=>m.g==='cmd',2)],['ETFs','etf',...of(m=>m.t==='ETF',2)],['Krypto','crypto',...of(m=>m.g==='crypto',2)]];
+  return [['Aktien','us',...of(m=>m.t==='Aktie',3)],['Rohstoffe','cmd',...of(m=>m.g==='cmd',2)],['ETFs','etf',...of(m=>m.t==='ETF',2)],['Devisen','fx',...of(m=>m.g==='fx',2)],['Krypto','crypto',...of(m=>m.g==='crypto',2)]];
 }
 function renderMarket(){
   if(!ui.allQuotes){
@@ -1941,7 +1943,7 @@ $('#tRanges').addEventListener('click',e=>{ const b=e.target.closest('[data-rg]'
 function openTrade(sym){
   ui.sym=sym; const q=Q[sym], m=META[sym], c=chg(sym);
   if(!pro() && ui.kind==='option') ui.kind='stock';
-  if(!pro() && ui.lev>5) ui.lev=5;
+  { const L=levsFor(sym); if(!L.includes(ui.lev)) ui.lev=L[0]; }
   $('#tName').textContent=m.n; CH.head=null; ui.ot='market'; syncStars(); loadSentiment(sym,'#tSent'); ui.rR=null;
   $('#tPrice').innerHTML=`${fmt(q.price,q.cur)} <span class="${cls(c)}">${pct(c)}</span>${pro()?` <span class="muted">· Vol. ${Math.round(q.vol*100)} % p. a.</span>`:''}`;
   // Erst die vorhandenen Tageskurse zeigen, dann den gewählten Zeitraum nachladen
@@ -1949,7 +1951,7 @@ function openTrade(sym){
   loadChart(sym, CH.r);
   $('#smart').innerHTML = smartPanel(sym);
   openSheet('#sheet');
-  updateTrade(m.g==='crypto'&&ui.kind==='stock'?'crypto':defaultTip());
+  updateTrade(m.g==='fx'?'forex':m.g==='crypto'&&ui.kind==='stock'?'crypto':defaultTip());
 }
 const defaultTip = () => ui.kind==='option'?(ui.dir>0?'call':'put'):ui.kind==='lev'?'lev':(ui.dir>0?'long':'short');
 
@@ -1970,9 +1972,11 @@ function quote(){
   }
   return o;
 }
+const levsFor = sym => META[sym]&&META[sym].g==='fx' ? (pro()?[30,50,100,200]:[10,20,30]) : (pro()?[2,5,10,20]:[2,3,5]);
 function updateTrade(tip){
   const q=Q[ui.sym], m=META[ui.sym], isC=m.g==='crypto';
-  $('#levSeg').innerHTML=(pro()?[2,5,10,20]:[2,3,5]).map(l=>`<button class="opt ${ui.lev===l?'on':''}" data-lev="${l}">${l}×</button>`).join('');
+  { const L=levsFor(ui.sym); if(!L.includes(ui.lev)) ui.lev=L[0]; }
+  $('#levSeg').innerHTML=levsFor(ui.sym).map(l=>`<button class="opt ${ui.lev===l?'on':''}" data-lev="${l}">${l}×</button>`).join('');
   $('#levSeg').className='seg '+(pro()?'c4':'c3');
   $('#kindSeg').className='seg '+(pro()?'c3':'c2'); $('[data-kind="option"]').hidden=!pro();
   $$('[data-dir]').forEach(b=>b.classList.toggle('on',+b.dataset.dir===ui.dir));
@@ -2557,7 +2561,7 @@ document.addEventListener('click',e=>{
     ['markt','depot','fonds','arena','lernen'].forEach(k=>{ const el=$('#tab-'+k); el.hidden=k!==tab; if(k===tab){ el.style.animation='none'; void el.offsetWidth; el.style.animation=''; } });
     const wide=matchMedia('(min-width:1100px)').matches;   // Desktop: Depotkasten bleibt rechts in jedem Bereich
     $('#hero').hidden=!wide&&!(tab==='markt'||tab==='depot'); $('#hero').classList.toggle('tap',tab==='depot'); $('#heroHint').hidden=tab!=='depot';
-    const PT={markt:['Märkte','Aktuelles, Kurse, Smart Money'],depot:['Depot','Positionen, Orders, Verlauf'],fonds:['Entdecken','TRCM Portfolio, Anleger kopieren, Fonds'],arena:['Arena','Rangliste, private Arenen, Talente'],lernen:['Lernen','13 Lektionen von Florian Homm']}[tab];
+    const PT={markt:['Märkte','Aktuelles, Kurse, Smart Money'],depot:['Depot','Positionen, Orders, Verlauf'],fonds:['Entdecken','TRCM Portfolio, Anleger kopieren, Fonds'],arena:['Arena','Rangliste, private Arenen, Talente'],lernen:['Lernen','14 Lektionen von Florian Homm']}[tab];
     $('#pageT').textContent=PT[0]; $('#pageS').textContent=PT[1]; $('#pageH').style.animation='none'; void $('#pageH').offsetWidth; $('#pageH').style.animation='';
     if(tab==='depot'&&!S.pos.length) coach('empty'); if(tab==='arena'){ coach('arena'); loadLB().then(renderArena); } if(tab==='fonds'){ coach('fundIntro'); loadFunds().then(renderFunds); loadTrcm().then(renderTrcm); loadDiscover().then(renderDiscover); }
     window.scrollTo({top:0,behavior:'smooth'}); }

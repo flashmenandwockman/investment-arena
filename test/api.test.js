@@ -485,3 +485,25 @@ test('Profiltext, Depot im Detail', async () => {
   assert.ok(Math.abs(pf.data.allocation.reduce((a, x) => a + x.w, 0) - 1) < 0.01, 'Aufteilung ergibt 100 %');
   assert.strictEqual(pf.data.openCount, 1);
 });
+
+test('Devisen: Hebel bis 200 im Profi-Modus, 30 im Start-Modus', async () => {
+  const game = require('../server/game');
+  const c = client();
+  await c('/api/auth/demo', {});
+  await c('/api/state', {mode: 'easy'}, 'PATCH');
+  assert.deepStrictEqual(game.levsFor('easy', 'EURUSD=X'), [10, 20, 30]);
+  assert.deepStrictEqual(game.levsFor('pro', 'EURUSD=X'), [30, 50, 100, 200]);
+  assert.deepStrictEqual(game.levsFor('pro', 'AAPL'), [2, 5, 10, 20]);
+  assert.strictEqual((await c('/api/orders', {sym: 'EURUSD=X', dir: 1, kind: 'lev', lev: 200, amt: 1000})).status, 400, '200× nur im Profi-Modus');
+  const e = await c('/api/orders', {sym: 'EURUSD=X', dir: 1, kind: 'lev', lev: 30, amt: 1000});
+  assert.strictEqual(e.status, 200);
+  await c('/api/state', {mode: 'pro'}, 'PATCH');
+  const o = await c('/api/orders', {sym: 'USDJPY=X', dir: -1, kind: 'lev', lev: 200, amt: 1000, sl: 0.1});
+  assert.strictEqual(o.status, 200);
+  const p = o.data.state.positions.find(x => x.sym === 'USDJPY=X');
+  assert.strictEqual(p.lev, 200);
+  assert.ok(Math.abs(p.ko / p.entry - 1.005) < 1e-6, 'Knock-out bei 0,5 % gegen die Position');
+  assert.strictEqual((await c('/api/orders', {sym: 'AAPL', dir: 1, kind: 'lev', lev: 200, amt: 1000})).status, 400, 'Aktien weiter höchstens 20×');
+  const q = await c('/api/quotes');
+  assert.strictEqual(q.data.instruments['USDJPY=X'].g, 'fx');
+});

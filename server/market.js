@@ -18,11 +18,12 @@ const CORE = {
   '^GDAXI':{n:'DAX',t:'Index',g:'idx',s:'DAX'}, '^GSPC':{n:'S&P 500',t:'Index',g:'idx',s:'SPX'},
   'GC=F':{n:'Gold',t:'Rohstoff',g:'cmd',s:'XAU'}, 'CL=F':{n:'Öl (WTI)',t:'Rohstoff',g:'cmd',s:'OIL'},
   'SPY':{n:'S&P 500 ETF',t:'ETF',g:'etf',s:'SPY'}, 'QQQ':{n:'Nasdaq 100 ETF',t:'ETF',g:'etf',s:'QQQ'}, 'URTH':{n:'MSCI World ETF',t:'ETF',g:'etf',s:'URTH'},
+  'EURUSD=X':{n:'EUR/USD',t:'Devisen',g:'fx',s:'EURUSD'}, 'GBPUSD=X':{n:'GBP/USD',t:'Devisen',g:'fx',s:'GBPUSD'}, 'USDJPY=X':{n:'USD/JPY',t:'Devisen',g:'fx',s:'USDJPY'}, 'USDCHF=X':{n:'USD/CHF',t:'Devisen',g:'fx',s:'USDCHF'},
   'BTC/EUR':{n:'Bitcoin',t:'Krypto',g:'crypto',s:'BTC'}, 'ETH/EUR':{n:'Ethereum',t:'Krypto',g:'crypto',s:'ETH'}, 'SOL/EUR':{n:'Solana',t:'Krypto',g:'crypto',s:'SOL'},
   'XRP/EUR':{n:'XRP',t:'Krypto',g:'crypto',s:'XRP'}, 'ADA/EUR':{n:'Cardano',t:'Krypto',g:'crypto',s:'ADA'}, 'DOGE/EUR':{n:'Dogecoin',t:'Krypto',g:'crypto',s:'DOGE'},
 };
 const INSTRUMENTS = {...CORE};
-const YAHOO = Object.keys(CORE).filter(s => !s.includes('/')).concat(['EURUSD=X']);
+const YAHOO = Object.keys(CORE).filter(s => !s.includes('/'));
 const CRYPTO = Object.keys(CORE).filter(s => s.includes('/'));
 const US = Object.keys(CORE).filter(s => CORE[s].g === 'us');
 const SYMBOL = /^[A-Z]{1,5}(\.[A-Z])?$/;   // US-Kürzel, auch Aktienklassen wie BRK.B (bei Yahoo: BRK-B)

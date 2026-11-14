@@ -159,7 +159,7 @@ const strip = s => String(s || '').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').
 const tag = (xml, t) => { const m = xml.match(new RegExp(`<${t}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${t}>`, 'i')); return m ? m[1] : ''; };
 const attr = (xml, t, a) => { const m = xml.match(new RegExp(`<${t}[^>]*\\s${a}="([^"]*)"`, 'i')); return m ? m[1] : ''; };
 const ALIAS = {NVIDIA: 'NVDA', APPLE: 'AAPL', MICROSOFT: 'MSFT', AMAZON: 'AMZN', TESLA: 'TSLA', SAP: 'SAP.DE', SIEMENS: 'SIE.DE', RHEINMETALL: 'RHM.DE', ALLIANZ: 'ALV.DE',
-  'DEUTSCHE BANK': 'DBK.DE', DAX: '^GDAXI', 'S&P 500': '^GSPC', 'S&P500': '^GSPC', GOLD: 'GC=F', BITCOIN: 'BTC/EUR', ETHEREUM: 'ETH/EUR', SOLANA: 'SOL/EUR', XRP: 'XRP/EUR', CARDANO: 'ADA/EUR', DOGECOIN: 'DOGE/EUR'};
+  'DEUTSCHE BANK': 'DBK.DE', DAX: '^GDAXI', 'S&P 500': '^GSPC', 'S&P500': '^GSPC', GOLD: 'GC=F', BITCOIN: 'BTC/EUR', ETHEREUM: 'ETH/EUR', SOLANA: 'SOL/EUR', XRP: 'XRP/EUR', CARDANO: 'ADA/EUR', DOGECOIN: 'DOGE/EUR', 'EUR/USD': 'EURUSD=X', EURUSD: 'EURUSD=X', 'GBP/USD': 'GBPUSD=X', 'USD/JPY': 'USDJPY=X', YEN: 'USDJPY=X', 'USD/CHF': 'USDCHF=X', FRANKEN: 'USDCHF=X', DOLLAR: 'EURUSD=X', EURO: 'EURUSD=X'};
 
 // $NVDA im Text, Kategorien des Feeds, bekannte Namen der Arena (nur Titel, die die Arena kennt)
 function detectSyms(parts, cats = []) {
