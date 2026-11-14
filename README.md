@@ -225,7 +225,17 @@ Wichtig: Eigene Konten (E-Mail + Passwort) prüfen die E-Mail-Adresse nicht. Vor
 
 ## Florians Tonspuren
 
-MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUFNAHMELISTE.md) in `public/audio/` legen (29 Texte). Die App erkennt sie automatisch; fehlt eine Datei, liest die Browser-Stimme vor. Im Docker-Betrieb ist der Ordner eingebunden, ein neuer Build ist nicht nötig.
+MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUFNAHMELISTE.md) in `public/audio/` legen (33 Texte). Die App erkennt sie automatisch; fehlt eine Datei, liest die Browser-Stimme vor. Im Docker-Betrieb ist der Ordner eingebunden (`/opt/investment-arena/public/audio/`), ein neuer Build ist nicht nötig.
+
+Erzeugung mit ElevenLabs (geklonte Stimme von Florian Homm, Modell `eleven_multilingual_v2`):
+
+```bash
+ELEVENLABS_API_KEY=... ELEVENLABS_VOICE_ID=... npm run tts            # erzeugt alle fehlenden Dateien
+ELEVENLABS_API_KEY=... ELEVENLABS_VOICE_ID=... npm run tts -- --force --only welcome,short   # einzelne neu
+npm run tts -- --dry                                                 # nur anzeigen, keine Kosten
+```
+
+Das Skript liest die Texte aus der Aufnahmeliste, ruft die ElevenLabs-API (`mp3_44100_128`) auf und schreibt `public/audio/<schlüssel>.mp3`. Vorhandene Dateien werden übersprungen. Textänderungen immer zuerst in der Aufnahmeliste vornehmen, dann mit `--force --only <schlüssel>` neu erzeugen. Echte Aufnahmen von Florian ersetzen die KI-Dateien einfach durch Überschreiben (gleicher Dateiname).
 
 ## Datenquellen und offene Lizenzfragen
 

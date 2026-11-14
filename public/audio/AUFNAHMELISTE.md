@@ -1,6 +1,6 @@
 # Tonspuren von Florian Homm
 
-Jede Erklärung in der App kann mit Florians Stimme abgespielt werden. Legen Sie die Aufnahme als MP3 (oder M4A) mit genau diesem Dateinamen in diesen Ordner (`public/audio/`). Die App erkennt neue Dateien automatisch; fehlt eine Datei, liest die Browser-Stimme den Text vor.
+Jede Erklärung in der App kann mit Florians Stimme abgespielt werden. Legen Sie die Aufnahme als MP3 (oder M4A) mit genau diesem Dateinamen in diesen Ordner (`public/audio/`). Alternativ erzeugt `npm run tts` alle Dateien mit der geklonten Stimme über ElevenLabs (siehe README). Die App erkennt neue Dateien automatisch; fehlt eine Datei, liest die Browser-Stimme den Text vor.
 
 Empfehlung: Mono, 44,1 kHz, 96–128 kbit/s, Lautheit etwa −16 LUFS, kurze Stille am Anfang und Ende entfernen.
 

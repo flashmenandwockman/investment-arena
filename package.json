@@ -11,7 +11,8 @@
     "start": "node --disable-warning=ExperimentalWarning server/index.js",
     "dev": "MARKET_OFFLINE=1 node --disable-warning=ExperimentalWarning server/index.js",
     "test": "node --disable-warning=ExperimentalWarning --test",
-    "snapshot": "node --disable-warning=ExperimentalWarning scripts/snapshot.js"
+    "snapshot": "node --disable-warning=ExperimentalWarning scripts/snapshot.js",
+    "tts": "node scripts/tts-elevenlabs.js"
   },
   "dependencies": {
     "ccxt": "4.4.40",
