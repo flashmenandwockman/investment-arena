@@ -35,6 +35,7 @@ const q = {
 };
 
 const CLASSES = {us: 'US-Aktien', de: 'Deutsche Aktien', etf: 'ETFs', cmd: 'Rohstoffe', fx: 'Devisen'};
+const RUN_VERSION = 2;   // bei neuer Bewertungslogik erhöhen: der Tageslauf wird dann nach dem Deploy einmal neu gerechnet
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const berlinDay = (d = new Date()) => new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit'}).format(d);
 const berlinHour = () => { const p = new Intl.DateTimeFormat('de-DE', {timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit', hour12: false}).formatToParts(new Date()); return Number(p.find(x => x.type === 'hour').value) + Number(p.find(x => x.type === 'minute').value) / 60; };
@@ -276,7 +277,7 @@ async function run(force = false) {
     q.putCand.run(today, cls, x.sym, x.name, x.score, x.risk, x.price, x.cur, x.firstSeen, JSON.stringify(x), today, cls, x.sym, today, cls, x.sym, today, cls, x.sym);
   }
   const tracking = (await safe(() => track(cacheC, today), 'track')) || {items: [], stats: {}};
-  const result = {day: today, at: Date.now(), durationMs: Date.now() - started, classes, trends: etf.trends, tracking, errors, counts: Object.fromEntries(Object.entries(classes).map(([k, v]) => [k, v.length]))};
+  const result = {day: today, at: Date.now(), version: RUN_VERSION, durationMs: Date.now() - started, classes, trends: etf.trends, tracking, errors, counts: Object.fromEntries(Object.entries(classes).map(([k, v]) => [k, v.length]))};
   q.putRun.run(today, result.at, JSON.stringify(result));
   cache = null; state = {at: Date.now(), ok: errors.length < 5, error: errors.join('; '), day: today};
   return load();
@@ -285,7 +286,8 @@ async function run(force = false) {
 // Der Tageslauf startet nach US-Börsenschluss (22:40 Berlin), sonst beim ersten Start ohne Daten
 async function tick() {
   const today = berlinDay();
-  if (q.run.get(today)) return;
+  const cur = q.run.get(today);
+  if (cur) { if ((JSON.parse(cur.json).version || 1) !== RUN_VERSION) await run(true); return; }   // Lauf von älterer Logik: neu rechnen
   const last = q.lastRun.get();
   if (!last || berlinHour() >= 22.67) await run();
 }
