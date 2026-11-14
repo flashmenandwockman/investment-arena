@@ -37,7 +37,7 @@ Die App hat fünf Bereiche im Menü unten:
 
 | Bereich | Inhalt |
 |---|---|
-| **Märkte** | Depotwert, Florians Erklärungen, Suche, Aktuell (Nachrichten mit Marktwirkung und der Beitrag von Florian Homm aus Free Homes), Kurse in der Übersicht (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte) oder als volle Liste, Smart-Money-Radar, Fair-Play-Hinweis |
+| **Märkte** | Depotwert, Florians Erklärungen, Suche, Aktuell (Nachrichten mit Marktwirkung und der Beitrag von Florian Homm aus Free Homes), Kurse in der Übersicht (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Devisen, 2 Kryptowerte) oder als volle Liste, Chancen des Tages (fünf Slider), Smart-Money-Radar, Fair-Play-Hinweis |
 | **Depot** | Kopierte Anleger, offene Positionen, Verlauf, Zurücksetzen |
 | **Entdecken** | TRCM Portfolio, Anleger kopieren, Großinvestoren, Community-Fonds |
 | **Arena** | Drei Reiter: Global (Preise, Profil, Rangliste), Meine Arenen (private Arenen, Gruppen-Liga), Talente (Scouting & Talents) |
@@ -92,6 +92,9 @@ Die App hat fünf Bereiche im Menü unten:
 **Florian Homm aus Free Homes:** Seine täglichen Postings (Überschrift, Chart, deutscher Text) und das Wochenvideo werden alle 30 Minuten aus Free Homes übernommen und ins Radar gemischt: als Karte zwischen den Signalen und im Smart-Money-Feld jedes genannten Titels. Für alle sichtbar ist nur, dass es ein Posting gibt, mit Datum und Titelbezug. Überschrift, Text, Chart und Video sehen nur Free-Homes-Mitglieder, alle anderen eine unscharfe Karte mit Schloss und „Mit Free Homes anmelden“, wie beim TRCM Portfolio. Jede Meldung trägt den Verweis „Vertiefung im Homm Long Short Börsenbrief“.
 
 *Options-Flow, Dark Pool und Kongress-Trades (z. B. Unusual Whales) sind nicht enthalten: Die Anzeige in einer öffentlichen App braucht dort eine Enterprise-Lizenz (ab etwa 625–750 $ im Monat).*
+
+### Chancen des Tages (Discovery Engine)
+Jeden Abend nach US-Börsenschluss scannt die Arena fünf Anlageklassen und zeigt je Klasse einen Slider mit den auffälligsten Kandidaten: US-Aktien (Tagesverlierer über den ganzen Markt mit Liquiditätsfilter und Fundamentaldaten), deutsche Aktien (DAX bis Nebenwerte), ETFs, Rohstoffe und Devisen. Jeder Kandidat bekommt 0 bis 100 Punkte, eine Risikoklasse (niedrig, mittel, hoch, spekulativ), „Warum auffällig“ und „Was Sie daraus machen können“. Darüber die Trends je Bereich (Halbleiter, Energie, Anleihen …). Die Tracking Engine verfolgt jeden Kandidaten ab Entdeckung und zeigt die Bilanz mit Trefferquote. Admins können eine Einordnung ergänzen.
 
 ### Smart-Money-Radar
 Die auffälligsten Signale des Tages als Karten, vorne die größte Bewegung der Großinvestoren:

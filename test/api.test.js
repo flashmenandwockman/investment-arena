@@ -529,3 +529,21 @@ test('Smart Money: Insider aus SEC Form 4, Stimmen, 11 Devisenpaare', async () =
   assert.strictEqual(fx.length, 11);
   assert.ok(['EURCHF=X', 'GBPCHF=X', 'CHFJPY=X', 'USDCHF=X'].every(s => q.data.quotes[s] && q.data.quotes[s].price > 0), 'CHF-Paare mit Kurs');
 });
+
+test('Discovery Engine: Bewertung, Texte, Kandidaten aus dem Fallback, Admin-Einordnung', async () => {
+  const research = require('../server/research');
+  const sc = research.scoreStock({fromHigh: -0.3, vol30: 0.4}, {revGrowth: 30, netMargin: 20, debtEq: 0.2, curRatio: 2, fwdPE: 15, roe: 25});
+  assert.ok(sc.score >= 85 && sc.score <= 100, 'Qualität mit Rücksetzer bekommt hohe Punktzahl');
+  const weak = research.scoreStock({fromHigh: -0.1, vol30: 0.4}, {revGrowth: -5, netMargin: -10, debtEq: 3, curRatio: 0.8, fwdPE: 60, roe: -5});
+  assert.ok(weak.score < 25, 'schwache Fundamentaldaten bekommen wenig Punkte');
+  const t = research.textStock({d1: -0.07, fromHigh: -0.3}, {revGrowth: 30, netMargin: 20, fwdPE: 15}, 'us');
+  assert.match(t.why, /−7 % am Tag/); assert.match(t.action, /Watchlist|Einstieg/);
+  const fx = research.textFx({d1: 0.003, w1: 0.02, m1: 0.013, fromHigh: -0.002}, 'USD/CHF');
+  assert.match(fx.action, /Franken/);
+  const c = client(); await c('/api/auth/demo', {});
+  const r = await c('/api/research');
+  assert.ok(r.data.classes && ['us', 'de', 'etf', 'cmd', 'fx'].every(k => Array.isArray(r.data.classes[k])), 'fünf Anlageklassen');
+  assert.ok(r.data.classes.us.length >= 1 && r.data.classes.us[0].why && r.data.classes.us[0].action, 'Kandidaten mit Begründung und Empfehlung');
+  assert.ok(r.data.trends.length >= 3, 'Trends je Bereich');
+  assert.strictEqual((await c('/api/admin/research/note', {cls: 'us', sym: 'X'})).status, 403, 'Einordnung nur für Admins');
+});

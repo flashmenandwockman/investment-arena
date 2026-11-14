@@ -557,6 +557,17 @@ header.top{margin:0 -16px 10px;padding:16px 16px 14px;background:rgba(5,7,15,.92
 .brand{gap:4px} .brand span{line-height:1.2}
 /* Kursliste auf schmalen Handys: Mini-Chart ausblenden, damit die Namen lesbar bleiben */
 @media (max-width:370px){ .row:not(.lesson){grid-template-columns:42px 1fr auto} .row .spk{display:none} }
+/* Chancen des Tages: Slider je Anlageklasse */
+.rsg{margin:6px 0 4px} .rsg .grp{padding:10px 2px 8px}
+.rc.rs{width:272px;gap:7px} .rc.rs b{font-size:15px} .rc .sc{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:7px;background:rgba(198,164,108,.14);color:var(--gold-l);margin-left:6px;vertical-align:1px}
+.rc .l2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rc.tr{width:230px;background:linear-gradient(160deg,#121b33,#0b1024)} .rc.tr .big{font-size:22px;font-weight:600;font-family:var(--serif)}
+.rsd .score{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;margin:10px 0 4px} .rsd .score .n{font-family:var(--serif);font-size:34px;line-height:1} .rsd .score .t{height:8px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden} .rsd .score .t i{display:block;height:100%;background:var(--gold-grad)}
+.rsd .parts{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:10px 0;font-size:12.5px} .rsd .parts div{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:5px 0} .rsd .parts span:last-child{color:var(--gold-p);font-weight:600}
+.rsd .box{margin-top:14px;padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--line)} .rsd .box h4{margin:0 0 6px;font-size:14px} .rsd .box p{margin:0;font-size:14px;line-height:1.55}
+.rsd .box.act{border-color:var(--line-gold);background:rgba(198,164,108,.06)} .rsd .box.note{border-color:var(--gold)}
+.tagrisk{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:7px;border:1px solid var(--line);color:var(--muted)}
+.tagrisk.hoch,.tagrisk.spekulativ{color:#ff9a9a;border-color:rgba(255,107,107,.4)} .tagrisk.niedrig{color:#7fe3b6;border-color:rgba(60,207,145,.4)}
 /* Academy-Module und Lektionsfenster */
 details.mod{border:1px solid var(--line);border-radius:18px;background:var(--card);margin-bottom:10px;overflow:hidden} details.mod[open]{border-color:var(--line-gold)}
 details.mod>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:14px} details.mod>summary::-webkit-details-marker{display:none}
@@ -708,6 +719,9 @@ main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:
       <div class="sres" id="sres2" hidden></div></div>
     <div class="chips" id="filters"></div>
     <div class="list" id="market"></div>
+    <div class="sec-h"><h2>Chancen des Tages</h2><button class="link" id="rsTrackBtn" style="font-size:12.5px;text-decoration:none">Bilanz ›</button></div>
+    <p class="muted" style="margin:0 2px 10px;font-size:13px;line-height:1.5" id="rsIntro"></p>
+    <div id="research"></div>
     <div class="sec-h"><h2>Smart-Money-Radar</h2><button class="link" id="smOpen" style="font-size:12.5px;text-decoration:none">Alle Meldungen ›</button></div>
     <div class="radar" id="radar"></div>
 
@@ -1232,6 +1246,23 @@ main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:
   </div>
 </section>
 
+<!-- Chance des Tages im Detail -->
+<section class="sheet" id="rsSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600" id="rsKick">Chance des Tages</span><h3 id="rsTitle"></h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div id="rsBody"></div>
+  </div>
+</section>
+<!-- Bilanz der Recherche -->
+<section class="sheet" id="rsTrackSheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <div class="sheet-h"><div><span class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Tracking Engine</span><h3>Bilanz der Recherche</h3></div><button class="x" data-closesheet aria-label="Schließen">×</button></div>
+    <div id="rsTrackBody"></div>
+  </div>
+</section>
+
 <!-- Lektion -->
 <section class="sheet" id="lessonSheet" role="dialog" aria-modal="true">
   <div class="sheet-in">
@@ -1475,6 +1506,61 @@ function smartPanel(s){
   return `<div class="smart"><h4>Smart Money <small>SEC-Meldungen · Finnhub</small></h4>${rows.join('')}<button class="explain" data-explain="${tip}">Florian ordnet ein</button></div>`;
 }
 
+/* ---------- Chancen des Tages (Discovery Engine) ---------- */
+let RS=null;
+async function loadResearch(){ try{ RS=await api('/api/research'); }catch(e){} }
+const RSN={us:'US-Aktien',de:'Deutsche Aktien',etf:'ETFs',cmd:'Rohstoffe',fx:'Devisen'};
+const pctS=(v,d=1)=>v==null?'–':(v>0?'+':v<0?'−':'')+nf(Math.abs(v),d)+NB+'%';
+function rsCard(x){
+  const c=x.cls, d=x.metrics||{};
+  return `<button class="rc rs ${x.risk==='niedrig'?'green':x.risk==='spekulativ'?'red':''}" data-rs="${esc(c)}:${esc(x.sym)}"><span class="kick">${esc(RSN[c])}${x.isNew?' · neu':''}</span><b>${esc(x.name)}<span class="sc">${x.score} P.</span></b><small class="l2">${esc(x.why)}</small><small class="l2" style="color:var(--text)">${esc((x.noteAction||x.action).split(/(?<=\.)\s/)[0])}</small><span class="go">${d.d1!=null?`<span class="${cls(d.d1)}">${pctS(d.d1)}</span> heute · `:''}Einordnung ›</span></button>`;
+}
+function renderResearch(){
+  if(!RS||!RS.classes){ $('#research').innerHTML=''; return; }
+  const dayTxt=RS.day?new Date(RS.day+'T12:00:00').toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'2-digit'}):'';
+  $('#rsIntro').textContent=`Jeden Abend nach US-Börsenschluss: die auffälligsten Bewegungen in fünf Anlageklassen, bewertet von 0 bis 100 Punkten, mit Einordnung und dem, was Sie daraus machen können.${dayTxt?` Stand ${dayTxt}`:''}`;
+  let h='';
+  if(RS.trends&&RS.trends.length) h+=`<div class="rsg"><div class="grp"><span>Trends · Monat</span><span class="muted" style="font-size:11px;text-transform:none;letter-spacing:0;font-weight:500">Durchschnitt der ETFs je Bereich</span></div><div class="radar">${RS.trends.slice(0,8).map(t=>`<button class="rc tr" data-rstrend="${esc(t.cat)}"><span class="kick">${esc(t.cat)}</span><span class="big ${cls(t.m1)}">${pctS(t.m1)}</span><small>${t.y1>=0?'im Jahr '+pctS(t.y1)+', ':''}${t.fromHigh<=-10?'deutlich unter dem Hoch ('+pctS(t.fromHigh)+')':'nahe am Hoch'}</small><span class="go">${t.m1<=-6&&t.y1>0?'Rücksetzer im Aufwärtstrend':t.m1<=-6?'Abwärtstrend':t.m1>=4?'Aufwärtstrend':'Seitwärts'} ›</span></button>`).join('')}</div></div>`;
+  for(const c of ['us','de','etf','cmd','fx']){ const l=(RS.classes[c]||[]); if(!l.length) continue;
+    h+=`<div class="rsg"><div class="grp"><span>${RSN[c]}</span><button class="link" data-f="${c==='us'||c==='de'?c:c}">Kurse ›</button></div><div class="radar">${l.map(rsCard).join('')}</div></div>`; }
+  if(!h) h='<div class="empty">Die erste Recherche läuft heute Abend nach US-Börsenschluss.</div>';
+  $('#research').innerHTML=h;
+}
+function rsFind(key){ const [c,sym]=key.split(':'); return (RS.classes[c]||[]).find(x=>x.sym===sym); }
+function openResearch(key){
+  const x=rsFind(key); if(!x) return; const d=x.metrics||{}, parts=x.parts||{};
+  const PN={wachstum:'Wachstum',bilanz:'Bilanz',bewertung:'Bewertung',position:'Marktposition',ruecksetzer:'Rücksetzer',jahrestrend:'Jahrestrend',schwankung:'Schwankung',stabilisierung:'Stabilisierung'};
+  const PM={wachstum:25,bilanz:25,bewertung:20,position:15,ruecksetzer:15,jahrestrend:20,schwankung:20,stabilisierung:20};
+  if(x.cls==='etf') PM.ruecksetzer=40;
+  const rows=[['Kurs',x.price!=null?fmt(x.price,x.cur):'–'],['Heute',pctS(d.d1)],['Woche',pctS(d.w1)],['Monat',pctS(d.m1)],['3 Monate',pctS(d.m3)],['Jahr',pctS(d.y1)],['Zum 52-W-Hoch',pctS(d.fromHigh)],['Schwankung p. a.',d.vol30!=null?nf(d.vol30,0)+NB+'%':'–'],
+    ['Umsatzwachstum',d.revGrowth!=null?pctS(d.revGrowth):null],['Nettomarge',d.netMargin!=null?pctS(d.netMargin):null],['Eigenkapitalrendite',d.roe!=null?pctS(d.roe):null],['KGV',d.fwdPE!=null?nf(d.fwdPE,1)+' (erw.)':d.pe!=null?nf(d.pe,1):null],['Schulden/Eigenkapital',d.debtEq!=null?nf(d.debtEq,2):null],['Marktwert',d.mcap?(d.mcap>=1e9?nf(d.mcap/1e9,1)+NB+'Mrd. $':nf(d.mcap/1e6,0)+NB+'Mio. $'):null],['Branche',d.industry||null],['Analysten',d.rating||null],['Tagesumsatz',d.turnover?(d.turnover>=1e9?nf(d.turnover/1e9,1)+NB+'Mrd.':nf(d.turnover/1e6,0)+NB+'Mio.'):null]].filter(r=>r[1]!=null&&r[1]!=='–');
+  $('#rsKick').textContent=`${RSN[x.cls]}${x.cat?' · '+x.cat:''}${x.firstSeen&&!x.isNew?' · seit '+new Date(x.firstSeen+'T12:00:00').toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+' beobachtet':' · heute entdeckt'}`; $('#rsTitle').textContent=x.name;
+  const tradable=x.tradable||(!!META[x.sym])||(x.cls==='us'||x.cls==='etf');
+  $('#rsBody').innerHTML=`<div class="rsd">
+    <div class="score"><span class="n num">${x.score}</span><span class="t"><i style="width:${x.score}%"></i></span><span class="tagrisk ${esc(String(x.risk).split(' ')[0])}">${esc(x.risk)}</span></div>
+    <p class="fine" style="margin:0 0 6px">Punkte von 0 bis 100 als Rangfolge, keine Renditeprognose.${x.cls==='de'?' Für deutsche Titel nur Markttechnik, Fundamentaldaten folgen mit dem lizenzierten Datenanbieter (höchstens 60 Punkte).':x.fundamentals===false?' Ohne Fundamentaldaten.':''}</p>
+    ${Object.keys(parts).length?`<div class="parts">${Object.entries(parts).map(([k,v])=>`<div><span>${PN[k]||k}</span><span>${v} / ${PM[k]||''}</span></div>`).join('')}</div>`:''}
+    <div class="kv" style="grid-template-columns:repeat(2,1fr)">${rows.map(([k,v])=>`<div><small>${esc(k)}</small><b class="num">${esc(String(v))}</b></div>`).join('')}</div>
+    <div class="box"><h4>Warum auffällig</h4><p>${esc(x.why)}</p></div>
+    <div class="box act"><h4>Was Sie daraus machen können</h4><p>${esc(x.action)}</p></div>
+    ${x.note||x.noteAction?`<div class="box note"><h4>Einordnung der Redaktion${x.noteBy?' · '+esc(x.noteBy):''}</h4><p>${esc(x.note||'')}${x.noteAction?'<br><b>'+esc(x.noteAction)+'</b>':''}</p></div>`:''}
+    ${x.related&&x.related.length?`<p class="fine" style="margin-top:12px">Betroffene Titel: ${x.related.map(r=>META[r]?`<button class="chip" data-sym="${esc(r)}" style="margin:2px 4px 2px 0">${esc(META[r].n)}</button>`:esc(r)).join(' ')}</p>`:''}
+    ${tradable?`<button class="cta" data-rstrade="${esc(x.sym)}" style="margin-top:16px">${META[x.sym]?'Ansehen und handeln →':'In die Arena holen und handeln →'}</button>`:'<p class="fine" style="margin-top:16px">Dieser Titel ist in der Arena noch nicht handelbar. Handel für deutsche Nebenwerte und Terminkontrakte folgt mit dem lizenzierten Datenanbieter.</p>'}
+    <p class="fine" style="margin-top:10px">Quellen: Yahoo Finance (Kurse, Tagesverlierer-Screening), Finnhub (Fundamentaldaten US), Stand ${RS.at?new Date(RS.at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'–'}. Simulation zu Lernzwecken, keine Anlageberatung.</p>
+  </div>`;
+  openSheet('#rsSheet');
+}
+function openTrack(){
+  const T=(RS&&RS.tracking)||{items:[],stats:{}}, st=T.stats||{};
+  const keys=Object.keys(st);
+  $('#rsTrackBody').innerHTML=`<p class="muted" style="font-size:13.5px;line-height:1.55;margin:8px 2px 12px">Jeder Kandidat wird ab dem Tag seiner Entdeckung verfolgt. So entsteht mit der Zeit eine ehrliche Statistik, welche Auswahlkriterien funktionieren, Fehlgriffe eingeschlossen.</p>
+    ${keys.length?`<div class="kv" style="grid-template-columns:repeat(${Math.min(3,keys.length)},1fr)">${keys.map(k=>`<div><small>${RSN[k]||k}</small><b class="num">${nf(st[k].hit*100,0)}${NB}% im Plus</b><small>${st[k].n} Kandidaten · Ø ${pctS(st[k].avg*100)}</small></div>`).join('')}</div>`:'<div class="empty">Noch keine Entwicklung: Die Bilanz entsteht ab dem zweiten Tag der Recherche.</div>'}
+    ${T.items.length?`<div class="tc-h"><h4>Bisherige Kandidaten</h4></div>`+T.items.slice(0,40).map(t=>`<div class="hrow"><span><span class="tag ${t.perf>=0?'long':'short'}">${esc(RSN[t.cls]||t.cls)}</span> <b>${esc(t.name)}</b></span><b class="num ${cls(t.perf)}">${pctS(t.perf*100)}</b><span class="sub num">seit ${new Date(t.firstSeen+'T12:00:00').toLocaleDateString('de-DE')} (${t.days} Tage) · damals ${t.score} Punkte, ${esc(t.risk)}</span></div>`).join(''):''}`;
+  openSheet('#rsTrackSheet');
+}
+$('#rsTrackBtn').onclick=openTrack;
+$('#rsBody').addEventListener('click',async e=>{ const b=e.target.closest('[data-rstrade]'); if(!b) return; const sym=b.dataset.rstrade; closeSheets(); if(META[sym]) openTrade(sym); else addInstrument(sym); });
+
 /* ---------- Postings von Florian Homm aus Free Homes ---------- */
 // Nicht-Mitglieder sehen nur, dass es ein Posting gibt, mit Datum und Titelbezug. Der Text kommt gar nicht erst vom Server; hier steht ein unscharfer Platzhalter.
 const HBLUR='Florian Homm ordnet die Lage ein und erklärt, was sie für Long- und Short-Positionen bedeutet. Die Einzelheiten lesen Free-Homes-Mitglieder hier in der Arena.';
@@ -1663,7 +1749,7 @@ function renderLessons(){
   const done=S.lessons||{}, n=LESSONS.filter(([k])=>done[k]).length;
   $('#lProg').hidden=!ME; $('#lProg').innerHTML=`<b>${n===LESSONS.length?'Alle Lektionen gehört. Stark!':`${n} von ${LESSONS.length} Lektionen gehört`}</b><div class="lvl"><i style="width:${n/LESSONS.length*100}%"></i></div><small>Tippen Sie auf eine Lektion, Florian erklärt sie in etwa 30 Sekunden.</small>`;
   $('#lessons').innerHTML = LESSONS.map(([k,l],i)=>`<button class="row lesson ${done[k]?'done':''}" style="grid-template-columns:42px 1fr auto" data-lesson="${k}"><span class="logo">${done[k]?'✓':i+1}</span><span class="n"><b>${l}</b><small>Florian erklärt · ca. 30 Sek. · mit Übung und Vertiefung</small></span><span class="say" style="width:40px;height:40px"><svg class="pl" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg><svg class="pz" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></span></button>`).join(''); }
-function render(){ renderLessons(); renderAcademy(); renderHeader(); renderNews(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); renderDiscover(); }
+function render(){ renderLessons(); renderAcademy(); renderHeader(); renderNews(); renderResearch(); radarCards(); renderMarket(); renderPositions(); renderArena(); renderFunds(); renderTrcm(); renderDiscover(); }
 
 /* ---------- coach / voice ---------- */
 let curCoach='welcome';
@@ -2562,6 +2648,8 @@ document.addEventListener('click',e=>{
   const sk=t.closest('[data-saykey]'); if(sk){ speakKey(sk.dataset.saykey, sk.closest('.coach')); return; }
   const rcs=t.closest('[data-radar="__smart"]'); if(rcs){ openSmart(); return; }
   const rch=t.closest('[data-radar^="__homm:"]'); if(rch){ openHomm(+rch.dataset.radar.slice(7)); return; }
+  const rsc=t.closest('[data-rs]'); if(rsc){ openResearch(rsc.dataset.rs); return; }
+  const rst=t.closest('[data-rstrend]'); if(rst){ ui.allQuotes=true; ui.filter='etf'; renderMarket(); $('#market').scrollIntoView({behavior:'smooth',block:'start'}); return; }
   const hr=t.closest('[data-homm]'); if(hr){ openHomm(+hr.dataset.homm); return; }
   if(t.closest('#moreNews')){ ui.allNews=!ui.allNews; renderNews(); if(!ui.allNews) $('#news').scrollIntoView({block:'start',behavior:'smooth'}); return; }
   if(t.closest('#toQuotes')){ const e=$('#market'); window.scrollTo({top:e.getBoundingClientRect().top+window.scrollY-140,behavior:'smooth'}); return; }
@@ -2702,7 +2790,8 @@ async function enter(){
   $('#ob').hidden=true;
   await Promise.all([refresh(false), loadLB(), loadFunds(), loadTrcm(), loadDiscover(), loadArenas(), loadSmart(),
     api('/api/radar').then(d=>{ RD=d.radar||{}; HN=d.homm||null; $('#radarAsof').textContent=d.live?'Live · Finnhub':'Stand '+new Date().toLocaleDateString('de-DE'); }).catch(()=>{}),
-    api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{}), loadNews()]);
+    api('/api/audio').then(d=>{ AUDIO=new Set(d.files); }).catch(()=>{}), loadNews(), loadResearch()]);
+  setInterval(()=>{ loadResearch().then(renderResearch); }, 60*60000);
   setInterval(()=>{ loadNews().then(renderNews); }, 240*60000);
   render();
   if(!S.mode){ $('#ob').hidden=false; $('#obAuth').hidden=true; $('#obMode').hidden=false; }

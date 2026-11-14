@@ -18,6 +18,7 @@ const news = require('./news');
 const popular = require('./popular');
 const insiders = require('./insiders');
 const voices = require('./voices');
+const research = require('./research');
 const copy = require('./copy');
 const gurus = require('./gurus');
 const arenas = require('./arenas');
@@ -177,6 +178,16 @@ async function api(req, res, url) {
     if (p === '/api/smart') return send(res, 200, {...smart.overview(), insiders: insiders.latest(), voices: voices.get()});
     if (/^\/api\/smart\/[\w.^=\/-]{1,20}$/.test(p)) { const sym = decodeURIComponent(p.slice('/api/smart/'.length)); return send(res, 200, {...smart.forSymbol(sym), insiders: insiders.forSymbol(sym)}); }
     if (p === '/api/news') return send(res, 200, news.get());
+    // Tägliche Recherche: Chancen je Anlageklasse, Trends, Entwicklung früherer Kandidaten
+    if (p === '/api/research' && m === 'GET') return send(res, 200, research.load());
+    if (p.startsWith('/api/admin/research')) {
+      const u = requireUser(req); if (!trcm.isAdmin(u)) throw Object.assign(new Error('Nur für Admins'), {status: 403});
+      const b = m === 'GET' ? {} : await body(req);
+      if (p === '/api/admin/research/run' && m === 'POST') { limit(req, 3, 'research'); await research.run(true); }
+      else if (p === '/api/admin/research/note' && m === 'POST') research.addNote(u, b.day, String(b.cls || ''), String(b.sym || '').toUpperCase(), b.note, b.action, b.score);
+      else return send(res, 404, {error: 'Unbekannte Route'});
+      return send(res, 200, research.load());
+    }
     if (p === '/api/radar') return send(res, 200, {radar: radar.get(), ...radar.status(), homm: homm.view(auth.currentUser(req))});
     // Postings von Florian Homm aus Free Homes: für alle sichtbar, dass es sie gibt; Inhalt nur für Mitglieder
     if (p === '/api/homm' && m === 'GET') return send(res, 200, homm.view(auth.currentUser(req), 40));
@@ -407,6 +418,7 @@ async function start() {
     news.refresh().catch(() => {}); setInterval(() => news.refresh().catch(() => {}), 240 * 60_000);
     voices.refresh().catch(() => {}); setInterval(() => voices.refresh().catch(() => {}), 60 * 60_000);
     setTimeout(() => insiders.sync().catch(() => {}), 20_000); setInterval(() => insiders.sync().catch(() => {}), 30 * 60_000);
+    setTimeout(() => research.tick().catch(() => {}), 60_000); setInterval(() => research.tick().catch(() => {}), 15 * 60_000);
     setInterval(() => auth.cleanupDemo(), 60 * 60_000);
     setInterval(() => { try { daybot.ensure(); } catch (e) {} }, 30 * 60_000);
     market.loadDirectory(); setInterval(() => market.loadDirectory(), 6 * 3600_000);

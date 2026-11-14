@@ -9,6 +9,7 @@ const smart = require('../server/smart');
 const news = require('../server/news');
 const insiders = require('../server/insiders');
 const voices = require('../server/voices');
+const research = require('../server/research');
 
 (async () => {
   const dir = path.join(__dirname, '..', 'server', 'fallback');
@@ -20,6 +21,8 @@ const voices = require('../server/voices');
   await insiders.sync(); fs.writeFileSync(path.join(dir, 'insiders.json'), JSON.stringify(insiders.snapshot()));
   const v = await voices.refresh(); fs.writeFileSync(path.join(dir, 'voices.json'), JSON.stringify({items: v}));
   console.log(`Insider: ${insiders.snapshot().items.length} Meldungen, Stimmen: ${v.length}`);
+  const rs = await research.run(true); fs.writeFileSync(path.join(dir, 'research.json'), JSON.stringify({day: rs.day, at: rs.at, classes: rs.classes, trends: rs.trends, tracking: rs.tracking}));
+  console.log(`Recherche: ${JSON.stringify(rs.counts)}`);
   const r = await radar.refresh();
   fs.writeFileSync(path.join(dir, 'radar.json'), JSON.stringify(r));
   const g = await gurus.snapshot();

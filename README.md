@@ -13,6 +13,7 @@ Idee, Konzept und alle Funktionen im Überblick: [docs/KONZEPT.md](docs/KONZEPT.
 | **Anmeldung** | Eigene Konten (E-Mail + Passwort), „Demo ausprobieren“ ohne Registrierung, vorbereitet: „Mit Free Homes anmelden“ (Keycloak) |
 | **Märkte** | Oben die Suche nach jeder US-Aktie und jedem US-ETF, darunter **Aktuell** (drei Einträge: zwei Nachrichten mit Wirkung auf Kurse und Wirtschaft, als dritter dezent der neueste Beitrag von Florian Homm aus Free Homes im selben Stil, der vierte Eintrag unscharf, „Mehr aktuelle News laden“ zeigt alle; alle 240 Minuten aktualisiert), dann ein zweiter Suchschlitz und die **Kurse** in der Übersicht: die heute beliebtesten Titel der Arena je Gruppe (3 Aktien, 2 Rohstoffe, 2 ETFs, 2 Kryptowerte, berechnet aus Positionen, Orders, Watchlists und Aufrufen aller Mitglieder, alle 10 Minuten), auf Wunsch alle 22 Werte mit Filtern, darunter das Smart-Money-Radar. Long, Short, Hebel, Optionen (Profi-Modus), Stop-Loss |
 | **Aktuell** | Überschriften von tagesschau.de (RSS, `NEWS_FEEDS`) und Finnhub-Marktnachrichten, nach Stichworten (Notenbanken, Zinsen, Inflation, Zölle, Öl, Quartalszahlen, Indizes) gewichtet, nur Überschrift, Quelle, Zeit und Link; englische Meldungen mit Kennzeichnung |
+| **Chancen des Tages (Discovery Engine)** | Jeden Abend um 22:40 Berlin nach US-Börsenschluss scannt der Server fünf Anlageklassen: US-Aktien (Tagesverlierer-Screening über den ganzen Markt mit Liquiditätsfilter und Fundamentaldaten), deutsche Aktien (DAX, MDAX, SDAX, TecDAX und Nebenwerte), ETFs (44 Märkte und Branchen), Rohstoffe (16 Märkte) und Devisen (12 Paare). Jeder Kandidat bekommt 0 bis 100 Punkte, eine Risikoklasse, „Warum auffällig“ und „Was Sie daraus machen können“. Trends je Bereich aus den ETF-Gruppen. Die Tracking Engine misst jeden Kandidaten ab Entdeckung (Bilanz mit Trefferquote). Slider je Anlageklasse über dem Smart-Money-Radar |
 | **Smart-Money-Radar** | Insider-Käufe/-Verkäufe je Titel (Finnhub) und **marktweit aus den Form-4-Originalmeldungen der SEC** (alle 30 Minuten: Käufer, Titel, Stück, Preis, Summe), Großinvestoren aus 13F, Analystenkonsens, Quartalstermine, ungewöhnliches Volumen, News, dazu **Stimmen aus Notenbanken und Research** (Fed, EZB, Hussman Funds, MarketWatch per RSS, stündlich, `SMART_FEEDS`) |
 | **Florian Homm aus Free Homes** | Die täglichen Postings und das Wochenvideo von Florian Homm aus Free Homes, untergemischt in die Radar-Karten und im Smart-Money-Feld je Titel. **Inhalt, Chart und Video nur für Free-Homes-Mitglieder**, alle anderen sehen eine unscharfe Karte mit Schloss. Jede Meldung verweist auf den Homm Long Short Börsenbrief |
 | **Kurs-Charts** | Zeiträume 24h, Woche, Monat, Jahr und Max (5 Jahre); beim Darüberfahren oder Tippen erscheinen Kurs, Veränderung und Zeitpunkt |
@@ -168,6 +169,20 @@ Ohne Zugang lassen sich Meldungen im Admin-Bereich (Radar-Karte → Admin) von H
 
 Zusätzlich zur Beispiel-Community (Gründungsmitglieder) legt der Server jeden Tag ein neues Konto mit einem echt wirkenden Namen an, das im Profil als „Gründungsmitglied“ erscheint. Es liest die Schlagzeilen unter „Aktuell“ und die Postings von Florian Homm, erkennt die genannten Titel, entscheidet nach dem Ton der Meldung zwischen Long und Short, hebelt mit 2× bis 5×, setzt Stop-Loss (10 %) und Kursziel (20 %) und begründet jeden Trade mit der Schlagzeile. Gewinne ab 6 % nimmt es mit, nach 20 Stunden schließt es alles. Fehlen Titel in den Nachrichten, folgt es den größten Tagesbewegungen. Diese Tageskonten werden nach 14 Tagen gelöscht, die Gründungsmitglieder bleiben.
 
+## Chancen des Tages (Discovery und Tracking Engine)
+
+Umsetzung des Konzepts „Internationaler Börsen- und Investment-Simulator“ als Teil der Arena. Der Tageslauf (`server/research.js`) startet um 22:40 Berlin, wenn Xetra und Wall Street geschlossen sind, dauert rund eine Minute und speichert das Ergebnis in `research_runs` und `research_candidates`:
+
+| Klasse | Quelle | Auswahl | Bewertung |
+|---|---|---|---|
+| US-Aktien | Yahoo-Screening der 100 größten Tagesverlierer, Finnhub-Fundamentaldaten und Branche | mindestens 1 Mio. Stück und 50 Mio. $ Tagesumsatz, 300 Mio. $ Marktwert; 3 bis 5 Kandidaten | 25 % Wachstum, 25 % Bilanz, 20 % Bewertung, 15 % Marktposition, 15 % Rücksetzer; Zielbranchen (Halbleiter, Robotik, Verteidigung, Energie, Bergbau, Cybersecurity …) bekommen 3 Punkte extra |
+| Deutsche Aktien | 110 Titel (DAX bis Nebenwerte) über Yahoo-Kursverläufe | 5 Mio. € Tagesumsatz; 10 größte Verlierer plus Titel mehr als 35 % unter dem Hoch; 2 bis 5 Kandidaten | nur Markttechnik, höchstens 60 Punkte, bis ein lizenzierter Anbieter Fundamentaldaten liefert |
+| ETFs | 44 ETFs in 10 Kategorien | Rücksetzer ab 8 % vom Hoch, Monatsverlust ab 5 % oder starker Jahrestrend; 2 bis 4 | 40 % Rücksetzer, 20 % Jahrestrend, 20 % Schwankung, 20 % Stabilisierung |
+| Rohstoffe | 13 Terminkontrakte und 3 Rohstoff-ETFs | Tagesbewegung ab 2 %, Wochenbewegung ab 5 %, weit unter dem Hoch oder nahe am Hoch; 1 bis 4 | Stärke der Bewegung; betroffene Förderer und Zulieferer werden genannt |
+| Devisen | 12 Paare | Wochenbewegung ab 1 %, Monatsbewegung ab 2,5 % oder Jahresextrem; 1 bis 3 | Stärke der Bewegung; Einordnung zu Dollar, Franken, Yen und Exporteuren |
+
+Gibt es keine überzeugenden Kandidaten, bleibt die Gruppe leer. Jeder Kandidat erhält bei der ersten Entdeckung ein Datum; die Tracking Engine berechnet täglich die Entwicklung seit Entdeckung und je Klasse die Trefferquote („Bilanz“ im Bereich Märkte). Admins können je Kandidat eine Einordnung ergänzen (`POST /api/admin/research/note` mit `cls`, `sym`, `note`, `action`, optional `score`) und den Lauf von Hand anstoßen (`POST /api/admin/research/run`). Ohne Netz zeigt die App den mitgelieferten Lauf aus `server/fallback/research.json` (`npm run snapshot` aktualisiert ihn).
+
 ## Copy Trading
 
 Im Bereich **Entdecken** stehen unter „Anleger kopieren“ die Trader der Arena, sortierbar nach Beliebtheit (Kopierer), Rendite im Monat, Rendite der Woche und geringem Risiko.
@@ -235,6 +250,8 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | GET | `/api/auth/freehomes/start`, `/api/auth/freehomes/callback` | Login über Free Homes |
 | GET | `/api/quotes`, `/api/radar` | Kurse (mit `popular`: Beliebtheit je Titel), Smart-Money-Radar (mit `homm`: Postings von Florian Homm, Inhalt nur für Mitglieder) |
 | GET | `/api/news` | Aktuell: Nachrichten mit Marktwirkung (alle 240 Minuten) |
+| GET | `/api/research` | Chancen des Tages: Kandidaten je Anlageklasse, Trends, Bilanz |
+| POST | `/api/admin/research/run`, `/api/admin/research/note` | Lauf anstoßen, Einordnung je Kandidat (nur Admins) |
 | GET | `/api/homm`, `/api/homm/:id/image` | Alle Postings von Florian Homm, Chart-Bild (nur Mitglieder) |
 | POST/PATCH/DELETE | `/api/admin/homm[/:id]`, `/api/admin/homm/sync` | Meldungen pflegen, Abgleich mit Free Homes anstoßen (nur Admins) |
 | GET/PATCH | `/api/state` | Spielstand, Modus, Folgen, Watchlist |
@@ -271,6 +288,8 @@ server/        Node-Server ohne Framework (http, node:sqlite)
   popular.js   Beliebteste Titel des Tages für die Kursübersicht (ohne Daten: Top des Quartals)
   insiders.js  Insiderkäufe und -verkäufe marktweit aus SEC Form 4, alle 30 Minuten
   voices.js    Stimmen aus Notenbanken und Research (RSS), stündlich
+  research.js  Discovery und Tracking Engine: tägliche Recherche in fünf Anlageklassen
+  universe.js  Universum der Recherche (deutsche Aktien, ETFs, Rohstoffe, Devisen)
   copy.js      Copy Trading und Kennzahlen (Rendite, Risiko, Kopierer)
   arenas.js    Private Arenen, Arena-Depots, Feed, Gruppen-Liga
   talents.js   Scouting & Talents (Score, Stufen, Vorstellungen, Scouting-Board)
