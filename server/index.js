@@ -351,6 +351,7 @@ function serveStatic(req, res, url) {
   const qr = url.pathname.match(/^\/qr\/a\/([\w-]{1,60})\.svg$/);
   if (qr) return require('qrcode').toString(`${config.baseUrl}/a/${qr[1]}`, {type: 'svg', margin: 1, color: {dark: '#05070f', light: '#ffffff'}})
     .then(svg => { res.writeHead(200, {'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400'}); res.end(svg); });
+  if (url.pathname === '/start') url.pathname = '/start.html';   // Startseite (Landingpage)
   let file = path.normalize(path.join(PUBLIC, decodeURIComponent(url.pathname)));
   if (!file.startsWith(PUBLIC)) { res.writeHead(403); return res.end(); }
   if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(PUBLIC, 'index.html');

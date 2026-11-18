@@ -2798,6 +2798,7 @@ async function enter(){
   if(!S.mode){ $('#ob').hidden=false; $('#obAuth').hidden=true; $('#obMode').hidden=false; }
   coach(S.pos.length?'live':pro()?'welcomePro':'welcome');
   renderBooks(); renderMine();
+  { const qs=new URLSearchParams(location.search), sym=qs.get('sym'); if(sym&&Q[sym]&&META[sym]){ if(qs.get('dir')==='short') ui.dir=-1; else if(qs.get('dir')==='long') ui.dir=1; openTrade(sym); } if(qs.get('demo')||sym) history.replaceState(null,'',location.pathname); }
   // Einladungslink /a/<name>: nach der Anmeldung direkt zum Beitreten
   let js=null; try{ js=sessionStorage.getItem('joinSlug'); }catch(e){}
   const pm=location.pathname.match(/^\/a\/([\w-]+)/); if(pm) js=pm[1];
@@ -2810,6 +2811,8 @@ async function boot(){
   try{ ME=(await api('/api/me')).user; }catch(e){}
   const pm=location.pathname.match(/^\/a\/([\w-]+)/);
   if(pm){ try{ sessionStorage.setItem('joinSlug',pm[1]); }catch(e){} }
+  const qs=new URLSearchParams(location.search);
+  if(!ME && qs.get('demo')==='1'){ try{ ME=(await api('/api/auth/demo',{body:{}})).user; }catch(e){} }   // Einstieg von der Startseite: sofort mit Demo-Konto
   if(ME) await enter(); else { showAuth(); refresh(false);
     if(pm) api('/api/arenas/by/'+pm[1]).then(a=>{ $('#authErr').innerHTML=`Sie wurden in die Arena <b>${esc(a.name)}</b> eingeladen (${a.members} ${a.members===1?'Mitglied':'Mitglieder'}). Melden Sie sich an oder registrieren Sie sich, um beizutreten.`; $('#authErr').hidden=false; $('#authErr').style.cssText='background:rgba(198,164,108,.1);border-color:var(--line-gold);color:var(--gold-p)'; }).catch(()=>{}); }
   setInterval(()=>refresh(false),30000);

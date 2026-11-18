@@ -223,6 +223,10 @@ docker compose exec app node scripts/admin.js revoke name@beispiel.de
 
 Wichtig: Eigene Konten (E-Mail + Passwort) prüfen die E-Mail-Adresse nicht. Vor dem Vergeben daher sicherstellen, dass das Konto wirklich der richtigen Person gehört (Name wird angezeigt). Sobald der Free-Homes-Login aktiv ist, genügt `ADMIN_EMAILS` in der `.env`: Diese Adressen werden beim Login über Free Homes automatisch Admin, wenn Keycloak die Adresse als bestätigt meldet.
 
+## Startseite (Landingpage)
+
+`/start` ist die öffentliche Startseite (`public/start.html`): Hero mit Live-Kursen und erstem Trade ohne Konto, Ablauf in drei Stufen, Mentoren (Florian Homm, TRCM-Team, Redaktion, zwei freie Plätze), Mechanik, Chance des Tages, Rangliste und Preise live aus der API, Lektionen, Vergleich Gast/Konto/Free-Homes-Mitglied, FAQ. Links wie `/?demo=1&sym=BTC/EUR&dir=short` legen ein Demo-Konto an und öffnen direkt das Handelsblatt. Die App selbst bleibt unter `/`.
+
 ## Florians Tonspuren
 
 MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUFNAHMELISTE.md) in `public/audio/` legen (33 Texte). Die App erkennt sie automatisch; fehlt eine Datei, liest die Browser-Stimme vor. Im Docker-Betrieb ist der Ordner eingebunden (`/opt/investment-arena/public/audio/`), ein neuer Build ist nicht nötig.
