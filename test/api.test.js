@@ -557,3 +557,34 @@ test('Redaktionsschlüssel: Einordnung ohne Login, falscher Schlüssel abgelehnt
   assert.strictEqual(bad.status, 401);
   config.researchToken = '';
 });
+
+test('TRCM-Portfolio: PIN aus dem Börsenbrief schaltet die Titel frei', async () => {
+  const db = require('../server/db');
+  const admin = client(), reader = client();
+  await admin('/api/auth/register', {name: 'Chef', email: 'chef@trcm.de', password: 'geheim1234'});
+  db.prepare("UPDATE users SET role = 'admin' WHERE email = ?").run('chef@trcm.de');
+  await reader('/api/auth/demo', {});
+  // Ohne PIN: keine Titel, kein PIN-Zugang
+  let v = await reader('/api/trcm');
+  assert.strictEqual(v.data.member, false); assert.strictEqual(v.data.unlocked, false);
+  // Admin setzt den PIN; ungültige Werte werden abgelehnt
+  assert.strictEqual((await admin('/api/admin/trcm', {pin: 'x'}, 'PATCH')).status, 400);
+  const set = await admin('/api/admin/trcm', {pin: 'Homm 4821'}, 'PATCH');
+  assert.strictEqual(set.status, 200); assert.strictEqual(set.data.pin, true);
+  assert.ok(set.data.log.some(l => l.action === 'PIN'), 'Protokoll ohne PIN-Wert');
+  assert.ok(!JSON.stringify(set.data.log).includes('4821'), 'PIN steht nicht im Protokoll');
+  // Falscher PIN
+  const bad = await reader('/api/trcm/pin', {pin: '0000'});
+  assert.strictEqual(bad.status, 403);
+  // Richtiger PIN (Leerzeichen egal) schaltet frei
+  const ok = await reader('/api/trcm/pin', {pin: 'homm4821'.toUpperCase().replace('HOMM', 'Homm')});
+  assert.strictEqual(ok.status, 200); assert.strictEqual(ok.data.member, true); assert.strictEqual(ok.data.unlocked, true);
+  assert.ok(Array.isArray(ok.data.holdings), 'Titel sichtbar');
+  v = await reader('/api/trcm'); assert.strictEqual(v.data.member, true, 'Freischaltung bleibt');
+  // Neuer PIN hebt die Freischaltung auf
+  await admin('/api/admin/trcm', {pin: '9999'}, 'PATCH');
+  v = await reader('/api/trcm'); assert.strictEqual(v.data.member, false, 'alte Freischaltung aufgehoben');
+  assert.strictEqual((await reader('/api/trcm/pin', {pin: '9999'})).data.member, true);
+  // Ohne Anmeldung kein Zugang
+  const anon = client(); assert.strictEqual((await anon('/api/trcm/pin', {pin: '9999'})).status, 401);
+});

@@ -1,8 +1,11 @@
 // TRCM-Portfolio: Musterdepot des Analystenteams von Florian Homm.
 // Gepflegt über den Admin-Zugang (Titel hinzufügen, korrigieren, schließen, löschen).
-// Die Wertentwicklung ist für alle sichtbar, die gehaltenen Titel nur für Free-Homes-Mitglieder und Admins.
+// Die Wertentwicklung ist für alle sichtbar, die gehaltenen Titel nur für Free-Homes-Mitglieder, Admins und wer den
+// PIN aus dem aktuellen Börsenbrief eingegeben hat (steht dort auf der letzten Seite; ein neuer PIN sperrt alle Freischaltungen).
+const crypto = require('crypto');
 const db = require('./db');
 const market = require('./market');
+const config = require('./config');
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS trcm_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);
@@ -17,6 +20,7 @@ CREATE TABLE IF NOT EXISTS trcm_holdings (
   closed_at INTEGER,                       -- gesetzt = Position geschlossen
   p1 REAL                                  -- Ausstiegskurs
 );
+CREATE TABLE IF NOT EXISTS trcm_pin_ok (user_id INTEGER PRIMARY KEY, pin_v INTEGER NOT NULL, at INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS trcm_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ts INTEGER NOT NULL, user_id INTEGER, user_name TEXT, action TEXT NOT NULL, detail TEXT NOT NULL DEFAULT ''
@@ -44,6 +48,40 @@ const qLogs = db.prepare('SELECT * FROM trcm_log ORDER BY id DESC LIMIT 60');
 const err = (msg, status = 400) => Object.assign(new Error(msg), {status});
 const isAdmin = u => !!u && u.role === 'admin';
 const isMember = u => !!u && (u.provider === 'freehomes' || isAdmin(u));
+
+/* ---------- PIN aus dem Börsenbrief ---------- */
+const qPinOk = db.prepare('SELECT pin_v FROM trcm_pin_ok WHERE user_id = ?');
+const qSetPinOk = db.prepare('INSERT INTO trcm_pin_ok (user_id, pin_v, at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET pin_v = excluded.pin_v, at = excluded.at');
+const pinHash = (pin, salt) => crypto.scryptSync(String(pin), salt, 32).toString('hex');
+const normPin = pin => String(pin || '').replace(/\s+/g, '').trim();
+// Gespeichert wird nur ein Hash. Ohne gesetzten PIN gilt TRCM_PIN aus der Umgebung (Startwert), sonst gibt es keinen PIN-Zugang.
+function pinState() {
+  const h = qMeta.get('pin_hash'), salt = qMeta.get('pin_salt'), v = Number((qMeta.get('pin_v') || {}).v || 0);
+  if (h && salt) return {hash: h.v, salt: salt.v, v, set: true};
+  if (config.trcmPin) return {hash: pinHash(normPin(config.trcmPin), 'env'), salt: 'env', v, set: true};
+  return {set: false, v};
+}
+const pinSet = () => pinState().set;
+function pinUnlocked(u) { if (!u) return false; const st = pinState(); if (!st.set) return false; const r = qPinOk.get(u.id); return !!r && r.pin_v === st.v; }
+const canView = u => isMember(u) || pinUnlocked(u);
+function unlockWithPin(u, pin) {
+  if (!u) throw err('Bitte anmelden', 401);
+  const st = pinState(), p = normPin(pin);
+  if (!st.set) throw err('Derzeit ist kein PIN hinterlegt', 404);
+  if (p.length < 3 || p.length > 12) throw err('Bitte den PIN aus dem aktuellen Börsenbrief eingeben');
+  const a = Buffer.from(pinHash(p, st.salt), 'hex'), b = Buffer.from(st.hash, 'hex');
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw err('Der PIN stimmt nicht. Er steht auf der letzten Seite des aktuellen Börsenbriefs.', 403);
+  qSetPinOk.run(u.id, st.v, Date.now());
+  return true;
+}
+function setPin(u, pin) {
+  requireAdmin(u);
+  const p = normPin(pin);
+  if (!/^[A-Za-z0-9]{3,12}$/.test(p)) throw err('PIN: 3 bis 12 Zeichen, Buchstaben oder Ziffern');
+  const salt = crypto.randomBytes(8).toString('hex'), v = pinState().v + 1;
+  qSetMeta.run('pin_hash', pinHash(p, salt)); qSetMeta.run('pin_salt', salt); qSetMeta.run('pin_v', String(v));
+  log(u, 'PIN', 'neuer PIN gesetzt, frühere Freischaltungen aufgehoben');
+}
 const name = sym => (market.INSTRUMENTS[sym] || {}).n || sym;
 
 // Symbole, deren Kurse der Server für das Portfolio holen muss (nicht öffentlich gelistet)
@@ -64,7 +102,7 @@ function view(user) {
   let sum = 0, daySum = 0;
   for (const h of open) if (h.perf != null) { sum += h.w * h.perf; daySum += h.w * (h.day || 0); }
   const out = {name: meta('name'), team: meta('team'), strategy: meta('strategy'), perf: sum / base, day: daySum / base,
-    count: open.length, member: isMember(user), admin: isAdmin(user)};
+    count: open.length, member: canView(user), freehomes: isMember(user), pin: pinSet(), unlocked: pinUnlocked(user), admin: isAdmin(user)};
   if (out.member) {
     out.cash = 1 - tw / base;
     out.holdings = open.map(h => ({...h, share: h.w / base}));
@@ -147,4 +185,4 @@ function updateMeta(u, b) {
   }
 }
 
-module.exports = {view, symbols, isAdmin, isMember, addHolding, updateHolding, closeHolding, deleteHolding, updateMeta};
+module.exports = {view, symbols, isAdmin, isMember, canView, unlockWithPin, setPin, addHolding, updateHolding, closeHolding, deleteHolding, updateMeta};

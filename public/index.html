@@ -1163,6 +1163,10 @@ main{animation:pagein .28s ease-out} @keyframes pagein{from{opacity:0;transform:
       <div class="step"><label>Team</label><input class="inp" id="tmTeam" maxlength="60"></div>
       <div class="step"><label>Strategie</label><textarea class="inp" id="tmStrat" rows="3" maxlength="600"></textarea></div>
       <button class="btn2" id="tmSave" style="margin-top:14px">Beschreibung speichern</button>
+      <h4 style="margin-top:34px">PIN aus dem Börsenbrief</h4>
+      <p class="muted" style="font-size:13px;margin:6px 0 10px" id="tmPinState"></p>
+      <div class="step"><label>Neuer PIN (3 bis 12 Zeichen, wie auf der letzten Seite der aktuellen Ausgabe)</label><input class="inp" id="tmPin" maxlength="12" autocomplete="off" placeholder="z. B. 4821"></div>
+      <button class="btn2" id="tmPinSave" style="margin-top:14px">PIN speichern</button>
       <h4 style="margin-top:34px">Änderungsprotokoll</h4>
       <div id="tcLog" style="margin-top:12px"></div>
     </div>
@@ -2489,7 +2493,7 @@ function renderTrcm(){
   if(!TC) return;
   $('#trcmCard').innerHTML=`<span class="kick">${esc(TC.team)}</span><h3>${esc(TC.name)}</h3><div class="team">Long und short, aktiv gemanagt</div>
     <div class="nums num"><b class="${cls(TC.perf)}">${pct(TC.perf,1)}</b><small class="${cls(TC.day)}">heute ${pct(TC.day,1)}</small></div>
-    <div class="foot2"><span>${TC.count} Titel${TC.member?'':' · 🔒 nur für Free-Homes-Mitglieder'}</span><span>${TC.member?'Titel ansehen →':'Mehr erfahren →'}</span></div>`;
+    <div class="foot2"><span>${TC.count} Titel${TC.member?'':' · 🔒 mit PIN aus dem Börsenbrief'}</span><span>${TC.member?'Titel ansehen →':'Freischalten →'}</span></div>`;
 }
 function holdingRow(h, closed){
   return `<div class="hrow"><span><span class="tag ${h.dir>0?'long':'short'}">${h.dir>0?'LONG':'SHORT'}</span> <b>${esc(h.name)}</b></span>
@@ -2506,8 +2510,10 @@ function renderTrcmSheet(){
     <p class="muted" style="font-size:12.5px;line-height:1.5;margin:0 2px">${esc(TC.team)} · ${TC.count} Titel</p>
     <p style="margin:14px 2px 0"><a class="link" href="https://homm-longshort.com/" target="_blank" rel="noopener">Mehr Infos im Homm Long Short Börsenbrief ↗</a></p>`;
   if(!TC.member){
-    h+=`<div class="lock"><div class="ic">🔒</div><b>Die Titel sehen nur Free-Homes-Mitglieder</b><p>Welche Aktien das Analystenteam hält, mit Einstiegskurs, Gewichtung und Begründung, ist Mitgliedern von Free Homes vorbehalten. Hintergründe und Analysen lesen Sie im <a class="link" href="https://homm-longshort.com/" target="_blank" rel="noopener">Homm Long Short Börsenbrief</a>.</p>
-      ${CFG.freehomes?'<button class="cta" id="tcFh" style="margin-top:18px">Mit Free Homes anmelden</button>':'<p style="margin-top:12px;color:var(--gold-p)">Der Login über Free Homes wird in Kürze freigeschaltet.</p>'}</div>`;
+    h+=`<div class="lock"><div class="ic">🔒</div><b>Die Titel sehen Abonnenten des Börsenbriefs und Free-Homes-Mitglieder</b><p>Welche Aktien das Analystenteam hält, mit Einstiegskurs, Gewichtung und Begründung, schalten Sie mit dem PIN frei. Er steht auf der <strong style="display:inline;color:var(--text)">letzten Seite des aktuellen Homm Long Short Börsenbriefs</strong> und wechselt mit jeder Ausgabe.</p>
+      ${TC.pin?`<form id="tcPinForm" style="margin-top:16px"><label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px">PIN aus dem Börsenbrief</label><div style="display:grid;grid-template-columns:1fr auto;gap:8px"><input class="inp" id="tcPin" inputmode="text" autocomplete="one-time-code" maxlength="12" placeholder="z. B. 4821" style="min-width:0;height:48px;letter-spacing:.2em;font-weight:600;text-align:center"><button class="cta" type="submit" id="tcPinGo" style="height:48px;padding:0 18px;margin:0">Freischalten</button></div><div class="err" id="tcPinErr" hidden style="margin-top:8px;color:var(--down);font-size:13px"></div></form>`:''}
+      <p style="margin-top:14px"><a class="link" href="${esc(CFG.boersenbrief||'https://homm-longshort.com/')}" target="_blank" rel="noopener">Noch kein Abonnent? Zum Börsenbrief ↗</a></p>
+      ${CFG.freehomes?'<button class="btn2" id="tcFh" style="margin-top:12px">Oder mit Free Homes anmelden</button>':''}</div>`;
   } else {
     const tw=TC.holdings.reduce((a,x)=>a+x.w,0);
     h+=`<div class="tc-h"><h4>Aktuelle Titel</h4><small class="num">${TC.admin?`Investiert ${nf(tw,1)} %`:''}</small></div>`
@@ -2520,6 +2526,7 @@ function renderTrcmSheet(){
   $('#tcAdmin').hidden=!TC.admin;
   if(TC.admin){
     $('#tmName').value=TC.name; $('#tmTeam').value=TC.team; $('#tmStrat').value=TC.strategy;
+    $('#tmPinState').textContent=TC.pin?'Ein PIN ist hinterlegt. Ein neuer PIN hebt alle bisherigen Freischaltungen auf.':'Noch kein PIN hinterlegt: Nichtmitglieder sehen die Titel nicht.';
     $('#tcLog').innerHTML=(TC.log||[]).map(l=>`<div class="logrow"><b>${esc(l.action)}</b> · ${esc(l.detail)}<small>${dstr(l.ts)} · ${esc(l.user||'')}</small></div>`).join('')||'<p class="muted" style="font-size:13px">Noch keine Änderungen.</p>';
     if(!$('#taSince').value) $('#taSince').value=today();
   }
@@ -2532,6 +2539,9 @@ async function trcmAdmin(path, method, body, errBox){
 $('#trcmCard').onclick=openTrcm;
 $('#tcBody').addEventListener('click',e=>{
   if(e.target.closest('#tcFh')){ location.href='/api/auth/freehomes/start'; return; }
+  if(e.target.closest('#tcPinGo')){ e.preventDefault(); const go=$('#tcPinGo'); go.disabled=true;
+    api('/api/trcm/pin',{body:{pin:$('#tcPin').value}}).then(d=>{ TC=d; renderTrcm(); renderTrcmSheet(); loadDiscover().then(renderDiscover); toast('Portfolio freigeschaltet'); coach('radar'); })
+      .catch(err=>{ $('#tcPinErr').textContent=err.message; $('#tcPinErr').hidden=false; }).finally(()=>{ go.disabled=false; }); return; }
   const b=e.target.closest('[data-tedit]'); if(!b) return;
   TE=[...TC.holdings,...TC.closed].find(x=>x.id===+b.dataset.tedit); if(!TE) return;
   $('#teName').textContent=TE.name; $$('[data-edir]').forEach(o=>o.classList.toggle('on',+o.dataset.edir===TE.dir));
@@ -2554,6 +2564,7 @@ $('#taGo').onclick=async()=>{
   const ok=await trcmAdmin('/holdings','POST',{sym:TA.sym,dir:TA.dir,w:$('#taW').value,p0:$('#taP0').value,since:$('#taSince').value,note:$('#taNote').value},'#taErr');
   if(ok){ toast('Titel hinzugefügt'); TA.sym=null; $('#taSel').hidden=true; ['#taW','#taP0','#taNote'].forEach(s=>$(s).value=''); }
 };
+$('#tmPinSave').onclick=async()=>{ const v=$('#tmPin').value.trim(); if(!v) return toast('Bitte einen PIN eingeben'); if(await trcmAdmin('','PATCH',{pin:v})){ $('#tmPin').value=''; toast('PIN gespeichert, alte Freischaltungen aufgehoben'); } };
 $('#tmSave').onclick=async()=>{ if(await trcmAdmin('','PATCH',{name:$('#tmName').value,team:$('#tmTeam').value,strategy:$('#tmStrat').value})) toast('Beschreibung gespeichert'); };
 $('#teBack').onclick=()=>closeTop();
 $('#teSave').onclick=async()=>{

@@ -39,6 +39,7 @@ module.exports = {
   researchToken: env('RESEARCH_TOKEN', ''),   // Schlüssel für die tägliche redaktionelle Einordnung (Bearer)
   academyUrl: env('ACADEMY_URL', 'https://app.free-homes.de/module/fh-academy'),   // Vertiefung: Free Homes Academy
   boersenbriefUrl: env('BOERSENBRIEF_URL', 'https://homm-longshort.com/'),
+  trcmPin: process.env.TRCM_PIN || '',   // Startwert für den Börsenbrief-PIN; Admins setzen ihn in der App neu
   freehomes: {
     issuer: env('FREEHOMES_ISSUER', 'https://keycloak.free-homes.de/realms/freehomes'),
     clientId: env('FREEHOMES_CLIENT_ID', ''),

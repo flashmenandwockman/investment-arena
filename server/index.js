@@ -216,9 +216,10 @@ async function api(req, res, url) {
     if (p.startsWith('/api/profile/')) { const pr = profile(Number(p.split('/').pop())); return pr ? send(res, 200, pr) : send(res, 404, {error: 'Nicht gefunden'}); }
     // TRCM-Portfolio: Wertentwicklung öffentlich, Titel nur für Free-Homes-Mitglieder, Pflege nur für Admins
     if (p === '/api/trcm' && m === 'GET') return send(res, 200, trcm.view(auth.currentUser(req)));
+    if (p === '/api/trcm/pin' && m === 'POST') { const u = requireUser(req); limit(req, 6, ':pin'); const b = await body(req); trcm.unlockWithPin(u, b.pin); return send(res, 200, trcm.view(u)); }
     if (p.startsWith('/api/admin/trcm')) {
       const u = requireUser(req), b = m === 'GET' || m === 'DELETE' ? {} : await body(req), id = Number(p.split('/')[5]);
-      if (p === '/api/admin/trcm' && m === 'PATCH') trcm.updateMeta(u, b);
+      if (p === '/api/admin/trcm' && m === 'PATCH') { if (b.pin != null) trcm.setPin(u, b.pin); else trcm.updateMeta(u, b); }
       else if (p === '/api/admin/trcm/holdings' && m === 'POST') { limit(req); await trcm.addHolding(u, b); heldCache.t = 0; }
       else if (/^\/api\/admin\/trcm\/holdings\/\d+$/.test(p) && m === 'PATCH') trcm.updateHolding(u, id, b);
       else if (/^\/api\/admin\/trcm\/holdings\/\d+$/.test(p) && m === 'DELETE') trcm.deleteHolding(u, id);

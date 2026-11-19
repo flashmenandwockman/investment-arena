@@ -227,6 +227,10 @@ Wichtig: Eigene Konten (E-Mail + Passwort) prüfen die E-Mail-Adresse nicht. Vor
 
 `/start` ist die öffentliche Startseite (`public/start.html`): Hero mit Live-Kursen und erstem Trade ohne Konto, Ablauf in drei Stufen, Mentoren (Florian Homm, TRCM-Team, Redaktion, zwei freie Plätze), Mechanik, Chance des Tages, Rangliste und Preise live aus der API, Lektionen, Vergleich Gast/Konto/Free-Homes-Mitglied, FAQ. Links wie `/?demo=1&sym=BTC/EUR&dir=short` legen ein Demo-Konto an und öffnen direkt das Handelsblatt. Die App selbst bleibt unter `/`.
 
+## PIN für das TRCM Portfolio
+
+Die Titel des TRCM Portfolios sehen Free-Homes-Mitglieder, Admins und alle, die den PIN aus dem aktuellen Homm Long Short Börsenbrief eingeben (er steht dort auf der letzten Seite). Admins setzen den PIN im Portfolio-Blatt unter „Admin → PIN aus dem Börsenbrief“; ein neuer PIN hebt alle bisherigen Freischaltungen auf, sodass mit jeder Ausgabe neu eingegeben werden muss. Gespeichert wird nur ein Hash, das Protokoll zeigt nie den Wert. `TRCM_PIN` in der `.env` dient als Startwert, bis ein Admin den PIN in der App setzt.
+
 ## Florians Tonspuren
 
 MP3-Dateien mit den Namen aus [`public/audio/AUFNAHMELISTE.md`](public/audio/AUFNAHMELISTE.md) in `public/audio/` legen (33 Texte). Die App erkennt sie automatisch; fehlt eine Datei, liest die Browser-Stimme vor. Im Docker-Betrieb ist der Ordner eingebunden (`/opt/investment-arena/public/audio/`), ein neuer Build ist nicht nötig.
@@ -275,7 +279,8 @@ Mitgelieferte Fallback-Daten (`server/fallback/`) halten die App auch ohne Live-
 | POST | `/api/orders`, `/api/positions/:id/close` | Order eröffnen, Position schließen |
 | GET | `/api/leaderboard`, `/api/profile/:id` | Rangliste, Trader-Profil |
 | GET/POST | `/api/funds`, `/api/funds/:id`, `/api/funds/:id/invest` | Community-Fonds |
-| GET | `/api/trcm` | TRCM Portfolio (Titel nur für Free-Homes-Mitglieder und Admins) |
+| GET | `/api/trcm` | TRCM Portfolio (Titel für Free-Homes-Mitglieder, Admins und nach PIN-Eingabe) |
+| POST | `/api/trcm/pin` | PIN aus dem aktuellen Börsenbrief eingeben, schaltet die Titel für dieses Konto frei (6 Versuche pro Minute) |
 | PATCH/POST/DELETE | `/api/admin/trcm`, `/api/admin/trcm/holdings[/:id[/close]]` | Pflege des TRCM Portfolios (nur Admins) |
 | GET | `/api/chart?sym=…&r=1d\|5d\|1mo\|1y\|5y` | Kursverlauf für den Chart |
 | GET | `/api/discover` | Trader zum Kopieren mit Kennzahlen, Großinvestoren |
